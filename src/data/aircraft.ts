@@ -5,7 +5,7 @@ const vhYpbLoadingStations: LoadingStation[] = [
   {
     id: 'pilot',
     name: 'Pilot',
-    armInches: 37,              // From loading arrangements diagram
+    armMm: 940,                 // 37" converted to mm (37 * 25.4)
     maxWeightLbs: 400,          // Reasonable pilot weight limit
     isRequired: true,
     category: 'pilot'
@@ -13,7 +13,7 @@ const vhYpbLoadingStations: LoadingStation[] = [
   {
     id: 'frontPassenger',
     name: 'Front Passenger',
-    armInches: 37,              // Same as pilot (front seats)
+    armMm: 940,                 // Same as pilot (front seats)
     maxWeightLbs: 400,
     isRequired: false,
     category: 'passenger'
@@ -21,7 +21,7 @@ const vhYpbLoadingStations: LoadingStation[] = [
   {
     id: 'rearPassenger1',
     name: 'Rear Passenger 1',
-    armInches: 74,              // From loading arrangements diagram
+    armMm: 1880,                // 74" converted to mm (74 * 25.4)
     maxWeightLbs: 400,
     isRequired: false,
     category: 'passenger'
@@ -29,7 +29,7 @@ const vhYpbLoadingStations: LoadingStation[] = [
   {
     id: 'rearPassenger2',
     name: 'Rear Passenger 2',
-    armInches: 74,              // Same as rear passenger 1
+    armMm: 1880,                // Same as rear passenger 1
     maxWeightLbs: 400,
     isRequired: false,
     category: 'passenger'
@@ -37,7 +37,7 @@ const vhYpbLoadingStations: LoadingStation[] = [
   {
     id: 'baggageA',
     name: 'Baggage Area A',
-    armInches: 97,              // From loading arrangements diagram (FS 82-109)
+    armMm: 2464,                // 97" converted to mm (97 * 25.4)
     maxWeightLbs: 120,          // From sample loading problem
     isRequired: false,
     category: 'baggage'
@@ -45,7 +45,7 @@ const vhYpbLoadingStations: LoadingStation[] = [
   {
     id: 'baggageB',
     name: 'Baggage Area B',
-    armInches: 116,             // From loading arrangements diagram (FS 109-124)
+    armMm: 2946,                // 116" converted to mm (116 * 25.4)
     maxWeightLbs: 80,           // From sample loading problem
     isRequired: false,
     category: 'baggage'
@@ -53,7 +53,7 @@ const vhYpbLoadingStations: LoadingStation[] = [
   {
     id: 'baggageC',
     name: 'Baggage Area C',
-    armInches: 129,             // From loading arrangements diagram (FS 124-134)
+    armMm: 3277,                // 129" converted to mm (129 * 25.4)
     maxWeightLbs: 80,           // From sample loading problem
     isRequired: false,
     category: 'baggage'
@@ -61,7 +61,7 @@ const vhYpbLoadingStations: LoadingStation[] = [
   {
     id: 'fuelLeft',
     name: 'Fuel - Left Wing',
-    armInches: 46.5,            // Usable fuel CG arm from notes
+    armMm: 1181,                // 46.5" converted to mm (46.5 * 25.4)
     maxWeightLbs: 522,          // 87 gallons * 6 lbs/gal
     isRequired: false,
     category: 'fuel'
@@ -69,7 +69,7 @@ const vhYpbLoadingStations: LoadingStation[] = [
   {
     id: 'fuelRight',
     name: 'Fuel - Right Wing',
-    armInches: 46.5,            // Same as left wing
+    armMm: 1181,                // Same as left wing
     maxWeightLbs: 522,          // 87 gallons * 6 lbs/gal
     isRequired: false,
     category: 'fuel'
@@ -81,14 +81,14 @@ const vhYpbLoadingStations: LoadingStation[] = [
 // For now, using representative values based on typical C182T envelope
 const vhYpbCGEnvelope: CGEnvelopePoint[] = [
   // Forward limit line
-  { weight: 2100, cgPosition: 35.0 },
-  { weight: 2950, cgPosition: 38.2 },
-  { weight: 3100, cgPosition: 40.5 },
+  { weight: 2100, cgPosition: 889 },   // 35.0" converted to mm (35.0 * 25.4)
+  { weight: 2950, cgPosition: 970 },   // 38.2" converted to mm (38.2 * 25.4)
+  { weight: 3100, cgPosition: 1029 },  // 40.5" converted to mm (40.5 * 25.4)
 
   // Aft limit line
-  { weight: 2100, cgPosition: 47.3 },
-  { weight: 2950, cgPosition: 47.3 },
-  { weight: 3100, cgPosition: 47.3 }
+  { weight: 2100, cgPosition: 1201 },  // 47.3" converted to mm (47.3 * 25.4)
+  { weight: 2950, cgPosition: 1201 },  // 47.3" converted to mm (47.3 * 25.4)
+  { weight: 3100, cgPosition: 1201 }   // 47.3" converted to mm (47.3 * 25.4)
 ];
 
 // VH-YPB Aircraft Definition
@@ -96,7 +96,7 @@ export const vhYpbAircraft: Aircraft = {
   registration: 'VH-YPB',
   model: 'Cessna 182T NAV III',
   emptyWeightLbs: 2007.0,           // From load data sheet
-  emptyCGInches: 38.4,              // From load data sheet (imperial)
+  emptyCGMm: 975,                   // 38.4" converted to mm (38.4 * 25.4)
   maxTakeoffWeightLbs: 3100,        // From envelope graph
   maxLandingWeightLbs: 2950,        // From envelope graph
   maxRampWeightLbs: 3110,           // From sample loading problem
@@ -113,7 +113,7 @@ export const secondAircraft: Aircraft = {
   registration: 'VH-XXX',
   model: 'Aircraft 2',
   emptyWeightLbs: 1800,
-  emptyCGInches: 36.0,
+  emptyCGMm: 914,                   // 36.0" converted to mm (36.0 * 25.4)
   maxTakeoffWeightLbs: 2800,
   maxLandingWeightLbs: 2700,
   maxRampWeightLbs: 2810,

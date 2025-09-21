@@ -1,18 +1,20 @@
 import React from 'react';
 import { convertWeightForDisplay, roundDownForDisplay } from '@/utils/conversions';
-import type { Aircraft, CalculationResult, Settings } from '@/types/aircraft';
+import type { Aircraft, CalculationResult, Settings, LoadingState } from '@/types/aircraft';
 import { cn } from '@/lib/utils';
 
 interface BalanceBeamViewProps {
   aircraft: Aircraft;
   calculations: CalculationResult;
   settings: Settings;
+  loadingState?: LoadingState;
 }
 
 const BalanceBeamView: React.FC<BalanceBeamViewProps> = ({
   aircraft,
   calculations,
-  settings
+  settings,
+  loadingState
 }) => {
   const { totalWeight, cgPosition, withinEnvelope } = calculations;
 

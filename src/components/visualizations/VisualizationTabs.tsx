@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BarChart3, Plane, Scale, Eye, Zap, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { Aircraft, CalculationResult, Settings } from '@/types/aircraft';
+import type { Aircraft, CalculationResult, Settings, LoadingState } from '@/types/aircraft';
 
 // Import visualization components (we'll create these)
 import CGEnvelopeChart from '@/components/charts/CGEnvelopeChart';
@@ -16,6 +16,7 @@ interface VisualizationTabsProps {
   aircraft: Aircraft;
   calculations: CalculationResult;
   settings: Settings;
+  loadingState: LoadingState;
   className?: string;
 }
 
@@ -30,6 +31,7 @@ interface VisualizationTab {
     aircraft: Aircraft;
     calculations: CalculationResult;
     settings: Settings;
+    loadingState?: LoadingState;
   }>;
 }
 
@@ -37,6 +39,7 @@ const VisualizationTabs: React.FC<VisualizationTabsProps> = ({
   aircraft,
   calculations,
   settings,
+  loadingState,
   className
 }) => {
   const [activeTab, setActiveTab] = useState<VisualizationType>('envelope');
@@ -127,6 +130,7 @@ const VisualizationTabs: React.FC<VisualizationTabsProps> = ({
             aircraft={aircraft}
             calculations={calculations}
             settings={settings}
+            loadingState={loadingState}
           />
         </div>
       </CardContent>

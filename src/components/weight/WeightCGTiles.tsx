@@ -138,7 +138,7 @@ const WeightCGTiles: React.FC<WeightCGTilesProps> = ({
                 "text-xl font-bold",
                 !withinEnvelope ? "text-danger" : "text-on-surface-container"
               )}>
-                {cgPosition.toFixed(1)}"
+                {cgPosition.toFixed(0)} mm
               </div>
               <div className="text-xs text-muted-foreground">
                 {percentMAC.toFixed(1)}% MAC

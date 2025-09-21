@@ -12,13 +12,14 @@ import {
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { convertWeightForDisplay, roundDownForDisplay } from '@/utils/conversions';
-import type { Aircraft, CalculationResult, Settings } from '@/types/aircraft';
+import type { Aircraft, CalculationResult, Settings, LoadingState } from '@/types/aircraft';
 import { cn } from '@/lib/utils';
 
 interface CGEnvelopeChartProps {
   aircraft: Aircraft;
   calculations: CalculationResult;
   settings: Settings;
+  loadingState?: LoadingState;
   className?: string;
 }
 
@@ -26,6 +27,7 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
   aircraft,
   calculations,
   settings,
+  loadingState,
   className
 }) => {
   const { totalWeight, cgPosition, withinEnvelope } = calculations;

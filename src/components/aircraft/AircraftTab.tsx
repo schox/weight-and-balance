@@ -41,6 +41,7 @@ const AircraftTab: React.FC<AircraftTabProps> = ({ aircraft, settings }) => {
         aircraft={aircraft}
         calculations={calculations}
         settings={settings}
+        loadingState={loadingState}
       />
     </div>
   );

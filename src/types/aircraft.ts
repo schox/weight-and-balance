@@ -14,7 +14,7 @@ export interface Settings {
 export interface LoadingStation {
   id: string;
   name: string;
-  armInches: number;          // CG arm in inches from datum
+  armMm: number;              // CG arm in mm from datum
   maxWeightLbs: number;       // Maximum weight for this station
   isRequired: boolean;        // Whether this station must have weight (e.g., pilot)
   category: 'pilot' | 'passenger' | 'baggage' | 'fuel';
@@ -23,7 +23,7 @@ export interface LoadingStation {
 // CG envelope point for plotting limits
 export interface CGEnvelopePoint {
   weight: number;             // Weight in lbs
-  cgPosition: number;         // CG position in inches aft of datum
+  cgPosition: number;         // CG position in mm aft of datum
 }
 
 // Aircraft specifications
@@ -31,7 +31,7 @@ export interface Aircraft {
   registration: string;
   model: string;
   emptyWeightLbs: number;
-  emptyCGInches: number;
+  emptyCGMm: number;          // Empty CG in mm aft of datum
   maxTakeoffWeightLbs: number;
   maxLandingWeightLbs: number;
   maxRampWeightLbs: number;
@@ -58,8 +58,8 @@ export interface LoadingState {
 
   // Computed values (automatically calculated)
   totalWeightLbs: number;
-  cgPositionInches: number;
-  momentInLbsInches: number;
+  cgPositionMm: number;
+  momentInKgMm: number;
   isWithinWeightLimits: boolean;
   isWithinCGLimits: boolean;
   marginToMTOW: number;      // Pounds remaining to MTOW
@@ -98,8 +98,8 @@ export interface CalculationResult {
   withinEnvelope: boolean;
   weightMargin: number;         // Pounds to MTOW
   cgMargin: {
-    forward: number;            // Inches to forward limit
-    aft: number;                // Inches to aft limit
+    forward: number;            // mm to forward limit
+    aft: number;                // mm to aft limit
   };
   warnings: string[];
   errors: string[];

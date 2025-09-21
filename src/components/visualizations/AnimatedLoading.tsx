@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, RotateCcw } from 'lucide-react';
 import { convertWeightForDisplay, roundDownForDisplay } from '@/utils/conversions';
-import type { Aircraft, CalculationResult, Settings } from '@/types/aircraft';
+import type { Aircraft, CalculationResult, Settings, LoadingState } from '@/types/aircraft';
 import { cn } from '@/lib/utils';
 
 interface AnimatedLoadingProps {
   aircraft: Aircraft;
   calculations: CalculationResult;
   settings: Settings;
+  loadingState?: LoadingState;
 }
 
 interface LoadingStep {
@@ -22,7 +23,8 @@ interface LoadingStep {
 
 const AnimatedLoading: React.FC<AnimatedLoadingProps> = ({
   aircraft,
-  settings
+  settings,
+  loadingState
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -30,7 +32,7 @@ const AnimatedLoading: React.FC<AnimatedLoadingProps> = ({
 
   // Define loading sequence (simulate realistic loading order)
   const loadingSequence: LoadingStep[] = [
-    { id: 'empty', name: 'Empty Aircraft', weight: aircraft.emptyWeightLbs, armInches: aircraft.emptyCGInches, category: 'empty', delay: 0 },
+    { id: 'empty', name: 'Empty Aircraft', weight: aircraft.emptyWeightLbs, armInches: aircraft.emptyCGMm / 25.4, category: 'empty', delay: 0 },
     { id: 'pilot', name: 'Pilot Boarding', weight: 185, armInches: 37, category: 'pilot', delay: 1000 },
     { id: 'frontPassenger', name: 'Front Passenger', weight: 165, armInches: 37, category: 'passenger', delay: 1500 },
     { id: 'rearPassenger1', name: 'Rear Passenger 1', weight: 155, armInches: 74, category: 'passenger', delay: 2000 },
@@ -59,7 +61,7 @@ const AnimatedLoading: React.FC<AnimatedLoadingProps> = ({
 
     return {
       weight: totalWeight,
-      cgPosition: totalWeight > 0 ? totalMoment / totalWeight : aircraft.emptyCGInches
+      cgPosition: totalWeight > 0 ? totalMoment / totalWeight : aircraft.emptyCGMm / 25.4
     };
   };
 

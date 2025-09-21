@@ -17,8 +17,8 @@ const createInitialState = (): LoadingState => ({
 
   // Computed values (will be calculated)
   totalWeightLbs: 0,
-  cgPositionInches: 0,
-  momentInLbsInches: 0,
+  cgPositionMm: 0,
+  momentInKgMm: 0,
   isWithinWeightLimits: true,
   isWithinCGLimits: true,
   marginToMTOW: 0

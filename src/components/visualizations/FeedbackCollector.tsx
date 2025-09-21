@@ -4,12 +4,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Star, Send, BarChart3, Plane, Zap, Scale, ThumbsUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { Aircraft, CalculationResult, Settings } from '@/types/aircraft';
+import type { Aircraft, CalculationResult, Settings, LoadingState } from '@/types/aircraft';
 
 interface FeedbackCollectorProps {
   aircraft: Aircraft;
   calculations: CalculationResult;
   settings: Settings;
+  loadingState?: LoadingState;
 }
 
 interface VisualizationRating {
@@ -22,7 +23,9 @@ interface VisualizationRating {
 
 const FeedbackCollector: React.FC<FeedbackCollectorProps> = ({
   aircraft,
-  calculations
+  calculations,
+  settings,
+  loadingState
 }) => {
   const [ratings, setRatings] = useState<VisualizationRating[]>([
     { id: 'envelope', name: 'CG Envelope Chart', icon: <BarChart3 className="h-5 w-5" />, rating: 0, comments: '' },

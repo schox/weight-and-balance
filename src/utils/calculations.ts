@@ -25,37 +25,49 @@ export const calculateTotalWeight = (
   return aircraft.emptyWeightLbs + peopleWeight + baggageWeight + fuelWeight;
 };
 
-// Calculate total moment in lb-inches
+// Calculate total moment in kg.mm
 export const calculateTotalMoment = (
   loadingState: LoadingState,
   aircraft: Aircraft,
   settings: Settings
 ): number => {
-  // Empty weight moment
-  const emptyMoment = aircraft.emptyWeightLbs * aircraft.emptyCGInches;
+  // Empty weight moment - convert lbs to kg for moment calculation
+  const emptyWeightKg = aircraft.emptyWeightLbs * 0.453592; // Convert lbs to kg
+  const emptyMoment = emptyWeightKg * aircraft.emptyCGMm;
 
   // Find loading stations by ID for arm values
   const getStationArm = (id: string): number => {
     const station = aircraft.loadingStations.find(s => s.id === id);
-    return station?.armInches || 0;
+    return station?.armMm || 0;
   };
 
-  // People moments
-  const pilotMoment = loadingState.pilot * getStationArm('pilot');
-  const frontPassengerMoment = loadingState.frontPassenger * getStationArm('frontPassenger');
-  const rearPassenger1Moment = loadingState.rearPassenger1 * getStationArm('rearPassenger1');
-  const rearPassenger2Moment = loadingState.rearPassenger2 * getStationArm('rearPassenger2');
+  // Convert weights to kg for moment calculations
+  const pilotKg = loadingState.pilot * 0.453592;
+  const frontPassengerKg = loadingState.frontPassenger * 0.453592;
+  const rearPassenger1Kg = loadingState.rearPassenger1 * 0.453592;
+  const rearPassenger2Kg = loadingState.rearPassenger2 * 0.453592;
+  const baggageAKg = loadingState.baggageA * 0.453592;
+  const baggageBKg = loadingState.baggageB * 0.453592;
+  const baggageCKg = loadingState.baggageC * 0.453592;
 
-  // Baggage moments
-  const baggageAMoment = loadingState.baggageA * getStationArm('baggageA');
-  const baggageBMoment = loadingState.baggageB * getStationArm('baggageB');
-  const baggageCMoment = loadingState.baggageC * getStationArm('baggageC');
+  // People moments in kg.mm
+  const pilotMoment = pilotKg * getStationArm('pilot');
+  const frontPassengerMoment = frontPassengerKg * getStationArm('frontPassenger');
+  const rearPassenger1Moment = rearPassenger1Kg * getStationArm('rearPassenger1');
+  const rearPassenger2Moment = rearPassenger2Kg * getStationArm('rearPassenger2');
 
-  // Fuel moments
-  const fuelLeftWeight = getFuelWeightLbs(loadingState.fuelLeft, settings.fuelUnits);
-  const fuelRightWeight = getFuelWeightLbs(loadingState.fuelRight, settings.fuelUnits);
-  const fuelLeftMoment = fuelLeftWeight * getStationArm('fuelLeft');
-  const fuelRightMoment = fuelRightWeight * getStationArm('fuelRight');
+  // Baggage moments in kg.mm
+  const baggageAMoment = baggageAKg * getStationArm('baggageA');
+  const baggageBMoment = baggageBKg * getStationArm('baggageB');
+  const baggageCMoment = baggageCKg * getStationArm('baggageC');
+
+  // Fuel moments in kg.mm
+  const fuelLeftWeightLbs = getFuelWeightLbs(loadingState.fuelLeft, settings.fuelUnits);
+  const fuelRightWeightLbs = getFuelWeightLbs(loadingState.fuelRight, settings.fuelUnits);
+  const fuelLeftWeightKg = fuelLeftWeightLbs * 0.453592;
+  const fuelRightWeightKg = fuelRightWeightLbs * 0.453592;
+  const fuelLeftMoment = fuelLeftWeightKg * getStationArm('fuelLeft');
+  const fuelRightMoment = fuelRightWeightKg * getStationArm('fuelRight');
 
   return emptyMoment +
          pilotMoment + frontPassengerMoment + rearPassenger1Moment + rearPassenger2Moment +
@@ -63,13 +75,16 @@ export const calculateTotalMoment = (
          fuelLeftMoment + fuelRightMoment;
 };
 
-// Calculate center of gravity position
+// Calculate center of gravity position in mm
 export const calculateCGPosition = (
   totalWeight: number,
   totalMoment: number
 ): number => {
   if (totalWeight === 0) return 0;
-  return totalMoment / totalWeight;
+  // totalMoment is in kg.mm, totalWeight is in lbs
+  // Convert totalWeight to kg to get CG position in mm
+  const totalWeightKg = totalWeight * 0.453592;
+  return totalMoment / totalWeightKg;
 };
 
 // Check if point is within CG envelope
@@ -97,8 +112,8 @@ export const isWithinCGEnvelope = (
 export const calculatePercentMAC = (cgPosition: number): number => {
   // For C182T, this is a simplified calculation
   // In production, this would use actual MAC data from POH
-  const macStart = 35.0; // Forward edge of MAC
-  const macLength = 12.0; // Length of MAC
+  const macStart = 889; // Forward edge of MAC in mm (35.0" * 25.4)
+  const macLength = 305; // Length of MAC in mm (12.0" * 25.4)
 
   return ((cgPosition - macStart) / macLength) * 100;
 };
@@ -112,7 +127,7 @@ export const getCGLimits = (
   // In production, this would be more sophisticated
 
   if (envelope.length < 6) {
-    return { forward: 35.0, aft: 47.3 }; // Default C182T limits
+    return { forward: 889, aft: 1201 }; // Default C182T limits in mm
   }
 
   // Find forward and aft limits for the given weight
