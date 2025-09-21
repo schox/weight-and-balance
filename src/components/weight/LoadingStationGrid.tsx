@@ -165,6 +165,7 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
             onChange={actions.updateFuelLeft}
             onSync={actions.syncFuelTanks}
             isSynced={isFuelSynced}
+            totalFuelAcrossAllTanks={loadingState.fuelLeft + loadingState.fuelRight}
           />
           <FuelTile
             id="fuelRight"
@@ -177,6 +178,7 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
             onChange={actions.updateFuelRight}
             onSync={actions.syncFuelTanks}
             isSynced={isFuelSynced}
+            totalFuelAcrossAllTanks={loadingState.fuelLeft + loadingState.fuelRight}
           />
         </div>
       </div>

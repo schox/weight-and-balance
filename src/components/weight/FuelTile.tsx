@@ -18,6 +18,7 @@ interface FuelTileProps {
   onChange: (value: number) => void;
   onSync?: () => void;
   isSynced?: boolean;
+  totalFuelAcrossAllTanks?: number;
   className?: string;
 }
 
@@ -30,6 +31,7 @@ const FuelTile: React.FC<FuelTileProps> = ({
   onChange,
   onSync,
   isSynced = false,
+  totalFuelAcrossAllTanks = 0,
   className
 }) => {
   const [inputValue, setInputValue] = useState(roundDownForDisplay(value).toString());
@@ -92,10 +94,14 @@ const FuelTile: React.FC<FuelTileProps> = ({
   const isNearEmpty = value < maxQuantity * 0.1;
   const isFull = value >= maxQuantity * 0.95;
 
+  // Check if both tanks are empty across all tanks
+  const bothTanksEmpty = totalFuelAcrossAllTanks === 0;
+
   return (
     <Card className={cn(
       "transition-all duration-200 hover:shadow-md bg-surface-container",
       isSynced && "ring-2 ring-info/50",
+      bothTanksEmpty && "border-warning bg-yellow-50",
       className
     )}>
       <CardHeader className="pb-3">
@@ -230,7 +236,12 @@ const FuelTile: React.FC<FuelTileProps> = ({
             ⚠ Low Fuel
           </div>
         )}
-        {value === 0 && (
+        {bothTanksEmpty && (
+          <div className="text-xs text-warning font-medium text-center">
+            ⚠ No fuel loaded - consider minimum fuel for taxi and reserves
+          </div>
+        )}
+        {value === 0 && !bothTanksEmpty && (
           <div className="text-xs text-muted-foreground text-center">
             Tank Empty
           </div>

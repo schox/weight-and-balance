@@ -158,11 +158,7 @@ export const validateLoading = (
     }
   });
 
-  // Check for unrealistic or missing critical data
-  const totalFuel = loadingState.fuelLeft + loadingState.fuelRight;
-  if (totalFuel === 0) {
-    warnings.push('No fuel loaded - consider minimum fuel for taxi and reserves');
-  }
+  // Check for unrealistic data
 
   // Check for unusually light pilot weight (might indicate data entry error)
   if (loadingState.pilot > 0 && loadingState.pilot < 40) {
