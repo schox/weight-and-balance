@@ -48,76 +48,71 @@ const WeightSummary: React.FC<WeightSummaryProps> = ({
     return "WITHIN LIMITS";
   };
 
-  const getStatusColor = () => {
-    if (errors.length > 0) return "text-destructive";
-    if (warnings.length > 0) return "text-yellow-600";
-    return "text-green-600";
-  };
 
   return (
-    <Card className={cn("border-2", className)}>
+    <Card className={cn("border-2 gradient-aviation-card text-white shadow-lg", className)}>
       <CardContent className="p-6">
         {/* Top Row - Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           {/* Basic Empty Weight */}
           <div className="text-center">
-            <div className="text-sm text-muted-foreground">BEW</div>
-            <div className="text-lg font-bold">{roundDownForDisplay(convertWeightForDisplay(aircraft.emptyWeightLbs, settings.weightUnits))}</div>
-            <div className="text-xs text-muted-foreground">{settings.weightUnits}</div>
+            <div className="text-sm text-white/70">BEW</div>
+            <div className="text-lg font-bold text-white">{roundDownForDisplay(convertWeightForDisplay(aircraft.emptyWeightLbs, settings.weightUnits))}</div>
+            <div className="text-xs text-white/70">{settings.weightUnits}</div>
           </div>
 
           {/* Current Weight */}
           <div className="text-center">
-            <div className="text-sm text-muted-foreground">Current Weight</div>
+            <div className="text-sm text-white/70">Current Weight</div>
             <div className={cn(
               "text-lg font-bold",
-              totalWeight > aircraft.maxTakeoffWeightLbs ? "text-destructive" : "text-foreground"
+              totalWeight > aircraft.maxTakeoffWeightLbs ? "text-aviation-red" : "text-white"
             )}>
               {roundDownForDisplay(convertWeightForDisplay(totalWeight, settings.weightUnits))}
             </div>
-            <div className="text-xs text-muted-foreground">{settings.weightUnits}</div>
+            <div className="text-xs text-white/70">{settings.weightUnits}</div>
           </div>
 
           {/* MTOW */}
           <div className="text-center">
-            <div className="text-sm text-muted-foreground">MTOW</div>
-            <div className="text-lg font-bold">{roundDownForDisplay(convertWeightForDisplay(aircraft.maxTakeoffWeightLbs, settings.weightUnits))}</div>
-            <div className="text-xs text-muted-foreground">{settings.weightUnits}</div>
+            <div className="text-sm text-white/70">MTOW</div>
+            <div className="text-lg font-bold text-white">{roundDownForDisplay(convertWeightForDisplay(aircraft.maxTakeoffWeightLbs, settings.weightUnits))}</div>
+            <div className="text-xs text-white/70">{settings.weightUnits}</div>
           </div>
 
           {/* Margin */}
           <div className="text-center">
-            <div className="text-sm text-muted-foreground">Margin</div>
+            <div className="text-sm text-white/70">Margin</div>
             <div className={cn(
               "text-lg font-bold",
-              weightMargin < 0 ? "text-destructive" :
-              weightMargin < 100 ? "text-yellow-600" : "text-green-600"
+              weightMargin < 0 ? "text-aviation-red" :
+              weightMargin < 100 ? "text-aviation-gold" : "text-aviation-green"
             )}>
               {convertWeightForDisplay(weightMargin, settings.weightUnits) > 0 ? '+' : ''}{roundDownForDisplay(convertWeightForDisplay(weightMargin, settings.weightUnits))}
             </div>
-            <div className="text-xs text-muted-foreground">{settings.weightUnits}</div>
+            <div className="text-xs text-white/70">{settings.weightUnits}</div>
           </div>
         </div>
 
         {/* Progress Bar */}
         <div className="space-y-2 mb-6">
           <div className="flex justify-between text-sm">
-            <span>Weight Loading</span>
+            <span className="text-white/90">Weight Loading</span>
             <span className={cn(
               "font-medium",
-              mtowPercentage > 100 ? "text-destructive" :
-              mtowPercentage > 90 ? "text-yellow-600" : "text-foreground"
+              mtowPercentage > 100 ? "text-aviation-red" :
+              mtowPercentage > 90 ? "text-aviation-gold" : "text-white"
             )}>
               {mtowPercentage.toFixed(1)}% of MTOW
             </span>
           </div>
-          <div className="w-full bg-muted rounded-full h-3">
+          <div className="w-full bg-white/20 rounded-full h-3">
             <div
               className={cn(
                 "h-3 rounded-full transition-all duration-300",
-                mtowPercentage > 100 ? "bg-destructive" :
-                mtowPercentage > 90 ? "bg-yellow-500" :
-                mtowPercentage > 75 ? "bg-blue-500" : "bg-green-500"
+                mtowPercentage > 100 ? "bg-aviation-red" :
+                mtowPercentage > 90 ? "bg-aviation-gold" :
+                mtowPercentage > 75 ? "bg-white" : "bg-aviation-green"
               )}
               style={{ width: `${Math.min(mtowPercentage, 100)}%` }}
             />
@@ -128,33 +123,37 @@ const WeightSummary: React.FC<WeightSummaryProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* CG Position */}
           <div className="text-center">
-            <div className="text-sm text-muted-foreground">CG Position</div>
+            <div className="text-sm text-white/70">CG Position</div>
             <div className={cn(
               "text-lg font-bold",
-              !withinEnvelope ? "text-destructive" : "text-foreground"
+              !withinEnvelope ? "text-aviation-red" : "text-white"
             )}>
               {cgPosition.toFixed(1)}"
             </div>
-            <div className="text-xs text-muted-foreground">
+            <div className="text-xs text-white/70">
               {percentMAC.toFixed(1)}% MAC
             </div>
           </div>
 
           {/* Status */}
           <div className="text-center">
-            <div className="text-sm text-muted-foreground">Status</div>
-            <div className={cn("flex items-center justify-center space-x-2", getStatusColor())}>
+            <div className="text-sm text-white/70">Status</div>
+            <div className={cn("flex items-center justify-center space-x-2")}>
               {getStatusIcon()}
-              <span className="font-bold">{getStatusText()}</span>
+              <span className={cn(
+                "font-bold",
+                errors.length > 0 ? "text-aviation-red" :
+                warnings.length > 0 ? "text-aviation-gold" : "text-aviation-green"
+              )}>{getStatusText()}</span>
             </div>
           </div>
 
           {/* Empty space for future use */}
           <div className="text-center">
-            <div className="text-sm text-muted-foreground">Envelope</div>
+            <div className="text-sm text-white/70">Envelope</div>
             <div className={cn(
               "text-lg font-bold",
-              withinEnvelope ? "text-green-600" : "text-destructive"
+              withinEnvelope ? "text-aviation-green" : "text-aviation-red"
             )}>
               {withinEnvelope ? "✓ SAFE" : "✗ UNSAFE"}
             </div>
