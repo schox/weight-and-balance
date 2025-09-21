@@ -29,15 +29,12 @@ const AircraftTab: React.FC<AircraftTabProps> = ({ aircraft, settings }) => {
       />
 
       {/* Loading Stations Grid */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Loading Stations</h3>
-        <LoadingStationGrid
-          aircraft={aircraft}
-          loadingState={loadingState}
-          settings={settings}
-          actions={actions}
-        />
-      </div>
+      <LoadingStationGrid
+        aircraft={aircraft}
+        loadingState={loadingState}
+        settings={settings}
+        actions={actions}
+      />
 
       {/* Visualization Tabs */}
       <VisualizationTabs

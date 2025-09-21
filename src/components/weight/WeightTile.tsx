@@ -21,13 +21,13 @@ interface WeightTileProps {
 const getIconForCategory = (category: string) => {
   switch (category) {
     case 'pilot':
-      return <UserCheck className="h-5 w-5 text-aviation-blue" />;
+      return <UserCheck className="h-5 w-5 text-info" />;
     case 'passenger':
       return <User className="h-5 w-5 text-purple-600" />;
     case 'baggage':
       return <Package className="h-5 w-5 text-orange-600" />;
     case 'fuel':
-      return <Fuel className="h-5 w-5 text-aviation-green" />;
+      return <Fuel className="h-5 w-5 text-success" />;
     default:
       return <User className="h-5 w-5 text-gray-600" />;
   }
@@ -96,10 +96,9 @@ const WeightTile: React.FC<WeightTileProps> = ({
 
   return (
     <Card className={cn(
-      "transition-all duration-200 hover:shadow-lg border-2",
-      isOverLimit && "border-aviation-red bg-red-50",
-      isApproachingLimit && !isOverLimit && "border-aviation-gold bg-yellow-50",
-      !isOverLimit && !isApproachingLimit && "border-aviation-blue/30 bg-white/90 backdrop-blur-sm",
+      "transition-all duration-200 hover:shadow-md bg-surface-container",
+      isOverLimit && "border-danger bg-red-50",
+      isApproachingLimit && !isOverLimit && "border-warning bg-yellow-50",
       className
     )}>
       <CardHeader className="pb-3">
@@ -175,9 +174,9 @@ const WeightTile: React.FC<WeightTileProps> = ({
               <div
                 className={cn(
                   "h-2 rounded-full transition-all duration-300",
-                  isOverLimit ? "bg-aviation-red" :
-                  isApproachingLimit ? "bg-aviation-gold" :
-                  "bg-aviation-blue"
+                  isOverLimit ? "bg-danger" :
+                  isApproachingLimit ? "bg-warning" :
+                  "bg-info"
                 )}
                 style={{ width: `${Math.min(weightPercentage, 100)}%` }}
               />

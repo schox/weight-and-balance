@@ -52,106 +52,132 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
     };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {/* Pilot - Required */}
-      <WeightTile
-        id="pilot"
-        title="Pilot"
-        value={convertWeightForTile(loadingState.pilot)}
-        maxWeight={convertMaxWeightForTile(400)}
-        unit={settings.weightUnits}
-        category="pilot"
-        isRequired={true}
-        onChange={handleWeightChange(actions.updatePilot)}
-      />
+    <div className="space-y-8">
+      {/* Front Row Seats */}
+      <div className="space-y-4">
+        <h4 className="text-lg font-semibold text-on-surface flex items-center">
+          <div className="w-2 h-2 rounded-full bg-info mr-3"></div>
+          Front Row Seats
+        </h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <WeightTile
+            id="pilot"
+            title="Pilot"
+            value={convertWeightForTile(loadingState.pilot)}
+            maxWeight={convertMaxWeightForTile(400)}
+            unit={settings.weightUnits}
+            category="pilot"
+            isRequired={true}
+            onChange={handleWeightChange(actions.updatePilot)}
+          />
+          <WeightTile
+            id="frontPassenger"
+            title="Front Passenger"
+            value={convertWeightForTile(loadingState.frontPassenger)}
+            maxWeight={convertMaxWeightForTile(400)}
+            unit={settings.weightUnits}
+            category="passenger"
+            onChange={handleWeightChange(actions.updateFrontPassenger)}
+          />
+        </div>
+      </div>
 
-      {/* Front Passenger */}
-      <WeightTile
-        id="frontPassenger"
-        title="Front Passenger"
-        value={convertWeightForTile(loadingState.frontPassenger)}
-        maxWeight={convertMaxWeightForTile(400)}
-        unit={settings.weightUnits}
-        category="passenger"
-        onChange={handleWeightChange(actions.updateFrontPassenger)}
-      />
+      {/* Rear Row Seats */}
+      <div className="space-y-4">
+        <h4 className="text-lg font-semibold text-on-surface flex items-center">
+          <div className="w-2 h-2 rounded-full bg-purple-600 mr-3"></div>
+          Rear Row Seats
+        </h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <WeightTile
+            id="rearPassenger1"
+            title="Rear Passenger 1"
+            value={convertWeightForTile(loadingState.rearPassenger1)}
+            maxWeight={convertMaxWeightForTile(400)}
+            unit={settings.weightUnits}
+            category="passenger"
+            onChange={handleWeightChange(actions.updateRearPassenger1)}
+          />
+          <WeightTile
+            id="rearPassenger2"
+            title="Rear Passenger 2"
+            value={convertWeightForTile(loadingState.rearPassenger2)}
+            maxWeight={convertMaxWeightForTile(400)}
+            unit={settings.weightUnits}
+            category="passenger"
+            onChange={handleWeightChange(actions.updateRearPassenger2)}
+          />
+        </div>
+      </div>
 
-      {/* Rear Passengers */}
-      <WeightTile
-        id="rearPassenger1"
-        title="Rear Passenger 1"
-        value={convertWeightForTile(loadingState.rearPassenger1)}
-        maxWeight={convertMaxWeightForTile(400)}
-        unit={settings.weightUnits}
-        category="passenger"
-        onChange={handleWeightChange(actions.updateRearPassenger1)}
-      />
+      {/* Baggage */}
+      <div className="space-y-4">
+        <h4 className="text-lg font-semibold text-on-surface flex items-center">
+          <div className="w-2 h-2 rounded-full bg-orange-600 mr-3"></div>
+          Baggage
+        </h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <WeightTile
+            id="baggageA"
+            title="Baggage Area A"
+            value={convertWeightForTile(loadingState.baggageA)}
+            maxWeight={convertMaxWeightForTile(120)}
+            unit={settings.weightUnits}
+            category="baggage"
+            onChange={handleWeightChange(actions.updateBaggageA)}
+          />
+          <WeightTile
+            id="baggageB"
+            title="Baggage Area B"
+            value={convertWeightForTile(loadingState.baggageB)}
+            maxWeight={convertMaxWeightForTile(80)}
+            unit={settings.weightUnits}
+            category="baggage"
+            onChange={handleWeightChange(actions.updateBaggageB)}
+          />
+          <WeightTile
+            id="baggageC"
+            title="Baggage Area C"
+            value={convertWeightForTile(loadingState.baggageC)}
+            maxWeight={convertMaxWeightForTile(80)}
+            unit={settings.weightUnits}
+            category="baggage"
+            onChange={handleWeightChange(actions.updateBaggageC)}
+          />
+        </div>
+      </div>
 
-      <WeightTile
-        id="rearPassenger2"
-        title="Rear Passenger 2"
-        value={convertWeightForTile(loadingState.rearPassenger2)}
-        maxWeight={convertMaxWeightForTile(400)}
-        unit={settings.weightUnits}
-        category="passenger"
-        onChange={handleWeightChange(actions.updateRearPassenger2)}
-      />
-
-      {/* Baggage Areas */}
-      <WeightTile
-        id="baggageA"
-        title="Baggage Area A"
-        value={convertWeightForTile(loadingState.baggageA)}
-        maxWeight={convertMaxWeightForTile(120)}
-        unit={settings.weightUnits}
-        category="baggage"
-        onChange={handleWeightChange(actions.updateBaggageA)}
-      />
-
-      <WeightTile
-        id="baggageB"
-        title="Baggage Area B"
-        value={convertWeightForTile(loadingState.baggageB)}
-        maxWeight={convertMaxWeightForTile(80)}
-        unit={settings.weightUnits}
-        category="baggage"
-        onChange={handleWeightChange(actions.updateBaggageB)}
-      />
-
-      <WeightTile
-        id="baggageC"
-        title="Baggage Area C"
-        value={convertWeightForTile(loadingState.baggageC)}
-        maxWeight={convertMaxWeightForTile(80)}
-        unit={settings.weightUnits}
-        category="baggage"
-        onChange={handleWeightChange(actions.updateBaggageC)}
-      />
-
-      {/* Fuel Tanks */}
-      <FuelTile
-        id="fuelLeft"
-        title="Fuel - Left Wing"
-        value={loadingState.fuelLeft}
-        maxQuantity={maxFuelInCurrentUnits}
-        fuelUnit={settings.fuelUnits}
-        side="left"
-        onChange={actions.updateFuelLeft}
-        onSync={actions.syncFuelTanks}
-        isSynced={isFuelSynced}
-      />
-
-      <FuelTile
-        id="fuelRight"
-        title="Fuel - Right Wing"
-        value={loadingState.fuelRight}
-        maxQuantity={maxFuelInCurrentUnits}
-        fuelUnit={settings.fuelUnits}
-        side="right"
-        onChange={actions.updateFuelRight}
-        onSync={actions.syncFuelTanks}
-        isSynced={isFuelSynced}
-      />
+      {/* Fuel */}
+      <div className="space-y-4">
+        <h4 className="text-lg font-semibold text-on-surface flex items-center">
+          <div className="w-2 h-2 rounded-full bg-success mr-3"></div>
+          Fuel
+        </h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <FuelTile
+            id="fuelLeft"
+            title="Fuel - Left Wing"
+            value={loadingState.fuelLeft}
+            maxQuantity={maxFuelInCurrentUnits}
+            fuelUnit={settings.fuelUnits}
+            side="left"
+            onChange={actions.updateFuelLeft}
+            onSync={actions.syncFuelTanks}
+            isSynced={isFuelSynced}
+          />
+          <FuelTile
+            id="fuelRight"
+            title="Fuel - Right Wing"
+            value={loadingState.fuelRight}
+            maxQuantity={maxFuelInCurrentUnits}
+            fuelUnit={settings.fuelUnits}
+            side="right"
+            onChange={actions.updateFuelRight}
+            onSync={actions.syncFuelTanks}
+            isSynced={isFuelSynced}
+          />
+        </div>
+      </div>
     </div>
   );
 };

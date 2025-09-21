@@ -4,32 +4,42 @@
   :root {
     --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --surface: 210 40% 98%;
+    --on-surface: 222.2 84% 4.9%;
+    --surface-container: 0 0% 100%;
+    --on-surface-container: 222.2 84% 4.9%;
     --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 0 0% 100%;
+    --on-primary: 0 0% 100%;
     --secondary: 199 89% 48%;
-    --secondary-foreground: 0 0% 100%;
+    --on-secondary: 0 0% 100%;
     --muted: 210 40% 96%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 43 96% 56%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 217.2 91.2% 59.8%;
     --radius: 0.5rem;
 
-    /* Aviation-themed custom colors */
-    --aviation-sky: 200 100% 85%;
-    --aviation-blue: 217 91% 60%;
-    --aviation-navy: 221 83% 53%;
-    --aviation-gold: 43 96% 56%;
-    --aviation-green: 142 76% 36%;
-    --aviation-red: 0 84% 60%;
+    /* Status colors */
+    --info: 217.2 91.2% 59.8%;
+    --on-info: 0 0% 100%;
+    --warning: 43 96% 56%;
+    --on-warning: 222.2 84% 4.9%;
+    --danger: 0 84.2% 60.2%;
+    --on-danger: 0 0% 100%;
+    --success: 142 76% 36%;
+    --on-success: 0 0% 100%;
+
+    /* Legacy support */
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary-foreground: 0 0% 100%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 43 96% 56%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
   }
 
   .dark {
@@ -60,59 +70,66 @@
     border-color: hsl(var(--border));
   }
   body {
-    background: linear-gradient(135deg, hsl(var(--aviation-sky)) 0%, hsl(var(--background)) 100%);
-    color: hsl(var(--foreground));
+    background-color: hsl(var(--surface));
+    color: hsl(var(--on-surface));
     font-family: "Inter", system-ui, sans-serif;
     margin: 0;
     min-height: 100vh;
   }
 }
 
-/* Aviation-themed utility classes */
+/* Surface-based utility classes */
 @layer utilities {
-  .bg-aviation-sky {
-    background-color: hsl(var(--aviation-sky));
+  .bg-surface {
+    background-color: hsl(var(--surface));
   }
-  .bg-aviation-blue {
-    background-color: hsl(var(--aviation-blue));
+  .bg-surface-container {
+    background-color: hsl(var(--surface-container));
   }
-  .bg-aviation-navy {
-    background-color: hsl(var(--aviation-navy));
+  .text-on-surface {
+    color: hsl(var(--on-surface));
   }
-  .bg-aviation-gold {
-    background-color: hsl(var(--aviation-gold));
-  }
-  .bg-aviation-green {
-    background-color: hsl(var(--aviation-green));
-  }
-  .bg-aviation-red {
-    background-color: hsl(var(--aviation-red));
+  .text-on-surface-container {
+    color: hsl(var(--on-surface-container));
   }
 
-  .text-aviation-sky {
-    color: hsl(var(--aviation-sky));
+  .bg-info {
+    background-color: hsl(var(--info));
   }
-  .text-aviation-blue {
-    color: hsl(var(--aviation-blue));
+  .text-info {
+    color: hsl(var(--info));
   }
-  .text-aviation-navy {
-    color: hsl(var(--aviation-navy));
-  }
-  .text-aviation-gold {
-    color: hsl(var(--aviation-gold));
-  }
-  .text-aviation-green {
-    color: hsl(var(--aviation-green));
-  }
-  .text-aviation-red {
-    color: hsl(var(--aviation-red));
+  .text-on-info {
+    color: hsl(var(--on-info));
   }
 
-  .gradient-aviation-header {
-    background: linear-gradient(135deg, hsl(var(--aviation-navy)) 0%, hsl(var(--aviation-blue)) 100%);
+  .bg-warning {
+    background-color: hsl(var(--warning));
+  }
+  .text-warning {
+    color: hsl(var(--warning));
+  }
+  .text-on-warning {
+    color: hsl(var(--on-warning));
   }
 
-  .gradient-aviation-card {
-    background: linear-gradient(135deg, hsl(var(--aviation-blue)) 0%, hsl(var(--aviation-sky)) 100%);
+  .bg-danger {
+    background-color: hsl(var(--danger));
+  }
+  .text-danger {
+    color: hsl(var(--danger));
+  }
+  .text-on-danger {
+    color: hsl(var(--on-danger));
+  }
+
+  .bg-success {
+    background-color: hsl(var(--success));
+  }
+  .text-success {
+    color: hsl(var(--success));
+  }
+  .text-on-success {
+    color: hsl(var(--on-success));
   }
 }

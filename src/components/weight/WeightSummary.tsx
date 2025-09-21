@@ -50,110 +50,104 @@ const WeightSummary: React.FC<WeightSummaryProps> = ({
 
 
   return (
-    <Card className={cn("border-2 gradient-aviation-card text-white shadow-lg", className)}>
-      <CardContent className="p-6">
-        {/* Top Row - Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          {/* Basic Empty Weight */}
+    <Card className={cn("bg-surface-container", className)}>
+      <CardContent className="p-4 sm:p-6 space-y-6">
+        {/* First Row - BEW and MTOW */}
+        <div className="grid grid-cols-2 gap-4">
           <div className="text-center">
-            <div className="text-sm text-white/70">BEW</div>
-            <div className="text-lg font-bold text-white">{roundDownForDisplay(convertWeightForDisplay(aircraft.emptyWeightLbs, settings.weightUnits))}</div>
-            <div className="text-xs text-white/70">{settings.weightUnits}</div>
+            <div className="text-sm text-muted-foreground">BEW</div>
+            <div className="text-xl font-bold text-on-surface-container">{roundDownForDisplay(convertWeightForDisplay(aircraft.emptyWeightLbs, settings.weightUnits))}</div>
+            <div className="text-xs text-muted-foreground">{settings.weightUnits}</div>
           </div>
-
-          {/* Current Weight */}
           <div className="text-center">
-            <div className="text-sm text-white/70">Current Weight</div>
+            <div className="text-sm text-muted-foreground">MTOW</div>
+            <div className="text-xl font-bold text-on-surface-container">{roundDownForDisplay(convertWeightForDisplay(aircraft.maxTakeoffWeightLbs, settings.weightUnits))}</div>
+            <div className="text-xs text-muted-foreground">{settings.weightUnits}</div>
+          </div>
+        </div>
+
+        {/* Second Row - Current Weight and Margin */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="text-center">
+            <div className="text-sm text-muted-foreground">Current Weight</div>
             <div className={cn(
-              "text-lg font-bold",
-              totalWeight > aircraft.maxTakeoffWeightLbs ? "text-aviation-red" : "text-white"
+              "text-xl font-bold",
+              totalWeight > aircraft.maxTakeoffWeightLbs ? "text-danger" : "text-on-surface-container"
             )}>
               {roundDownForDisplay(convertWeightForDisplay(totalWeight, settings.weightUnits))}
             </div>
-            <div className="text-xs text-white/70">{settings.weightUnits}</div>
+            <div className="text-xs text-muted-foreground">{settings.weightUnits}</div>
           </div>
-
-          {/* MTOW */}
           <div className="text-center">
-            <div className="text-sm text-white/70">MTOW</div>
-            <div className="text-lg font-bold text-white">{roundDownForDisplay(convertWeightForDisplay(aircraft.maxTakeoffWeightLbs, settings.weightUnits))}</div>
-            <div className="text-xs text-white/70">{settings.weightUnits}</div>
-          </div>
-
-          {/* Margin */}
-          <div className="text-center">
-            <div className="text-sm text-white/70">Margin</div>
+            <div className="text-sm text-muted-foreground">Margin</div>
             <div className={cn(
-              "text-lg font-bold",
-              weightMargin < 0 ? "text-aviation-red" :
-              weightMargin < 100 ? "text-aviation-gold" : "text-aviation-green"
+              "text-xl font-bold",
+              weightMargin < 0 ? "text-danger" :
+              weightMargin < 100 ? "text-warning" : "text-success"
             )}>
               {convertWeightForDisplay(weightMargin, settings.weightUnits) > 0 ? '+' : ''}{roundDownForDisplay(convertWeightForDisplay(weightMargin, settings.weightUnits))}
             </div>
-            <div className="text-xs text-white/70">{settings.weightUnits}</div>
+            <div className="text-xs text-muted-foreground">{settings.weightUnits}</div>
           </div>
         </div>
 
         {/* Progress Bar */}
-        <div className="space-y-2 mb-6">
+        <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-white/90">Weight Loading</span>
+            <span className="text-muted-foreground">Weight Loading</span>
             <span className={cn(
               "font-medium",
-              mtowPercentage > 100 ? "text-aviation-red" :
-              mtowPercentage > 90 ? "text-aviation-gold" : "text-white"
+              mtowPercentage > 100 ? "text-danger" :
+              mtowPercentage > 90 ? "text-warning" : "text-on-surface-container"
             )}>
               {mtowPercentage.toFixed(1)}% of MTOW
             </span>
           </div>
-          <div className="w-full bg-white/20 rounded-full h-3">
+          <div className="w-full bg-muted rounded-full h-3">
             <div
               className={cn(
                 "h-3 rounded-full transition-all duration-300",
-                mtowPercentage > 100 ? "bg-aviation-red" :
-                mtowPercentage > 90 ? "bg-aviation-gold" :
-                mtowPercentage > 75 ? "bg-white" : "bg-aviation-green"
+                mtowPercentage > 100 ? "bg-danger" :
+                mtowPercentage > 90 ? "bg-warning" :
+                mtowPercentage > 75 ? "bg-info" : "bg-success"
               )}
               style={{ width: `${Math.min(mtowPercentage, 100)}%` }}
             />
           </div>
         </div>
 
-        {/* Bottom Row - CG and Status */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* CG Position */}
+        {/* Third Row - CG, Status, and Envelope */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="text-center">
-            <div className="text-sm text-white/70">CG Position</div>
+            <div className="text-sm text-muted-foreground">CG Position</div>
             <div className={cn(
               "text-lg font-bold",
-              !withinEnvelope ? "text-aviation-red" : "text-white"
+              !withinEnvelope ? "text-danger" : "text-on-surface-container"
             )}>
               {cgPosition.toFixed(1)}"
             </div>
-            <div className="text-xs text-white/70">
+            <div className="text-xs text-muted-foreground">
               {percentMAC.toFixed(1)}% MAC
             </div>
           </div>
 
-          {/* Status */}
           <div className="text-center">
-            <div className="text-sm text-white/70">Status</div>
-            <div className={cn("flex items-center justify-center space-x-2")}>
+            <div className="text-sm text-muted-foreground">Status</div>
+            <div className="flex items-center justify-center space-x-2">
               {getStatusIcon()}
               <span className={cn(
-                "font-bold",
-                errors.length > 0 ? "text-aviation-red" :
-                warnings.length > 0 ? "text-aviation-gold" : "text-aviation-green"
+                "font-bold text-sm",
+                errors.length > 0 ? "text-danger" :
+                warnings.length > 0 ? "text-warning" : "text-success"
               )}>{getStatusText()}</span>
             </div>
           </div>
 
-          {/* Empty space for future use */}
           <div className="text-center">
-            <div className="text-sm text-white/70">Envelope</div>
+            <div className="text-sm text-muted-foreground">Envelope</div>
             <div className={cn(
               "text-lg font-bold",
-              withinEnvelope ? "text-aviation-green" : "text-aviation-red"
+              withinEnvelope ? "text-success" : "text-danger"
             )}>
               {withinEnvelope ? "✓ SAFE" : "✗ UNSAFE"}
             </div>
