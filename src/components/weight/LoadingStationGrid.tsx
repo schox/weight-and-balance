@@ -1,7 +1,7 @@
 import React from 'react';
 import WeightTile from './WeightTile';
 import FuelTile from './FuelTile';
-import { convertWeightForDisplay, convertWeightToLbs } from '@/utils/conversions';
+import { convertWeightForDisplay, convertWeightToLbs, roundDownForDisplay } from '@/utils/conversions';
 import type { Aircraft, LoadingState, Settings } from '@/types/aircraft';
 
 interface LoadingStationGridProps {
@@ -29,19 +29,21 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
   actions
 }) => {
   // Calculate maximum fuel quantities in current units
-  const maxFuelInCurrentUnits = settings.fuelUnits === 'litres'
-    ? aircraft.fuelCapacityLitres / 2  // Half capacity per tank
-    : aircraft.fuelCapacityGallons / 2;
+  const maxFuelInCurrentUnits = roundDownForDisplay(
+    settings.fuelUnits === 'litres'
+      ? aircraft.fuelCapacityLitres / 2  // Half capacity per tank
+      : aircraft.fuelCapacityGallons / 2
+  );
 
   // Check if fuel tanks are synchronized
   const isFuelSynced = Math.abs(loadingState.fuelLeft - loadingState.fuelRight) < 0.1;
 
   // Weight conversion helpers
   const convertWeightForTile = (weightLbs: number) =>
-    convertWeightForDisplay(weightLbs, settings.weightUnits);
+    roundDownForDisplay(convertWeightForDisplay(weightLbs, settings.weightUnits));
 
   const convertMaxWeightForTile = (maxWeightLbs: number) =>
-    convertWeightForDisplay(maxWeightLbs, settings.weightUnits);
+    roundDownForDisplay(convertWeightForDisplay(maxWeightLbs, settings.weightUnits));
 
   const handleWeightChange = (updater: (weight: number) => void) =>
     (displayWeight: number) => {
