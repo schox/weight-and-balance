@@ -4,8 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, Fuel, Link } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getFuelWeightLbs, roundDownForDisplay } from '@/utils/conversions';
-import type { FuelUnit } from '@/types/aircraft';
+import { getFuelWeightLbs, convertWeightForDisplay, roundDownForDisplay } from '@/utils/conversions';
+import type { FuelUnit, WeightUnit } from '@/types/aircraft';
 
 interface FuelTileProps {
   id: string;
@@ -13,6 +13,7 @@ interface FuelTileProps {
   value: number;
   maxQuantity: number;
   fuelUnit: FuelUnit;
+  weightUnit: WeightUnit;
   side: 'left' | 'right';
   onChange: (value: number) => void;
   onSync?: () => void;
@@ -25,6 +26,7 @@ const FuelTile: React.FC<FuelTileProps> = ({
   value,
   maxQuantity,
   fuelUnit,
+  weightUnit,
   onChange,
   onSync,
   isSynced = false,
@@ -77,6 +79,7 @@ const FuelTile: React.FC<FuelTileProps> = ({
 
   // Calculate fuel weight for display
   const fuelWeightLbs = getFuelWeightLbs(value, fuelUnit);
+  const fuelWeightDisplay = roundDownForDisplay(convertWeightForDisplay(fuelWeightLbs, weightUnit));
 
   // Calculate percentage for visual indicator
   const fuelPercentage = (value / maxQuantity) * 100;
@@ -91,14 +94,14 @@ const FuelTile: React.FC<FuelTileProps> = ({
 
   return (
     <Card className={cn(
-      "transition-all duration-200 hover:shadow-md",
-      isSynced && "ring-2 ring-blue-500/50",
+      "transition-all duration-200 hover:shadow-md bg-surface-container",
+      isSynced && "ring-2 ring-info/50",
       className
     )}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Fuel className="h-5 w-5 text-green-600" />
+            <Fuel className="h-5 w-5 text-success" />
             <h3 className="font-semibold text-sm">{title}</h3>
             {onSync && (
               <Button
@@ -110,7 +113,7 @@ const FuelTile: React.FC<FuelTileProps> = ({
               >
                 <Link className={cn(
                   "h-3 w-3 transition-colors",
-                  isSynced ? "text-blue-600" : "text-muted-foreground"
+                  isSynced ? "text-info" : "text-muted-foreground"
                 )} />
               </Button>
             )}
@@ -166,7 +169,7 @@ const FuelTile: React.FC<FuelTileProps> = ({
         {/* Weight Display */}
         <div className="text-center py-2 bg-muted/50 rounded-md">
           <div className="text-sm font-medium">
-            {fuelWeightLbs.toFixed(1)} lbs
+            {fuelWeightDisplay} {weightUnit}
           </div>
           <div className="text-xs text-muted-foreground">
             Fuel Weight
@@ -186,9 +189,9 @@ const FuelTile: React.FC<FuelTileProps> = ({
             <div
               className={cn(
                 "h-full transition-all duration-300 rounded-lg",
-                isNearEmpty ? "bg-red-500" :
-                fuelPercentage < 50 ? "bg-yellow-500" :
-                "bg-green-500"
+                isNearEmpty ? "bg-danger" :
+                fuelPercentage < 50 ? "bg-warning" :
+                "bg-success"
               )}
               style={{ width: `${Math.min(fuelPercentage, 100)}%` }}
             />
@@ -218,12 +221,12 @@ const FuelTile: React.FC<FuelTileProps> = ({
 
         {/* Status Messages */}
         {isFull && (
-          <div className="text-xs text-green-600 font-medium text-center">
+          <div className="text-xs text-success font-medium text-center">
             ✓ Tank Full
           </div>
         )}
         {isNearEmpty && value > 0 && (
-          <div className="text-xs text-yellow-600 font-medium text-center">
+          <div className="text-xs text-warning font-medium text-center">
             ⚠ Low Fuel
           </div>
         )}
