@@ -3,6 +3,7 @@ import type { Aircraft, Settings } from '@/types/aircraft';
 import { useLoadingState } from '@/hooks/useLoadingState';
 import LoadingStationGrid from '@/components/weight/LoadingStationGrid';
 import WeightSummary from '@/components/weight/WeightSummary';
+import CGEnvelopeChart from '@/components/charts/CGEnvelopeChart';
 
 interface AircraftTabProps {
   aircraft: Aircraft;
@@ -38,11 +39,12 @@ const AircraftTab: React.FC<AircraftTabProps> = ({ aircraft, settings }) => {
         />
       </div>
 
-      {/* TODO: Add CG Envelope Chart here */}
-      <div className="bg-muted/50 rounded-lg p-8 text-center">
-        <h3 className="text-lg font-semibold mb-2">CG Envelope Chart</h3>
-        <p className="text-muted-foreground">Coming next - Interactive weight and balance envelope</p>
-      </div>
+      {/* CG Envelope Chart */}
+      <CGEnvelopeChart
+        aircraft={aircraft}
+        calculations={calculations}
+        settings={settings}
+      />
     </div>
   );
 };
