@@ -4,9 +4,10 @@ import { Settings, Plane, Info } from "lucide-react";
 import { vhYpbAircraft } from '@/data/aircraft';
 import type { Settings as SettingsType } from '@/types/aircraft';
 import AircraftTab from '@/components/aircraft/AircraftTab';
+import SettingsDialog from '@/components/dialogs/SettingsDialog';
 
 function App() {
-  const [settings] = useState<SettingsType>({
+  const [settings, setSettings] = useState<SettingsType>({
     fuelUnits: 'litres',
     weightUnits: 'kg',
     distanceUnits: 'inches'
@@ -14,9 +15,8 @@ function App() {
 
   const aircraft = vhYpbAircraft; // In the future, this would be selected based on currentAircraft
 
-  const handleSettingsClick = () => {
-    // TODO: Open settings dialog
-    console.log('Settings clicked');
+  const handleSettingsChange = (newSettings: SettingsType) => {
+    setSettings(newSettings);
   };
 
   const handleInfoClick = () => {
@@ -38,9 +38,14 @@ function App() {
               <Button variant="ghost" size="icon" onClick={handleInfoClick}>
                 <Info className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" onClick={handleSettingsClick}>
-                <Settings className="h-4 w-4" />
-              </Button>
+              <SettingsDialog
+                settings={settings}
+                onSettingsChange={handleSettingsChange}
+              >
+                <Button variant="ghost" size="icon">
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </SettingsDialog>
             </div>
           </div>
         </div>
