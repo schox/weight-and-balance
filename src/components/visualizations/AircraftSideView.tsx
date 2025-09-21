@@ -6,7 +6,7 @@ interface AircraftSideViewProps {
   aircraft: Aircraft;
   calculations: CalculationResult;
   settings: Settings;
-  loadingState: LoadingState;
+  loadingState?: LoadingState;
 }
 
 const AircraftSideView: React.FC<AircraftSideViewProps> = ({

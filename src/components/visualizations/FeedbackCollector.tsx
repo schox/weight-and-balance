@@ -24,8 +24,8 @@ interface VisualizationRating {
 const FeedbackCollector: React.FC<FeedbackCollectorProps> = ({
   aircraft,
   calculations,
-  settings,
-  loadingState
+  settings: _settings,
+  loadingState: _loadingState
 }) => {
   const [ratings, setRatings] = useState<VisualizationRating[]>([
     { id: 'envelope', name: 'CG Envelope Chart', icon: <BarChart3 className="h-5 w-5" />, rating: 0, comments: '' },
