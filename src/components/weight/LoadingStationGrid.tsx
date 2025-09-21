@@ -69,6 +69,7 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
             category="pilot"
             isRequired={true}
             onChange={handleWeightChange(actions.updatePilot)}
+            tabIndex={1}
           />
           <WeightTile
             id="frontPassenger"
@@ -78,6 +79,7 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
             unit={settings.weightUnits}
             category="passenger"
             onChange={handleWeightChange(actions.updateFrontPassenger)}
+            tabIndex={2}
           />
         </div>
       </div>
@@ -97,6 +99,7 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
             unit={settings.weightUnits}
             category="passenger"
             onChange={handleWeightChange(actions.updateRearPassenger1)}
+            tabIndex={3}
           />
           <WeightTile
             id="rearPassenger2"
@@ -106,6 +109,7 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
             unit={settings.weightUnits}
             category="passenger"
             onChange={handleWeightChange(actions.updateRearPassenger2)}
+            tabIndex={4}
           />
         </div>
       </div>
@@ -125,6 +129,7 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
             unit={settings.weightUnits}
             category="baggage"
             onChange={handleWeightChange(actions.updateBaggageA)}
+            tabIndex={5}
           />
           <WeightTile
             id="baggageB"
@@ -134,6 +139,7 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
             unit={settings.weightUnits}
             category="baggage"
             onChange={handleWeightChange(actions.updateBaggageB)}
+            tabIndex={6}
           />
           <WeightTile
             id="baggageC"
@@ -143,6 +149,7 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
             unit={settings.weightUnits}
             category="baggage"
             onChange={handleWeightChange(actions.updateBaggageC)}
+            tabIndex={7}
           />
         </div>
       </div>
@@ -166,6 +173,7 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
             onSync={actions.syncFuelTanks}
             isSynced={isFuelSynced}
             totalFuelAcrossAllTanks={loadingState.fuelLeft + loadingState.fuelRight}
+            tabIndex={8}
           />
           <FuelTile
             id="fuelRight"
@@ -179,6 +187,7 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
             onSync={actions.syncFuelTanks}
             isSynced={isFuelSynced}
             totalFuelAcrossAllTanks={loadingState.fuelLeft + loadingState.fuelRight}
+            tabIndex={9}
           />
         </div>
       </div>

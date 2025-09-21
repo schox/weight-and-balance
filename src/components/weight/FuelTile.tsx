@@ -19,6 +19,7 @@ interface FuelTileProps {
   onSync?: () => void;
   isSynced?: boolean;
   totalFuelAcrossAllTanks?: number;
+  tabIndex?: number;
   className?: string;
 }
 
@@ -32,6 +33,7 @@ const FuelTile: React.FC<FuelTileProps> = ({
   onSync,
   isSynced = false,
   totalFuelAcrossAllTanks = 0,
+  tabIndex,
   className
 }) => {
   const [inputValue, setInputValue] = useState(roundDownForDisplay(value).toString());
@@ -155,6 +157,7 @@ const FuelTile: React.FC<FuelTileProps> = ({
               min="0"
               max={maxQuantity}
               step={fuelUnit === 'litres' ? '5' : '1'}
+              tabIndex={tabIndex}
             />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
               {fuelUnit}

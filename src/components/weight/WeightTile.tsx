@@ -15,6 +15,7 @@ interface WeightTileProps {
   category: 'pilot' | 'passenger' | 'baggage' | 'fuel';
   isRequired?: boolean;
   onChange: (value: number) => void;
+  tabIndex?: number;
   className?: string;
 }
 
@@ -41,6 +42,7 @@ const WeightTile: React.FC<WeightTileProps> = ({
   category,
   isRequired = false,
   onChange,
+  tabIndex,
   className
 }) => {
   const [inputValue, setInputValue] = useState(roundDownForDisplay(value).toString());
@@ -147,6 +149,7 @@ const WeightTile: React.FC<WeightTileProps> = ({
               min="0"
               max={maxWeight}
               step="1"
+              tabIndex={tabIndex}
             />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
               {unit}
