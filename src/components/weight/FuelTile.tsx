@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Minus, Plus, Fuel, Link } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getFuelWeightLbs } from '@/utils/conversions';
-import { FuelUnit } from '@/types/aircraft';
+import type { FuelUnit } from '@/types/aircraft';
 
 interface FuelTileProps {
   id: string;
@@ -21,12 +21,10 @@ interface FuelTileProps {
 }
 
 const FuelTile: React.FC<FuelTileProps> = ({
-  id,
   title,
   value,
   maxQuantity,
   fuelUnit,
-  side,
   onChange,
   onSync,
   isSynced = false,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Aircraft, CalculationResult } from '@/types/aircraft';
+import type { Aircraft, CalculationResult } from '@/types/aircraft';
 import { cn } from '@/lib/utils';
 import { CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 
@@ -21,7 +21,6 @@ const WeightSummary: React.FC<WeightSummaryProps> = ({
     percentMAC,
     withinEnvelope,
     weightMargin,
-    isValid,
     errors,
     warnings
   } = calculations;

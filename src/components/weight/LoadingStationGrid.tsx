@@ -1,8 +1,7 @@
 import React from 'react';
 import WeightTile from './WeightTile';
 import FuelTile from './FuelTile';
-import { Aircraft, LoadingState, Settings } from '@/types/aircraft';
-import { convertFuelQuantity } from '@/utils/conversions';
+import type { Aircraft, LoadingState, Settings } from '@/types/aircraft';
 
 interface LoadingStationGridProps {
   aircraft: Aircraft;

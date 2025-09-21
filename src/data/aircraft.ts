@@ -1,4 +1,4 @@
-import { Aircraft, LoadingStation, CGEnvelopePoint } from '@/types/aircraft';
+import type { Aircraft, LoadingStation, CGEnvelopePoint } from '@/types/aircraft';
 
 // VH-YPB Cessna 182T Loading Stations
 const vhYpbLoadingStations: LoadingStation[] = [

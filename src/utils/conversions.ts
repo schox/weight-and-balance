@@ -1,4 +1,4 @@
-import { FuelConversion } from '@/types/aircraft';
+import type { FuelConversion } from '@/types/aircraft';
 
 // Fuel conversion constants
 const GALLONS_TO_LITRES = 3.78541;

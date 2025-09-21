@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Settings, Plane, Info } from "lucide-react";
 import { vhYpbAircraft } from '@/data/aircraft';
-import { Settings as SettingsType } from '@/types/aircraft';
+import type { Settings as SettingsType } from '@/types/aircraft';
 import AircraftTab from '@/components/aircraft/AircraftTab';
 
 function App() {
-  const [currentAircraft] = useState('VH-YPB'); // For now, just one aircraft
-  const [settings, setSettings] = useState<SettingsType>({
+  const [settings] = useState<SettingsType>({
     fuelUnits: 'litres',
     weightUnits: 'lbs',
     distanceUnits: 'inches'

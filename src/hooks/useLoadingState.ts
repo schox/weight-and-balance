@@ -1,5 +1,5 @@
 import { useReducer, useMemo } from 'react';
-import { LoadingState, LoadingAction, Aircraft, Settings, CalculationResult } from '@/types/aircraft';
+import type { LoadingState, LoadingAction, Aircraft, Settings, CalculationResult } from '@/types/aircraft';
 import { calculateWeightAndBalance } from '@/utils/calculations';
 import { convertFuelQuantity } from '@/utils/conversions';
 

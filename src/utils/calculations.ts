@@ -1,4 +1,4 @@
-import { Aircraft, LoadingState, CalculationResult, CGEnvelopePoint, Settings } from '@/types/aircraft';
+import type { Aircraft, LoadingState, CalculationResult, CGEnvelopePoint, Settings } from '@/types/aircraft';
 import { getFuelWeightLbs, roundToPrecision } from './conversions';
 
 // Calculate total weight in pounds

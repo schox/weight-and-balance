@@ -17,7 +17,7 @@ interface WeightTileProps {
   className?: string;
 }
 
-const getIconForCategory = (category: string, isRequired?: boolean) => {
+const getIconForCategory = (category: string) => {
   switch (category) {
     case 'pilot':
       return <UserCheck className="h-5 w-5 text-blue-600" />;
@@ -33,7 +33,6 @@ const getIconForCategory = (category: string, isRequired?: boolean) => {
 };
 
 const WeightTile: React.FC<WeightTileProps> = ({
-  id,
   title,
   value,
   maxWeight,
@@ -103,7 +102,7 @@ const WeightTile: React.FC<WeightTileProps> = ({
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            {getIconForCategory(category, isRequired)}
+            {getIconForCategory(category)}
             <h3 className="font-semibold text-sm">
               {title}
               {isRequired && <span className="text-destructive ml-1">*</span>}

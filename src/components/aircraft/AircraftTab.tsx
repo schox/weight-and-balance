@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Aircraft, Settings } from '@/types/aircraft';
+import React from 'react';
+import type { Aircraft, Settings } from '@/types/aircraft';
 import { useLoadingState } from '@/hooks/useLoadingState';
 import LoadingStationGrid from '@/components/weight/LoadingStationGrid';
 import WeightSummary from '@/components/weight/WeightSummary';
