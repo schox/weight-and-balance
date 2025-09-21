@@ -24,7 +24,7 @@ interface LoadingStep {
 const AnimatedLoading: React.FC<AnimatedLoadingProps> = ({
   aircraft,
   settings,
-  loadingState
+  loadingState: _loadingState
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);

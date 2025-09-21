@@ -1,7 +1,5 @@
 import React from 'react';
-import { convertWeightForDisplay, roundDownForDisplay } from '@/utils/conversions';
 import type { Aircraft, CalculationResult, Settings, LoadingState } from '@/types/aircraft';
-import { cn } from '@/lib/utils';
 import airplaneImage from '/assets/airplane-1295210_1280-pixabay.png';
 
 interface AircraftSideViewProps {
@@ -12,12 +10,12 @@ interface AircraftSideViewProps {
 }
 
 const AircraftSideView: React.FC<AircraftSideViewProps> = ({
-  aircraft,
+  aircraft: _aircraft,
   calculations,
-  settings,
-  loadingState
+  settings: _settings,
+  loadingState: _loadingState
 }) => {
-  const { totalWeight, cgPosition, withinEnvelope } = calculations;
+  const { cgPosition: _cgPosition } = calculations;
 
   // Experimental offset positions (as percentages of image width)
   // These can be adjusted to find the correct positions
@@ -29,30 +27,29 @@ const AircraftSideView: React.FC<AircraftSideViewProps> = ({
     baggageC: 75      // Third baggage area
   };
 
-  // Calculate loading station positions as percentages along aircraft length
-  const getStationPosition = (armInches: number) => {
-    // Assuming aircraft datum is at nose, and total length is ~28 feet (336 inches) for C182
-    const aircraftLength = 336;
-    return Math.max(0, Math.min(100, (armInches / aircraftLength) * 100));
-  };
+  // These functions will be used when implementing actual loading visualization
+  // const getStationPosition = (armInches: number) => {
+  //   // Assuming aircraft datum is at nose, and total length is ~28 feet (336 inches) for C182
+  //   const aircraftLength = 336;
+  //   return Math.max(0, Math.min(100, (armInches / aircraftLength) * 100));
+  // };
 
-  // Get current loading for each station from actual loading state
-  const getStationWeight = (stationId: string) => {
-    if (!loadingState) return 0;
+  // const getStationWeight = (stationId: string) => {
+  //   if (!loadingState) return 0;
 
-    switch (stationId) {
-      case 'pilot': return loadingState.pilot || 0;
-      case 'frontPassenger': return loadingState.frontPassenger || 0;
-      case 'rearPassenger1': return loadingState.rearPassenger1 || 0;
-      case 'rearPassenger2': return loadingState.rearPassenger2 || 0;
-      case 'baggageA': return loadingState.baggageA || 0;
-      case 'baggageB': return loadingState.baggageB || 0;
-      case 'baggageC': return loadingState.baggageC || 0;
-      default: return 0;
-    }
-  };
+  //   switch (stationId) {
+  //     case 'pilot': return loadingState.pilot || 0;
+  //     case 'frontPassenger': return loadingState.frontPassenger || 0;
+  //     case 'rearPassenger1': return loadingState.rearPassenger1 || 0;
+  //     case 'rearPassenger2': return loadingState.rearPassenger2 || 0;
+  //     case 'baggageA': return loadingState.baggageA || 0;
+  //     case 'baggageB': return loadingState.baggageB || 0;
+  //     case 'baggageC': return loadingState.baggageC || 0;
+  //     default: return 0;
+  //   }
+  // };
 
-  const cgPositionPercent = getStationPosition(cgPosition);
+  // const cgPositionPercent = getStationPosition(cgPosition);
 
   return (
     <div className="space-y-6">

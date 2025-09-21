@@ -27,7 +27,7 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
   aircraft,
   calculations,
   settings,
-  loadingState,
+  loadingState: _loadingState,
   className
 }) => {
   const { totalWeight, cgPosition, withinEnvelope } = calculations;

@@ -14,7 +14,7 @@ const BalanceBeamView: React.FC<BalanceBeamViewProps> = ({
   aircraft,
   calculations,
   settings,
-  loadingState
+  loadingState: _loadingState
 }) => {
   const { totalWeight, cgPosition, withinEnvelope } = calculations;
 
