@@ -1,6 +1,7 @@
 import React from 'react';
 import WeightTile from './WeightTile';
 import FuelTile from './FuelTile';
+import { convertWeightForDisplay, convertWeightToLbs } from '@/utils/conversions';
 import type { Aircraft, LoadingState, Settings } from '@/types/aircraft';
 
 interface LoadingStationGridProps {
@@ -35,81 +36,94 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
   // Check if fuel tanks are synchronized
   const isFuelSynced = Math.abs(loadingState.fuelLeft - loadingState.fuelRight) < 0.1;
 
+  // Weight conversion helpers
+  const convertWeightForTile = (weightLbs: number) =>
+    convertWeightForDisplay(weightLbs, settings.weightUnits);
+
+  const convertMaxWeightForTile = (maxWeightLbs: number) =>
+    convertWeightForDisplay(maxWeightLbs, settings.weightUnits);
+
+  const handleWeightChange = (updater: (weight: number) => void) =>
+    (displayWeight: number) => {
+      const weightInLbs = convertWeightToLbs(displayWeight, settings.weightUnits);
+      updater(weightInLbs);
+    };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {/* Pilot - Required */}
       <WeightTile
         id="pilot"
         title="Pilot"
-        value={loadingState.pilot}
-        maxWeight={400}
-        unit="lbs"
+        value={convertWeightForTile(loadingState.pilot)}
+        maxWeight={convertMaxWeightForTile(400)}
+        unit={settings.weightUnits}
         category="pilot"
         isRequired={true}
-        onChange={actions.updatePilot}
+        onChange={handleWeightChange(actions.updatePilot)}
       />
 
       {/* Front Passenger */}
       <WeightTile
         id="frontPassenger"
         title="Front Passenger"
-        value={loadingState.frontPassenger}
-        maxWeight={400}
-        unit="lbs"
+        value={convertWeightForTile(loadingState.frontPassenger)}
+        maxWeight={convertMaxWeightForTile(400)}
+        unit={settings.weightUnits}
         category="passenger"
-        onChange={actions.updateFrontPassenger}
+        onChange={handleWeightChange(actions.updateFrontPassenger)}
       />
 
       {/* Rear Passengers */}
       <WeightTile
         id="rearPassenger1"
         title="Rear Passenger 1"
-        value={loadingState.rearPassenger1}
-        maxWeight={400}
-        unit="lbs"
+        value={convertWeightForTile(loadingState.rearPassenger1)}
+        maxWeight={convertMaxWeightForTile(400)}
+        unit={settings.weightUnits}
         category="passenger"
-        onChange={actions.updateRearPassenger1}
+        onChange={handleWeightChange(actions.updateRearPassenger1)}
       />
 
       <WeightTile
         id="rearPassenger2"
         title="Rear Passenger 2"
-        value={loadingState.rearPassenger2}
-        maxWeight={400}
-        unit="lbs"
+        value={convertWeightForTile(loadingState.rearPassenger2)}
+        maxWeight={convertMaxWeightForTile(400)}
+        unit={settings.weightUnits}
         category="passenger"
-        onChange={actions.updateRearPassenger2}
+        onChange={handleWeightChange(actions.updateRearPassenger2)}
       />
 
       {/* Baggage Areas */}
       <WeightTile
         id="baggageA"
         title="Baggage Area A"
-        value={loadingState.baggageA}
-        maxWeight={120}
-        unit="lbs"
+        value={convertWeightForTile(loadingState.baggageA)}
+        maxWeight={convertMaxWeightForTile(120)}
+        unit={settings.weightUnits}
         category="baggage"
-        onChange={actions.updateBaggageA}
+        onChange={handleWeightChange(actions.updateBaggageA)}
       />
 
       <WeightTile
         id="baggageB"
         title="Baggage Area B"
-        value={loadingState.baggageB}
-        maxWeight={80}
-        unit="lbs"
+        value={convertWeightForTile(loadingState.baggageB)}
+        maxWeight={convertMaxWeightForTile(80)}
+        unit={settings.weightUnits}
         category="baggage"
-        onChange={actions.updateBaggageB}
+        onChange={handleWeightChange(actions.updateBaggageB)}
       />
 
       <WeightTile
         id="baggageC"
         title="Baggage Area C"
-        value={loadingState.baggageC}
-        maxWeight={80}
-        unit="lbs"
+        value={convertWeightForTile(loadingState.baggageC)}
+        maxWeight={convertMaxWeightForTile(80)}
+        unit={settings.weightUnits}
         category="baggage"
-        onChange={actions.updateBaggageC}
+        onChange={handleWeightChange(actions.updateBaggageC)}
       />
 
       {/* Fuel Tanks */}

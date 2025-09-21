@@ -8,7 +8,7 @@ import AircraftTab from '@/components/aircraft/AircraftTab';
 function App() {
   const [settings] = useState<SettingsType>({
     fuelUnits: 'litres',
-    weightUnits: 'lbs',
+    weightUnits: 'kg',
     distanceUnits: 'inches'
   });
 

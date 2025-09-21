@@ -80,3 +80,25 @@ export const roundToPrecision = (value: number, precision: number = 1): number =
   const factor = Math.pow(10, precision);
   return Math.round(value * factor) / factor;
 };
+
+// Convert weight for display based on user's preferred units
+export const convertWeightForDisplay = (
+  weightLbs: number,
+  targetUnit: 'lbs' | 'kg'
+): number => {
+  if (targetUnit === 'kg') {
+    return weightConversions.lbsToKg(weightLbs);
+  }
+  return weightLbs;
+};
+
+// Convert weight from display units back to pounds (for calculations)
+export const convertWeightToLbs = (
+  weight: number,
+  fromUnit: 'lbs' | 'kg'
+): number => {
+  if (fromUnit === 'kg') {
+    return weightConversions.kgToLbs(weight);
+  }
+  return weight;
+};

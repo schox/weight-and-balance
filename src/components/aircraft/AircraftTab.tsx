@@ -24,6 +24,7 @@ const AircraftTab: React.FC<AircraftTabProps> = ({ aircraft, settings }) => {
       <WeightSummary
         aircraft={aircraft}
         calculations={calculations}
+        settings={settings}
       />
 
       {/* Loading Stations Grid */}
