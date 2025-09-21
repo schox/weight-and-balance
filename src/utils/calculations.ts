@@ -158,9 +158,15 @@ export const validateLoading = (
     }
   });
 
-  // Check required stations
-  if (loadingState.pilot === 0) {
-    warnings.push('Pilot weight is required');
+  // Check for unrealistic or missing critical data
+  const totalFuel = loadingState.fuelLeft + loadingState.fuelRight;
+  if (totalFuel === 0) {
+    warnings.push('No fuel loaded - consider minimum fuel for taxi and reserves');
+  }
+
+  // Check for unusually light pilot weight (might indicate data entry error)
+  if (loadingState.pilot > 0 && loadingState.pilot < 40) {
+    warnings.push('Pilot weight seems unusually low - please verify');
   }
 
   return warnings;
@@ -201,10 +207,7 @@ export const calculateWeightAndBalance = (
     errors.push(`Total weight (${totalWeight.toFixed(1)} lbs) exceeds MTOW (${aircraft.maxTakeoffWeightLbs} lbs)`);
   }
 
-  // Check CG limits
-  if (!withinEnvelope) {
-    errors.push(`CG position (${cgPosition.toFixed(1)}") is outside safe envelope`);
-  }
+  // CG status is already clearly shown in the CG tile, no need for redundant message
 
   return {
     isValid: errors.length === 0,

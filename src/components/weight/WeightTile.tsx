@@ -99,6 +99,7 @@ const WeightTile: React.FC<WeightTileProps> = ({
       "transition-all duration-200 hover:shadow-md bg-surface-container",
       isOverLimit && "border-danger bg-red-50",
       isApproachingLimit && !isOverLimit && "border-warning bg-yellow-50",
+      isRequired && value === 0 && "border-info bg-blue-50",
       className
     )}>
       <CardHeader className="pb-3">
@@ -196,8 +197,8 @@ const WeightTile: React.FC<WeightTileProps> = ({
           </div>
         )}
         {isRequired && value === 0 && (
-          <div className="text-xs text-muted-foreground">
-            Required field
+          <div className="text-xs text-info font-medium">
+            ⚠ Required for flight
           </div>
         )}
       </CardContent>
