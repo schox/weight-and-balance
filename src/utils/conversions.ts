@@ -81,6 +81,11 @@ export const roundToPrecision = (value: number, precision: number = 1): number =
   return Math.round(value * factor) / factor;
 };
 
+// Round down to nearest integer for display (easier to read)
+export const roundDownForDisplay = (value: number): number => {
+  return Math.floor(value);
+};
+
 // Convert weight for display based on user's preferred units
 export const convertWeightForDisplay = (
   weightLbs: number,

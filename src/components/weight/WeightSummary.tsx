@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { convertWeightForDisplay } from '@/utils/conversions';
+import { convertWeightForDisplay, roundDownForDisplay } from '@/utils/conversions';
 import type { Aircraft, CalculationResult, Settings } from '@/types/aircraft';
 import { cn } from '@/lib/utils';
 import { CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
@@ -62,7 +62,7 @@ const WeightSummary: React.FC<WeightSummaryProps> = ({
           {/* Basic Empty Weight */}
           <div className="text-center">
             <div className="text-sm text-muted-foreground">BEW</div>
-            <div className="text-lg font-bold">{convertWeightForDisplay(aircraft.emptyWeightLbs, settings.weightUnits).toFixed(1)}</div>
+            <div className="text-lg font-bold">{roundDownForDisplay(convertWeightForDisplay(aircraft.emptyWeightLbs, settings.weightUnits))}</div>
             <div className="text-xs text-muted-foreground">{settings.weightUnits}</div>
           </div>
 
@@ -73,7 +73,7 @@ const WeightSummary: React.FC<WeightSummaryProps> = ({
               "text-lg font-bold",
               totalWeight > aircraft.maxTakeoffWeightLbs ? "text-destructive" : "text-foreground"
             )}>
-              {convertWeightForDisplay(totalWeight, settings.weightUnits).toFixed(1)}
+              {roundDownForDisplay(convertWeightForDisplay(totalWeight, settings.weightUnits))}
             </div>
             <div className="text-xs text-muted-foreground">{settings.weightUnits}</div>
           </div>
@@ -81,7 +81,7 @@ const WeightSummary: React.FC<WeightSummaryProps> = ({
           {/* MTOW */}
           <div className="text-center">
             <div className="text-sm text-muted-foreground">MTOW</div>
-            <div className="text-lg font-bold">{convertWeightForDisplay(aircraft.maxTakeoffWeightLbs, settings.weightUnits).toFixed(1)}</div>
+            <div className="text-lg font-bold">{roundDownForDisplay(convertWeightForDisplay(aircraft.maxTakeoffWeightLbs, settings.weightUnits))}</div>
             <div className="text-xs text-muted-foreground">{settings.weightUnits}</div>
           </div>
 
@@ -93,7 +93,7 @@ const WeightSummary: React.FC<WeightSummaryProps> = ({
               weightMargin < 0 ? "text-destructive" :
               weightMargin < 100 ? "text-yellow-600" : "text-green-600"
             )}>
-              {convertWeightForDisplay(weightMargin, settings.weightUnits) > 0 ? '+' : ''}{convertWeightForDisplay(weightMargin, settings.weightUnits).toFixed(1)}
+              {convertWeightForDisplay(weightMargin, settings.weightUnits) > 0 ? '+' : ''}{roundDownForDisplay(convertWeightForDisplay(weightMargin, settings.weightUnits))}
             </div>
             <div className="text-xs text-muted-foreground">{settings.weightUnits}</div>
           </div>

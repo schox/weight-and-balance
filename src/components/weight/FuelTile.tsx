@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, Fuel, Link } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getFuelWeightLbs } from '@/utils/conversions';
+import { getFuelWeightLbs, roundDownForDisplay } from '@/utils/conversions';
 import type { FuelUnit } from '@/types/aircraft';
 
 interface FuelTileProps {
@@ -30,13 +30,14 @@ const FuelTile: React.FC<FuelTileProps> = ({
   isSynced = false,
   className
 }) => {
-  const [inputValue, setInputValue] = useState(value.toString());
+  const [inputValue, setInputValue] = useState(roundDownForDisplay(value).toString());
   const [isFocused, setIsFocused] = useState(false);
 
   // Update input value when prop changes
   useEffect(() => {
     if (!isFocused) {
-      setInputValue(value.toString());
+      // Show rounded down integer when not focused
+      setInputValue(roundDownForDisplay(value).toString());
     }
   }, [value, isFocused]);
 
@@ -66,7 +67,8 @@ const FuelTile: React.FC<FuelTileProps> = ({
 
   const handleBlur = () => {
     setIsFocused(false);
-    setInputValue(value.toString());
+    // Show rounded down integer when focus is lost
+    setInputValue(roundDownForDisplay(value).toString());
   };
 
   const handleFocus = () => {

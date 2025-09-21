@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, User, UserCheck, Package, Fuel } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { roundDownForDisplay } from '@/utils/conversions';
 
 interface WeightTileProps {
   id: string;
@@ -42,13 +43,14 @@ const WeightTile: React.FC<WeightTileProps> = ({
   onChange,
   className
 }) => {
-  const [inputValue, setInputValue] = useState(value.toString());
+  const [inputValue, setInputValue] = useState(roundDownForDisplay(value).toString());
   const [isFocused, setIsFocused] = useState(false);
 
   // Update input value when prop changes (for external updates)
   useEffect(() => {
     if (!isFocused) {
-      setInputValue(value.toString());
+      // Show rounded down integer when not focused
+      setInputValue(roundDownForDisplay(value).toString());
     }
   }, [value, isFocused]);
 
@@ -77,8 +79,8 @@ const WeightTile: React.FC<WeightTileProps> = ({
 
   const handleBlur = () => {
     setIsFocused(false);
-    // Ensure the input displays the current value on blur
-    setInputValue(value.toString());
+    // Show rounded down integer when focus is lost
+    setInputValue(roundDownForDisplay(value).toString());
   };
 
   const handleFocus = () => {
