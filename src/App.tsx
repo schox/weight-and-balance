@@ -1,38 +1,87 @@
-import { Button } from "@/components/ui/button"
-import { Settings, Plane } from "lucide-react"
+import React, { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Settings, Plane, Info } from "lucide-react";
+import { vhYpbAircraft } from '@/data/aircraft';
+import { Settings as SettingsType } from '@/types/aircraft';
+import AircraftTab from '@/components/aircraft/AircraftTab';
 
 function App() {
+  const [currentAircraft] = useState('VH-YPB'); // For now, just one aircraft
+  const [settings, setSettings] = useState<SettingsType>({
+    fuelUnits: 'litres',
+    weightUnits: 'lbs',
+    distanceUnits: 'inches'
+  });
+
+  const aircraft = vhYpbAircraft; // In the future, this would be selected based on currentAircraft
+
+  const handleSettingsClick = () => {
+    // TODO: Open settings dialog
+    console.log('Settings clicked');
+  };
+
+  const handleInfoClick = () => {
+    // TODO: Show aircraft info
+    console.log('Info clicked');
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Plane className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold">Aircraft Weight & Balance Calculator</h1>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
-              <Settings className="h-4 w-4" />
-            </Button>
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Plane className="h-6 w-6 text-primary" />
+              <h1 className="text-2xl font-bold">Aircraft Weight & Balance Calculator</h1>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button variant="ghost" size="icon" onClick={handleInfoClick}>
+                <Info className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={handleSettingsClick}>
+                <Settings className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="text-center space-y-4">
-          <h2 className="text-xl font-semibold text-muted-foreground">
-            Setting up Weight & Balance Calculator...
-          </h2>
-          <div className="flex justify-center space-x-4">
-            <Button>Get Started</Button>
-            <Button variant="outline">Learn More</Button>
+      {/* Aircraft Tabs (placeholder for now) */}
+      <div className="border-b">
+        <div className="container mx-auto px-4">
+          <div className="flex space-x-1">
+            <Button variant="default" className="rounded-none rounded-t-lg">
+              ✈️ VH-YPB C182T
+            </Button>
+            <Button variant="ghost" className="rounded-none rounded-t-lg" disabled>
+              ✈️ Aircraft 2
+            </Button>
           </div>
         </div>
+      </div>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-6">
+        <AircraftTab aircraft={aircraft} settings={settings} />
       </main>
+
+      {/* Footer */}
+      <footer className="border-t mt-12">
+        <div className="container mx-auto px-4 py-6">
+          <div className="text-center text-sm text-muted-foreground space-y-2">
+            <p>
+              <strong>Disclaimer:</strong> This calculator is for planning purposes only.
+              Pilots are responsible for verifying all weight and balance calculations.
+            </p>
+            <p>
+              Always refer to the current Aircraft Flight Manual and Weight & Balance documentation.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
