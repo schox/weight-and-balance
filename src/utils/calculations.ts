@@ -197,6 +197,54 @@ const getStationWeight = (loadingState: LoadingState, stationId: string): number
   }
 };
 
+// Calculate combined baggage weight, moment, and CG
+export const calculateCombinedBaggage = (
+  loadingState: LoadingState,
+  aircraft: Aircraft
+): { weight: number; cgPosition: number; moment: number } => {
+  // Get arm positions for each baggage compartment
+  const getStationArm = (id: string): number => {
+    const station = aircraft.loadingStations.find(s => s.id === id);
+    return station?.armMm || 0;
+  };
+
+  // Individual baggage weights in lbs
+  const baggageAWeight = loadingState.baggageA;
+  const baggageBWeight = loadingState.baggageB;
+  const baggageCWeight = loadingState.baggageC;
+
+  // Total baggage weight
+  const totalBaggageWeight = baggageAWeight + baggageBWeight + baggageCWeight;
+
+  // If no baggage, return zeros
+  if (totalBaggageWeight === 0) {
+    return { weight: 0, cgPosition: 0, moment: 0 };
+  }
+
+  // Convert to kg for moment calculations
+  const baggageAKg = baggageAWeight * 0.453592;
+  const baggageBKg = baggageBWeight * 0.453592;
+  const baggageCKg = baggageCWeight * 0.453592;
+
+  // Calculate individual moments in kg.mm
+  const baggageAMoment = baggageAKg * getStationArm('baggageA');
+  const baggageBMoment = baggageBKg * getStationArm('baggageB');
+  const baggageCMoment = baggageCKg * getStationArm('baggageC');
+
+  // Total baggage moment
+  const totalBaggageMoment = baggageAMoment + baggageBMoment + baggageCMoment;
+
+  // Combined baggage CG position
+  const totalBaggageKg = totalBaggageWeight * 0.453592;
+  const combinedBaggageCG = totalBaggageMoment / totalBaggageKg;
+
+  return {
+    weight: totalBaggageWeight,
+    cgPosition: combinedBaggageCG,
+    moment: totalBaggageMoment
+  };
+};
+
 // Main calculation function
 export const calculateWeightAndBalance = (
   loadingState: LoadingState,

@@ -1,5 +1,8 @@
 import React from 'react';
 import type { Aircraft, CalculationResult, Settings, LoadingState } from '@/types/aircraft';
+import { calculateCombinedBaggage } from '@/utils/calculations';
+import { convertWeightForDisplay, roundDownForDisplay } from '@/utils/conversions';
+import { cn } from '@/lib/utils';
 import airplaneImage from '/assets/airplane-1295210_1280-pixabay.png';
 
 interface AircraftSideViewProps {
@@ -10,22 +13,42 @@ interface AircraftSideViewProps {
 }
 
 const AircraftSideView: React.FC<AircraftSideViewProps> = ({
-  aircraft: _aircraft,
+  aircraft,
   calculations,
-  settings: _settings,
-  loadingState: _loadingState
+  settings,
+  loadingState
 }) => {
-  const { cgPosition: _cgPosition } = calculations;
 
-  // Experimental offset positions (as percentages of image width)
-  // These can be adjusted to find the correct positions
-  const experimentalOffsets = {
-    frontRow: 40,     // Front seats (pilot/front passenger) - moved from 25%
-    backRow: 45,      // Rear seats - moved left from 48% to 45%
-    baggageA: 50,     // First baggage area - moved left from 55%
-    baggageB: 65,     // Second baggage area
-    baggageC: 75      // Third baggage area
+  // Calculate combined baggage if we have loading state
+  const combinedBaggage = loadingState ? calculateCombinedBaggage(loadingState, aircraft) : null;
+
+  // Calculate weights for each category
+  const categoryWeights = loadingState ? {
+    fuel: (loadingState.fuelLeft || 0) + (loadingState.fuelRight || 0),
+    frontRow: (loadingState.pilot || 0) + (loadingState.frontPassenger || 0),
+    backRow: (loadingState.rearPassenger1 || 0) + (loadingState.rearPassenger2 || 0),
+    baggage: combinedBaggage?.weight || 0
+  } : { fuel: 0, frontRow: 0, backRow: 0, baggage: 0 };
+
+  // Calculate positions for the 4 main categories based on aircraft features
+  const categoryPositions = {
+    fuel: { x: 29, color: '#22c55e', name: 'Fuel' },        // Green light at front of wing
+    frontRow: { x: 32, color: '#3b82f6', name: 'Front Row' }, // Center of front door window
+    backRow: { x: 41, color: '#8b5cf6', name: 'Back Row' },   // Center of rear window
+    baggage: { x: 46.8, color: '#f97316', name: 'Baggage' }    // Middle of back door
   };
+
+  // Calculate balance status data for tiles
+  const { totalWeight, cgPosition, withinEnvelope } = calculations;
+  const forwardLimit = Math.min(...aircraft.cgEnvelope.slice(0, 3).map(p => p.cgPosition));
+  const aftLimit = Math.max(...aircraft.cgEnvelope.slice(3, 6).map(p => p.cgPosition));
+  const idealCG = (forwardLimit + aftLimit) / 2;
+  const cgOffset = cgPosition - idealCG;
+  const maxOffset = Math.max(
+    Math.abs(forwardLimit - idealCG),
+    Math.abs(aftLimit - idealCG)
+  );
+  const tiltAngle = (cgOffset / maxOffset) * 15; // Max 15 degree tilt
 
   // These functions will be used when implementing actual loading visualization
   // const getStationPosition = (armInches: number) => {
@@ -52,162 +75,87 @@ const AircraftSideView: React.FC<AircraftSideViewProps> = ({
   // const cgPositionPercent = getStationPosition(cgPosition);
 
   return (
-    <div className="space-y-6">
-      {/* Aircraft Visualization */}
-      <div className="relative bg-gradient-to-b from-sky-100 to-sky-50 rounded-lg p-8 min-h-[500px] border-4 border-red-500">
-
-        {/* Airplane Image */}
-        <div className="relative w-full h-64 mb-8">
-          <img
-            src={airplaneImage}
-            alt="Cessna 182T Side View"
-            className="w-full h-full object-contain"
-          />
-
-          {/* Horizontal Reference Line */}
-          <div className="absolute bottom-32 left-4 right-4 h-0.5 bg-gray-400"></div>
-
-          {/* Reference Dots and Labels */}
-
-          {/* Front Reference Dot - Black */}
-          <div
-            className="absolute w-3 h-3 bg-black rounded-full"
-            style={{ left: '20.5%', bottom: 'calc(8rem - 0.375rem)' }}
-          ></div>
-
-          {/* Fuel Dot - Green */}
-          <div
-            className="absolute w-3 h-3 bg-green-500 rounded-full"
-            style={{ left: '36%', bottom: 'calc(8rem - 0.375rem)' }}
-          ></div>
-
-          {/* Test Yellow Dot - higher up in same horizontal location */}
-          <div
-            className="absolute bottom-40 w-6 h-6 bg-yellow-500 rounded-full"
-            style={{ left: '30%' }}
-          ></div>
-
-          {/* Light gray dot in middle of Fuel Label */}
-          <div
-            className="absolute bottom-40 w-6 h-6 bg-gray-400 rounded-full"
-            style={{ left: '25%' }}
-          ></div>
+    <div className="space-y-4 sm:space-y-6">
+      {/* Aircraft Visualization - Everything in SVG with inset margins */}
+      <div className="relative bg-gradient-to-b from-sky-100 to-sky-50 rounded-lg p-4 sm:p-8">
+        <svg viewBox="0 0 1480 840" className="w-full h-auto">
+          {/* Airplane Image - inset by 100px on all sides */}
+          <image href={airplaneImage} x="100" y="100" width="1280" height="640" />
 
 
-          {/* Front Row Dot - Blue */}
-          <div
-            className="absolute w-3 h-3 bg-blue-500 rounded-full"
-            style={{ left: `${experimentalOffsets.frontRow}%`, bottom: 'calc(8rem - 0.375rem)' }}
-          ></div>
+          {/* Main Category Dots - 4 categories only */}
+          {/* Fuel Dot */}
+          <circle cx={categoryPositions.fuel.x * 12.8 + 100} cy="316" r="16" fill={categoryPositions.fuel.color}/>
 
-          {/* Back Row Dot - Purple */}
-          <div
-            className="absolute w-3 h-3 bg-purple-500 rounded-full"
-            style={{ left: `${experimentalOffsets.backRow}%`, bottom: 'calc(8rem - 0.375rem)' }}
-          ></div>
+          {/* Front Row Dot */}
+          <circle cx={categoryPositions.frontRow.x * 12.8 + 100} cy="391" r="16" fill={categoryPositions.frontRow.color}/>
 
-          {/* Baggage A Dot - Orange */}
-          <div
-            className="absolute w-3 h-3 bg-orange-500 rounded-full"
-            style={{ left: `${experimentalOffsets.baggageA}%`, bottom: 'calc(8rem - 0.375rem)' }}
-          ></div>
+          {/* Back Row Dot */}
+          <circle cx={categoryPositions.backRow.x * 12.8 + 100} cy="394" r="16" fill={categoryPositions.backRow.color}/>
 
-          {/* Baggage B Dot - Red */}
-          <div
-            className="absolute w-3 h-3 bg-red-500 rounded-full"
-            style={{ left: `${experimentalOffsets.baggageB}%`, bottom: 'calc(8rem - 0.375rem)' }}
-          ></div>
+          {/* Combined Baggage Dot */}
+          <circle cx={categoryPositions.baggage.x * 12.8 + 100} cy="477" r="16" fill={categoryPositions.baggage.color}/>
 
-          {/* Baggage C Dot - Pink */}
-          <div
-            className="absolute w-3 h-3 bg-pink-500 rounded-full"
-            style={{ left: `${experimentalOffsets.baggageC}%`, bottom: 'calc(8rem - 0.375rem)' }}
-          ></div>
-
-          {/* Back Reference Dot - Gray */}
-          <div
-            className="absolute w-3 h-3 bg-gray-600 rounded-full"
-            style={{ left: '79%', bottom: 'calc(8rem - 0.375rem)' }}
-          ></div>
-
-          {/* Spread out labels above with oblique connector lines */}
-
-          {/* Front Label */}
-          <div className="absolute bottom-48 text-xs" style={{ left: '10%' }}>
-            <div className="bg-black text-white px-1 py-0.5 rounded whitespace-nowrap">
-              Front (20.5%)
-            </div>
-          </div>
-
+          {/* Labels - all at same vertical location with equal spacing */}
           {/* Fuel Label */}
-          <div className="absolute bottom-56 text-xs" style={{ left: '25%' }}>
-            <div className="bg-green-500 text-white px-1 py-0.5 rounded whitespace-nowrap">
-              Fuel (36%)
-            </div>
-          </div>
+          <rect x="330" y="200" width="140" height="50" fill="#22c55e" rx="8"/>
+          <text x="400" y="220" textAnchor="middle" fill="white" fontSize="16" fontFamily="sans-serif" fontWeight="bold">Fuel</text>
+          <text x="400" y="238" textAnchor="middle" fill="white" fontSize="14" fontFamily="sans-serif">{roundDownForDisplay(convertWeightForDisplay(categoryWeights.fuel, settings.weightUnits))} {settings.weightUnits} (29%)</text>
 
           {/* Front Row Label */}
-          <div className="absolute bottom-48 text-xs" style={{ left: '35%' }}>
-            <div className="bg-blue-500 text-white px-1 py-0.5 rounded whitespace-nowrap">
-              Front Row ({experimentalOffsets.frontRow}%)
-            </div>
-          </div>
+          <rect x="500" y="200" width="160" height="50" fill="#3b82f6" rx="8"/>
+          <text x="580" y="220" textAnchor="middle" fill="white" fontSize="16" fontFamily="sans-serif" fontWeight="bold">Front Row</text>
+          <text x="580" y="238" textAnchor="middle" fill="white" fontSize="14" fontFamily="sans-serif">{roundDownForDisplay(convertWeightForDisplay(categoryWeights.frontRow, settings.weightUnits))} {settings.weightUnits} (32%)</text>
 
           {/* Back Row Label */}
-          <div className="absolute bottom-48 text-xs" style={{ left: '42%' }}>
-            <div className="bg-purple-500 text-white px-1 py-0.5 rounded whitespace-nowrap">
-              Back Row ({experimentalOffsets.backRow}%)
-            </div>
-          </div>
+          <rect x="690" y="200" width="160" height="50" fill="#8b5cf6" rx="8"/>
+          <text x="770" y="220" textAnchor="middle" fill="white" fontSize="16" fontFamily="sans-serif" fontWeight="bold">Back Row</text>
+          <text x="770" y="238" textAnchor="middle" fill="white" fontSize="14" fontFamily="sans-serif">{roundDownForDisplay(convertWeightForDisplay(categoryWeights.backRow, settings.weightUnits))} {settings.weightUnits} (41%)</text>
 
-          {/* Baggage A Label */}
-          <div className="absolute bottom-48 text-xs" style={{ left: '48%' }}>
-            <div className="bg-orange-500 text-white px-1 py-0.5 rounded whitespace-nowrap">
-              Bag A ({experimentalOffsets.baggageA}%)
-            </div>
-          </div>
-
-          {/* Baggage B Label */}
-          <div className="absolute bottom-48 text-xs" style={{ left: '60%' }}>
-            <div className="bg-red-500 text-white px-1 py-0.5 rounded whitespace-nowrap">
-              Bag B ({experimentalOffsets.baggageB}%)
-            </div>
-          </div>
-
-          {/* Baggage C Label */}
-          <div className="absolute bottom-48 text-xs" style={{ left: '70%' }}>
-            <div className="bg-pink-500 text-white px-1 py-0.5 rounded whitespace-nowrap">
-              Bag C ({experimentalOffsets.baggageC}%)
-            </div>
-          </div>
-
-          {/* Back Label */}
-          <div className="absolute bottom-48 text-xs" style={{ left: '80%' }}>
-            <div className="bg-gray-600 text-white px-1 py-0.5 rounded whitespace-nowrap">
-              Back (79%)
-            </div>
-          </div>
+          {/* Combined Baggage Label */}
+          <rect x="880" y="200" width="160" height="50" fill="#f97316" rx="8"/>
+          <text x="960" y="220" textAnchor="middle" fill="white" fontSize="16" fontFamily="sans-serif" fontWeight="bold">Baggage</text>
+          <text x="960" y="238" textAnchor="middle" fill="white" fontSize="14" fontFamily="sans-serif">{roundDownForDisplay(convertWeightForDisplay(categoryWeights.baggage, settings.weightUnits))} {settings.weightUnits} (47%)</text>
 
           {/* Connector Lines from Labels to Dots */}
-          <svg className="absolute inset-0 pointer-events-none w-full h-full">
-            {/* Green line from center of green dot */}
-            <line x1="36%" y1="calc(100% - 8rem + 0.375rem)" x2="29%" y2="calc(100% - 14rem - 0.75rem)" stroke="green" strokeWidth="4" opacity="1"/>
-          </svg>
+          {/* Fuel Label to Fuel Dot */}
+          <line x1="400" y1="240" x2={categoryPositions.fuel.x * 12.8 + 100} y2="316" stroke="#22c55e" strokeWidth="3"/>
+
+          {/* Front Row Label to Front Row Dot */}
+          <line x1="580" y1="240" x2={categoryPositions.frontRow.x * 12.8 + 100} y2="391" stroke="#3b82f6" strokeWidth="3"/>
+
+          {/* Back Row Label to Back Row Dot */}
+          <line x1="770" y1="240" x2={categoryPositions.backRow.x * 12.8 + 100} y2="394" stroke="#8b5cf6" strokeWidth="3"/>
+
+          {/* Baggage Label to Baggage Dot */}
+          <line x1="960" y1="240" x2={categoryPositions.baggage.x * 12.8 + 100} y2="477" stroke="#f97316" strokeWidth="3"/>
+        </svg>
+
+        {/* Weight Summary - Top Left */}
+        <div className="absolute top-4 left-4 bg-white/90 rounded-lg p-3">
+          <div className="text-sm font-semibold mb-2">Total Weight</div>
+          <div className="text-lg font-bold">
+            {roundDownForDisplay(convertWeightForDisplay(totalWeight, settings.weightUnits))} {settings.weightUnits}
+          </div>
+          <div className="text-sm text-muted-foreground mt-1">
+            {((totalWeight / aircraft.maxTakeoffWeightLbs) * 100).toFixed(1)}% of MTOW
+          </div>
         </div>
 
-        {/* Component corner dots - positioned relative to the component (red border) */}
-        {/* Top-left corner of component */}
-        <div className="absolute top-0 left-0 w-4 h-4 bg-red-500 rounded-full"></div>
-
-        {/* Top-right corner of component */}
-        <div className="absolute top-0 right-0 w-4 h-4 bg-blue-500 rounded-full"></div>
-
-        {/* Bottom-left corner of component */}
-        <div className="absolute bottom-0 left-0 w-4 h-4 bg-purple-500 rounded-full"></div>
-
-        {/* Bottom-right corner of component */}
-        <div className="absolute bottom-0 right-0 w-4 h-4 bg-orange-500 rounded-full"></div>
-
+        {/* Balance Status - Top Right */}
+        <div className="absolute top-4 right-4 bg-white/90 rounded-lg p-3">
+          <div className="text-sm font-semibold mb-2">Balance Status</div>
+          <div className={cn(
+            "text-lg font-bold",
+            withinEnvelope ? "text-green-600" : "text-red-600"
+          )}>
+            {Math.abs(tiltAngle) < 1 ? "LEVEL" :
+             tiltAngle > 0 ? "AFT HEAVY" : "NOSE HEAVY"}
+          </div>
+          <div className="text-sm text-muted-foreground mt-1">
+            Tilt: {Math.abs(tiltAngle).toFixed(1)}°
+          </div>
+        </div>
       </div>
     </div>
   );

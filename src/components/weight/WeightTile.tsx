@@ -105,7 +105,7 @@ const WeightTile: React.FC<WeightTileProps> = ({
       className
     )}>
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
+        <div className="space-y-2">
           <div className="flex items-center space-x-2">
             {getIconForCategory(category)}
             <h3 className="font-semibold text-sm">

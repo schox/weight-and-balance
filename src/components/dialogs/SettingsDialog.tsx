@@ -6,6 +6,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogOverlay,
+  DialogPortal,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -60,7 +62,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="max-w-md w-full bg-white">
         <DialogHeader>
           <DialogTitle>Application Settings</DialogTitle>
           <DialogDescription>
@@ -142,7 +144,8 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
             <div>• Distance: {settings.distanceUnits === 'inches' ? 'Inches (in)' : 'Millimeters (mm)'}</div>
           </div>
         </div>
-      </DialogContent>
+
+        </DialogContent>
     </Dialog>
   );
 };

@@ -59,7 +59,7 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
           <div className="w-2 h-2 rounded-full bg-info mr-3"></div>
           Front Row Seats
         </h4>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <WeightTile
             id="pilot"
             title="Pilot"
@@ -90,7 +90,7 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
           <div className="w-2 h-2 rounded-full bg-purple-600 mr-3"></div>
           Rear Row Seats
         </h4>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <WeightTile
             id="rearPassenger1"
             title="Rear Passenger 1"

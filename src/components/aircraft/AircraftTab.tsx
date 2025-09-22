@@ -15,12 +15,6 @@ const AircraftTab: React.FC<AircraftTabProps> = ({ aircraft, settings }) => {
 
   return (
     <div className="space-y-6">
-      {/* Aircraft Info Header */}
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold">{aircraft.registration}</h2>
-        <p className="text-muted-foreground">{aircraft.model}</p>
-      </div>
-
       {/* Weight & CG Tiles */}
       <WeightCGTiles
         aircraft={aircraft}

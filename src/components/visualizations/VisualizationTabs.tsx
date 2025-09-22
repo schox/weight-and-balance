@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BarChart3, Plane, Scale, Eye, Zap, MessageSquare } from 'lucide-react';
+import { BarChart3, Plane, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Aircraft, CalculationResult, Settings, LoadingState } from '@/types/aircraft';
 
@@ -9,8 +9,6 @@ import type { Aircraft, CalculationResult, Settings, LoadingState } from '@/type
 import CGEnvelopeChart from '@/components/charts/CGEnvelopeChart';
 import AircraftSideView from './AircraftSideView';
 import AnimatedLoading from './AnimatedLoading';
-import BalanceBeamView from './BalanceBeamView';
-import FeedbackCollector from './FeedbackCollector';
 
 interface VisualizationTabsProps {
   aircraft: Aircraft;
@@ -20,7 +18,7 @@ interface VisualizationTabsProps {
   className?: string;
 }
 
-type VisualizationType = 'envelope' | 'sideview' | 'animated' | 'balance' | 'feedback';
+type VisualizationType = 'envelope' | 'sideview' | 'animated';
 
 interface VisualizationTab {
   id: VisualizationType;
@@ -65,20 +63,6 @@ const VisualizationTabs: React.FC<VisualizationTabsProps> = ({
       icon: <Zap className="h-4 w-4" />,
       description: 'Animated sequence showing loading process',
       component: AnimatedLoading
-    },
-    {
-      id: 'balance',
-      label: 'Balance Beam',
-      icon: <Scale className="h-4 w-4" />,
-      description: '3D balance beam representation',
-      component: BalanceBeamView
-    },
-    {
-      id: 'feedback',
-      label: 'Feedback',
-      icon: <MessageSquare className="h-4 w-4" />,
-      description: 'Rate visualizations and provide feedback',
-      component: FeedbackCollector
     }
   ];
 
@@ -86,18 +70,12 @@ const VisualizationTabs: React.FC<VisualizationTabsProps> = ({
   const ActiveComponent = activeTabData?.component || CGEnvelopeChart;
 
   return (
-    <Card className={cn("w-full", className)}>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>Weight & Balance Visualizations</span>
-          <div className="flex items-center text-sm text-muted-foreground">
-            <Eye className="h-4 w-4 mr-1" />
-            <span>Choose your preferred view</span>
-          </div>
-        </CardTitle>
+    <Card className={cn("w-full border border-border shadow-sm", className)}>
+      <CardHeader className="pb-3">
+        <CardTitle>Weight & Balance Visualizations</CardTitle>
 
         {/* Tab Navigation */}
-        <div className="flex flex-wrap gap-1 border-b">
+        <div className="flex flex-wrap gap-1 border-b pt-3">
           {tabs.map((tab) => (
             <Button
               key={tab.id}
@@ -125,7 +103,7 @@ const VisualizationTabs: React.FC<VisualizationTabsProps> = ({
 
       <CardContent className="p-0">
         {/* Render active visualization component */}
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <ActiveComponent
             aircraft={aircraft}
             calculations={calculations}

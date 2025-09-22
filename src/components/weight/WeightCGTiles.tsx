@@ -49,28 +49,26 @@ const WeightCGTiles: React.FC<WeightCGTilesProps> = ({
   };
 
   return (
-    <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6", className)}>
+    <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6", className)}>
       {/* Weight Data Tile */}
-      <Card className="bg-surface-container">
-        <CardContent className="p-6">
+      <Card className="bg-surface-container border border-border shadow-sm">
+        <CardContent className="p-4 sm:p-6">
           <h3 className="text-lg font-semibold mb-4 text-on-surface-container">Weight Data</h3>
           <div className="grid grid-cols-2 gap-4">
             {/* BEW */}
             <div className="text-center">
               <div className="text-sm text-muted-foreground">BEW</div>
               <div className="text-xl font-bold text-on-surface-container">
-                {roundDownForDisplay(convertWeightForDisplay(aircraft.emptyWeightLbs, settings.weightUnits))}
+                {roundDownForDisplay(convertWeightForDisplay(aircraft.emptyWeightLbs, settings.weightUnits))} {settings.weightUnits}
               </div>
-              <div className="text-xs text-muted-foreground">{settings.weightUnits}</div>
             </div>
 
             {/* MTOW */}
             <div className="text-center">
               <div className="text-sm text-muted-foreground">MTOW</div>
               <div className="text-xl font-bold text-on-surface-container">
-                {roundDownForDisplay(convertWeightForDisplay(aircraft.maxTakeoffWeightLbs, settings.weightUnits))}
+                {roundDownForDisplay(convertWeightForDisplay(aircraft.maxTakeoffWeightLbs, settings.weightUnits))} {settings.weightUnits}
               </div>
-              <div className="text-xs text-muted-foreground">{settings.weightUnits}</div>
             </div>
 
             {/* Current Weight */}
@@ -80,9 +78,8 @@ const WeightCGTiles: React.FC<WeightCGTilesProps> = ({
                 "text-xl font-bold",
                 totalWeight > aircraft.maxTakeoffWeightLbs ? "text-danger" : "text-on-surface-container"
               )}>
-                {roundDownForDisplay(convertWeightForDisplay(totalWeight, settings.weightUnits))}
+                {roundDownForDisplay(convertWeightForDisplay(totalWeight, settings.weightUnits))} {settings.weightUnits}
               </div>
-              <div className="text-xs text-muted-foreground">{settings.weightUnits}</div>
             </div>
 
             {/* Margin */}
@@ -93,9 +90,8 @@ const WeightCGTiles: React.FC<WeightCGTilesProps> = ({
                 weightMargin < 0 ? "text-danger" :
                 weightMargin < 100 ? "text-warning" : "text-success"
               )}>
-                {convertWeightForDisplay(weightMargin, settings.weightUnits) > 0 ? '+' : ''}{roundDownForDisplay(convertWeightForDisplay(weightMargin, settings.weightUnits))}
+                {convertWeightForDisplay(weightMargin, settings.weightUnits) > 0 ? '+' : ''}{roundDownForDisplay(convertWeightForDisplay(weightMargin, settings.weightUnits))} {settings.weightUnits}
               </div>
-              <div className="text-xs text-muted-foreground">{settings.weightUnits}</div>
             </div>
           </div>
 
@@ -127,9 +123,9 @@ const WeightCGTiles: React.FC<WeightCGTilesProps> = ({
       </Card>
 
       {/* CG Data Tile */}
-      <Card className="bg-surface-container">
-        <CardContent className="p-6">
-          <h3 className="text-lg font-semibold mb-4 text-on-surface-container">Center of Gravity</h3>
+      <Card className="bg-surface-container border border-border shadow-sm">
+        <CardContent className="p-4 sm:p-6">
+          <h3 className="text-lg font-semibold mb-4 text-on-surface-container">Centre of Gravity</h3>
           <div className="grid grid-cols-2 gap-4">
             {/* CG Position */}
             <div className="text-center">
@@ -138,10 +134,7 @@ const WeightCGTiles: React.FC<WeightCGTilesProps> = ({
                 "text-xl font-bold",
                 !withinEnvelope ? "text-danger" : "text-on-surface-container"
               )}>
-                {cgPosition.toFixed(0)} mm
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {percentMAC.toFixed(1)}% MAC
+                {cgPosition.toFixed(0)} mm <span className="text-xs text-muted-foreground font-normal">{percentMAC.toFixed(1)}% MAC</span>
               </div>
             </div>
 
@@ -185,7 +178,7 @@ const WeightCGTiles: React.FC<WeightCGTilesProps> = ({
 
       {/* Errors and Warnings - Span across both tiles if present */}
       {(errors.length > 0 || warnings.length > 0) && (
-        <Card className="col-span-1 md:col-span-2 bg-surface-container">
+        <Card className="col-span-1 md:col-span-2 bg-surface-container border border-border shadow-sm">
           <CardContent className="p-4">
             <div className="space-y-2">
               {errors.map((error, index) => (
