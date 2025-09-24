@@ -107,3 +107,25 @@ export const convertWeightToLbs = (
   }
   return weight;
 };
+
+// Convert fuel quantity for display based on user's preferred units
+export const convertFuelForDisplay = (
+  fuelLitres: number,
+  targetUnit: 'litres' | 'gallons'
+): number => {
+  if (targetUnit === 'gallons') {
+    return fuelConversions.litresToGallons(fuelLitres);
+  }
+  return fuelLitres;
+};
+
+// Convert fuel to weight for display
+export const convertFuelToWeight = (
+  fuelLitres: number,
+  settings: { fuelUnits: 'litres' | 'gallons', weightUnits: 'lbs' | 'kg' }
+): number => {
+  // Always get weight in lbs first
+  const weightLbs = getFuelWeightLbs(fuelLitres, 'litres');
+  // Then convert to display units
+  return convertWeightForDisplay(weightLbs, settings.weightUnits);
+};

@@ -77,18 +77,19 @@ const vhYpbLoadingStations: LoadingStation[] = [
 ];
 
 // CG Envelope points for VH-YPB (Normal Category)
-// These would need to be extracted from the actual envelope graph in the POH
-// For now, using representative values based on typical C182T envelope
+// Based on actual handbook data with proper shape including two angular changes
 const vhYpbCGEnvelope: CGEnvelopePoint[] = [
-  // Forward limit line
-  { weight: 2100, cgPosition: 889 },   // 35.0" converted to mm (35.0 * 25.4)
-  { weight: 2950, cgPosition: 970 },   // 38.2" converted to mm (38.2 * 25.4)
-  { weight: 3100, cgPosition: 1029 },  // 40.5" converted to mm (40.5 * 25.4)
+  // Forward limit line (with two angular changes as shown in handbook)
+  { weight: 2007, cgPosition: 940 },   // BEW vertical line start ~37.0"
+  { weight: 2200, cgPosition: 940 },   // Vertical line at BEW CG
+  { weight: 2600, cgPosition: 978 },   // First angular change ~38.5"
+  { weight: 2950, cgPosition: 1016 },  // Second angular change ~40.0"
+  { weight: 3100, cgPosition: 1042 },  // Top of envelope ~41.0"
 
-  // Aft limit line
-  { weight: 2100, cgPosition: 1201 },  // 47.3" converted to mm (47.3 * 25.4)
-  { weight: 2950, cgPosition: 1201 },  // 47.3" converted to mm (47.3 * 25.4)
-  { weight: 3100, cgPosition: 1201 }   // 47.3" converted to mm (47.3 * 25.4)
+  // Aft limit line (straight vertical line) - make narrower
+  { weight: 2007, cgPosition: 1168 },  // BEW level ~46.0"
+  { weight: 2950, cgPosition: 1168 },  // Same CG all the way up
+  { weight: 3100, cgPosition: 1168 }   // Top ~46.0"
 ];
 
 // VH-YPB Aircraft Definition

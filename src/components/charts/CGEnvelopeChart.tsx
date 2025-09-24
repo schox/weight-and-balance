@@ -22,59 +22,75 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
   const { totalWeight, cgPosition, withinEnvelope } = calculations;
 
   // Convert envelope points to display units
+  // Convert CG based on weight unit preference: kg->mm, lbs->inches
+  const convertCGForDisplay = (cgMm: number) => {
+    return settings.weightUnits === 'kg' ? cgMm : cgMm / 25.4; // mm for kg, inches for lbs
+  };
+
+  const getCGUnit = () => settings.weightUnits === 'kg' ? 'mm' : 'inches';
+
   const forwardLimitPoints = aircraft.cgEnvelope
-    .slice(0, 3) // First 3 points are forward limit
+    .slice(0, 5) // First 5 points are forward limit (includes vertical line and two angular changes)
     .map(point => ({
       weight: convertWeightForDisplay(point.weight, settings.weightUnits),
-      cgPosition: point.cgPosition
+      cgPosition: convertCGForDisplay(point.cgPosition)
     }));
 
   const aftLimitPoints = aircraft.cgEnvelope
-    .slice(3, 6) // Last 3 points are aft limit
+    .slice(5, 8) // Last 3 points are aft limit
     .map(point => ({
       weight: convertWeightForDisplay(point.weight, settings.weightUnits),
-      cgPosition: point.cgPosition
+      cgPosition: convertCGForDisplay(point.cgPosition)
     }));
 
   // Current aircraft position
   const currentPosition = {
     weight: convertWeightForDisplay(totalWeight, settings.weightUnits),
-    cgPosition: cgPosition
+    cgPosition: convertCGForDisplay(cgPosition)
   };
 
-  // Calculate chart bounds with padding
-  const allWeights = [...forwardLimitPoints, ...aftLimitPoints].map(p => p.weight);
+  // Calculate chart bounds with fixed weight scale range
   const allCGs = [...forwardLimitPoints, ...aftLimitPoints].map(p => p.cgPosition);
 
-  const minWeight = Math.min(...allWeights) - 100;
-  const maxWeight = Math.max(...allWeights) + 100;
-  const minCG = Math.min(...allCGs) - 1;
-  const maxCG = Math.max(...allCGs) + 1;
+  // Fixed weight range: 850-1450 kg or equivalent in lbs
+  const minWeightKg = 850;
+  const maxWeightKg = 1450;
+  const minWeight = settings.weightUnits === 'kg' ? minWeightKg : minWeightKg * 2.20462;
+  const maxWeight = settings.weightUnits === 'kg' ? maxWeightKg : maxWeightKg * 2.20462;
 
-  // SVG dimensions
-  const svgWidth = 800;
-  const svgHeight = 500;
-  const margin = { top: 40, right: 60, bottom: 80, left: 80 };
-  const chartWidth = svgWidth - margin.left - margin.right;
-  const chartHeight = svgHeight - margin.top - margin.bottom;
+  // Add significant horizontal padding to match handbook layout
+  const cgRange = Math.max(...allCGs) - Math.min(...allCGs);
+  const horizontalPadding = cgRange * 0.4; // 40% padding on each side
+  const minCG = Math.min(...allCGs) - horizontalPadding;
+  const maxCG = Math.max(...allCGs) + horizontalPadding;
 
-  // Scale functions
-  const xScale = (weight: number) => ((weight - minWeight) / (maxWeight - minWeight)) * chartWidth;
-  const yScale = (cg: number) => chartHeight - ((cg - minCG) / (maxCG - minCG)) * chartHeight;
+  // SVG dimensions - responsive (match handbook proportions - taller than wide)
+  const margin = { top: 40, right: 40, bottom: 70, left: 80 };
+  const chartWidth = 450;
+  const chartHeight = 550;
+  const svgWidth = chartWidth + margin.left + margin.right;
+  const svgHeight = chartHeight + margin.top + margin.bottom;
+
+  // Scale functions - SWAPPED: CG on X-axis, Weight on Y-axis (to match handbook)
+  const xScale = (cg: number) => ((cg - minCG) / (maxCG - minCG)) * chartWidth;
+  const yScale = (weight: number) => chartHeight - ((weight - minWeight) / (maxWeight - minWeight)) * chartHeight;
 
   // Create polygon points for the envelope
-  // Start with forward limit points (bottom to top), then aft limit points (top to bottom)
+  // Construct proper closed polygon: forward limit (bottom to top) + aft limit (top to bottom)
   const sortedForward = [...forwardLimitPoints].sort((a, b) => a.weight - b.weight);
   const sortedAft = [...aftLimitPoints].sort((a, b) => b.weight - a.weight);
 
+  // Build polygon by tracing the envelope boundary
   const polygonPoints = [
-    ...sortedForward.map(p => `${xScale(p.weight)},${yScale(p.cgPosition)}`),
-    ...sortedAft.map(p => `${xScale(p.weight)},${yScale(p.cgPosition)}`)
+    // Forward limit: bottom to top
+    ...sortedForward.map(p => `${xScale(p.cgPosition)},${yScale(p.weight)}`),
+    // Aft limit: top to bottom (to close the shape)
+    ...sortedAft.map(p => `${xScale(p.cgPosition)},${yScale(p.weight)}`)
   ].join(' ');
 
-  // Current position coordinates
-  const currentX = xScale(currentPosition.weight);
-  const currentY = yScale(currentPosition.cgPosition);
+  // Current position coordinates - SWAPPED
+  const currentX = xScale(currentPosition.cgPosition);
+  const currentY = yScale(currentPosition.weight);
 
   // Grid lines
   const weightTicks = [];
@@ -103,34 +119,37 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4 sm:p-6">
-        <div className="w-full overflow-x-auto">
-          <svg width={svgWidth} height={svgHeight} className="border border-gray-200 rounded w-full min-w-[600px]">
+        <div className="w-full">
+          <svg
+            viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+            className="border border-gray-200 rounded w-full h-auto"
+            preserveAspectRatio="xMidYMid meet">
             {/* Background */}
             <rect width={svgWidth} height={svgHeight} fill="#fafafa" />
 
             {/* Grid Lines */}
             <g transform={`translate(${margin.left}, ${margin.top})`}>
-              {/* Vertical grid lines */}
-              {weightTicks.map(weight => (
+              {/* Vertical grid lines - now for CG */}
+              {cgTicks.map(cg => (
                 <line
-                  key={`v-${weight}`}
-                  x1={xScale(weight)}
+                  key={`v-${cg}`}
+                  x1={xScale(cg)}
                   y1={0}
-                  x2={xScale(weight)}
+                  x2={xScale(cg)}
                   y2={chartHeight}
                   stroke="#e5e5e5"
                   strokeDasharray="2,2"
                 />
               ))}
 
-              {/* Horizontal grid lines */}
-              {cgTicks.map(cg => (
+              {/* Horizontal grid lines - now for Weight */}
+              {weightTicks.map(weight => (
                 <line
-                  key={`h-${cg}`}
+                  key={`h-${weight}`}
                   x1={0}
-                  y1={yScale(cg)}
+                  y1={yScale(weight)}
                   x2={chartWidth}
-                  y2={yScale(cg)}
+                  y2={yScale(weight)}
                   stroke="#e5e5e5"
                   strokeDasharray="2,2"
                 />
@@ -139,11 +158,75 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
               {/* CG Envelope Polygon */}
               <polygon
                 points={polygonPoints}
-                fill="rgba(239, 68, 68, 0.1)"
-                stroke="#ef4444"
+                fill="rgba(34, 197, 94, 0.15)"
+                stroke="#16a34a"
                 strokeWidth="2"
                 strokeLinejoin="round"
               />
+
+              {/* Forward Limit Line */}
+              <polyline
+                points={sortedForward.map(p => `${xScale(p.cgPosition)},${yScale(p.weight)}`).join(' ')}
+                fill="none"
+                stroke="#dc2626"
+                strokeWidth="2"
+              />
+
+              {/* Aft Limit Line */}
+              <polyline
+                points={sortedAft.sort((a, b) => a.weight - b.weight).map(p => `${xScale(p.cgPosition)},${yScale(p.weight)}`).join(' ')}
+                fill="none"
+                stroke="#dc2626"
+                strokeWidth="2"
+              />
+
+              {/* Darker shaded area for MTOW/MLW at top */}
+              {(() => {
+                const mlwWeight = convertWeightForDisplay(2950, settings.weightUnits);  // MLW
+
+                // Create darker polygon for the top area between MLW and MTOW
+                const topAreaPoints = [
+                  // Forward limit from MLW to MTOW
+                  ...sortedForward
+                    .filter(p => p.weight >= mlwWeight)
+                    .map(p => `${xScale(p.cgPosition)},${yScale(p.weight)}`),
+                  // Aft limit from MTOW to MLW
+                  ...sortedAft
+                    .filter(p => p.weight >= mlwWeight)
+                    .sort((a, b) => b.weight - a.weight)
+                    .map(p => `${xScale(p.cgPosition)},${yScale(p.weight)}`)
+                ].join(' ');
+
+                return (
+                  <polygon
+                    points={topAreaPoints}
+                    fill="rgba(34, 197, 94, 0.4)"
+                    stroke="none"
+                  />
+                );
+              })()}
+
+              {/* Centre of gravity limits text in middle of envelope */}
+              {(() => {
+                // Calculate center of envelope
+                const centerCG = (Math.min(...allCGs) + Math.max(...allCGs)) / 2;
+                const centerWeight = (minWeight + maxWeight) / 2;
+                const centerX = xScale(centerCG);
+                const centerY = yScale(centerWeight);
+
+                return (
+                  <text
+                    x={centerX}
+                    y={centerY}
+                    textAnchor="middle"
+                    fontSize="16"
+                    fontWeight="bold"
+                    fill="#374151"
+                  >
+                    Centre of gravity limits
+                  </text>
+                );
+              })()}
 
               {/* Current Position Dot */}
               <circle
@@ -168,14 +251,14 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
               </text>
             </g>
 
-            {/* X-axis */}
+            {/* X-axis - now for CG */}
             <g transform={`translate(${margin.left}, ${margin.top + chartHeight})`}>
               <line x1={0} y1={0} x2={chartWidth} y2={0} stroke="#374151" strokeWidth="1" />
-              {weightTicks.map(weight => (
-                <g key={`x-tick-${weight}`} transform={`translate(${xScale(weight)}, 0)`}>
+              {cgTicks.map(cg => (
+                <g key={`x-tick-${cg}`} transform={`translate(${xScale(cg)}, 0)`}>
                   <line y1={0} y2={5} stroke="#374151" strokeWidth="1" />
                   <text y={20} textAnchor="middle" fontSize="12" fill="#374151">
-                    {Math.round(weight)}
+                    {cg.toFixed(1)}
                   </text>
                 </g>
               ))}
@@ -187,18 +270,18 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
                 fontWeight="bold"
                 fill="#374151"
               >
-                Weight ({settings.weightUnits})
+                CG Position ({getCGUnit()} from datum)
               </text>
             </g>
 
-            {/* Y-axis */}
+            {/* Y-axis - now for Weight */}
             <g transform={`translate(${margin.left}, ${margin.top})`}>
               <line x1={0} y1={0} x2={0} y2={chartHeight} stroke="#374151" strokeWidth="1" />
-              {cgTicks.map(cg => (
-                <g key={`y-tick-${cg}`} transform={`translate(0, ${yScale(cg)})`}>
+              {weightTicks.map(weight => (
+                <g key={`y-tick-${weight}`} transform={`translate(0, ${yScale(weight)})`}>
                   <line x1={-5} x2={0} stroke="#374151" strokeWidth="1" />
                   <text x={-10} y={4} textAnchor="end" fontSize="12" fill="#374151">
-                    {cg.toFixed(1)}
+                    {Math.round(weight)}
                   </text>
                 </g>
               ))}
@@ -211,7 +294,7 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
                 fill="#374151"
                 transform={`rotate(-90, -50, ${chartHeight / 2})`}
               >
-                CG Position (inches from datum)
+                Weight ({settings.weightUnits})
               </text>
             </g>
           </svg>
@@ -242,7 +325,7 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
             </div>
             <div>
               <span className="font-medium">Current CG:</span>
-              <span className="ml-2">{currentPosition.cgPosition.toFixed(1)}" from datum</span>
+              <span className="ml-2">{currentPosition.cgPosition.toFixed(1)} {getCGUnit()} from datum</span>
             </div>
           </div>
         </div>

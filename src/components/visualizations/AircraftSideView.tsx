@@ -75,66 +75,119 @@ const AircraftSideView: React.FC<AircraftSideViewProps> = ({
   // const cgPositionPercent = getStationPosition(cgPosition);
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Aircraft Visualization - Everything in SVG with inset margins */}
-      <div className="relative bg-gradient-to-b from-sky-100 to-sky-50 rounded-lg p-4 sm:p-8">
-        <svg viewBox="0 0 1480 840" className="w-full h-auto">
-          {/* Airplane Image - inset by 100px on all sides */}
-          <image href={airplaneImage} x="100" y="100" width="1280" height="640" />
+    <div className="flex flex-col h-full">
+      {/* Aircraft Visualization - Everything in SVG with labels at top, aircraft centered */}
+      <div className="flex-1 bg-gradient-to-b from-sky-100 to-sky-50 rounded-lg p-2 sm:p-4 flex flex-col">
+        <svg viewBox="0 0 1480 840" className="w-full flex-1" preserveAspectRatio="xMidYMid meet">
+          {/* Labels at top - responsive sizing for small screens */}
+          {/* Calculate label positions for even spacing */}
+          {(() => {
+            const totalWidth = 1480;
+            const groupWidth = totalWidth * 0.95; // 95% of component width
+            const groupStartX = (totalWidth - groupWidth) / 2; // Center the group
+            const labelGap = 20; // Bigger gap between labels for better separation
+            const labelWidth = (groupWidth - (labelGap * 3)) / 4; // Divide remaining space by 4
+            const labelHeight = 140; // Much taller labels for bigger text
+            const labelY = 10;
 
+            return (
+              <>
+                {/* Fuel Label */}
+                <rect x={groupStartX} y={labelY} width={labelWidth} height={labelHeight} fill="#22c55e" rx="8"/>
+                <text x={groupStartX + labelWidth/2} y={labelY + 50} textAnchor="middle" fill="white" fontSize="48" fontFamily="sans-serif" fontWeight="bold">Fuel</text>
+                <text x={groupStartX + labelWidth/2} y={labelY + 105} textAnchor="middle" fill="white" fontSize="42" fontFamily="sans-serif">
+                  {roundDownForDisplay(convertWeightForDisplay(categoryWeights.fuel, settings.weightUnits))} {settings.weightUnits}
+                </text>
 
-          {/* Main Category Dots - 4 categories only */}
-          {/* Fuel Dot */}
-          <circle cx={categoryPositions.fuel.x * 12.8 + 100} cy="316" r="16" fill={categoryPositions.fuel.color}/>
+                {/* Front Row Label */}
+                <rect x={groupStartX + labelWidth + labelGap} y={labelY} width={labelWidth} height={labelHeight} fill="#3b82f6" rx="8"/>
+                <text x={groupStartX + labelWidth + labelGap + labelWidth/2} y={labelY + 50} textAnchor="middle" fill="white" fontSize="48" fontFamily="sans-serif" fontWeight="bold">Front Row</text>
+                <text x={groupStartX + labelWidth + labelGap + labelWidth/2} y={labelY + 105} textAnchor="middle" fill="white" fontSize="42" fontFamily="sans-serif">
+                  {roundDownForDisplay(convertWeightForDisplay(categoryWeights.frontRow, settings.weightUnits))} {settings.weightUnits}
+                </text>
 
-          {/* Front Row Dot */}
-          <circle cx={categoryPositions.frontRow.x * 12.8 + 100} cy="391" r="16" fill={categoryPositions.frontRow.color}/>
+                {/* Back Row Label */}
+                <rect x={groupStartX + (labelWidth + labelGap) * 2} y={labelY} width={labelWidth} height={labelHeight} fill="#8b5cf6" rx="8"/>
+                <text x={groupStartX + (labelWidth + labelGap) * 2 + labelWidth/2} y={labelY + 50} textAnchor="middle" fill="white" fontSize="48" fontFamily="sans-serif" fontWeight="bold">Back Row</text>
+                <text x={groupStartX + (labelWidth + labelGap) * 2 + labelWidth/2} y={labelY + 105} textAnchor="middle" fill="white" fontSize="42" fontFamily="sans-serif">
+                  {roundDownForDisplay(convertWeightForDisplay(categoryWeights.backRow, settings.weightUnits))} {settings.weightUnits}
+                </text>
 
-          {/* Back Row Dot */}
-          <circle cx={categoryPositions.backRow.x * 12.8 + 100} cy="394" r="16" fill={categoryPositions.backRow.color}/>
+                {/* Baggage Label */}
+                <rect x={groupStartX + (labelWidth + labelGap) * 3} y={labelY} width={labelWidth} height={labelHeight} fill="#f97316" rx="8"/>
+                <text x={groupStartX + (labelWidth + labelGap) * 3 + labelWidth/2} y={labelY + 50} textAnchor="middle" fill="white" fontSize="48" fontFamily="sans-serif" fontWeight="bold">Baggage</text>
+                <text x={groupStartX + (labelWidth + labelGap) * 3 + labelWidth/2} y={labelY + 105} textAnchor="middle" fill="white" fontSize="42" fontFamily="sans-serif">
+                  {roundDownForDisplay(convertWeightForDisplay(categoryWeights.baggage, settings.weightUnits))} {settings.weightUnits}
+                </text>
 
-          {/* Combined Baggage Dot */}
-          <circle cx={categoryPositions.baggage.x * 12.8 + 100} cy="477" r="16" fill={categoryPositions.baggage.color}/>
+                {/* Airplane Image - KEEP ORIGINAL SIZE AND POSITION */}
+                <image href={airplaneImage} x="100" y="100" width="1280" height="640"/>
 
-          {/* Labels - all at same vertical location with equal spacing */}
-          {/* Fuel Label */}
-          <rect x="330" y="200" width="140" height="50" fill="#22c55e" rx="8"/>
-          <text x="400" y="220" textAnchor="middle" fill="white" fontSize="16" fontFamily="sans-serif" fontWeight="bold">Fuel</text>
-          <text x="400" y="238" textAnchor="middle" fill="white" fontSize="14" fontFamily="sans-serif">{roundDownForDisplay(convertWeightForDisplay(categoryWeights.fuel, settings.weightUnits))} {settings.weightUnits} (29%)</text>
+                {/* Main Category Dots - KEEP ORIGINAL POSITIONS */}
+                {/* Fuel Dot */}
+                <circle cx={categoryPositions.fuel.x * 12.8 + 100} cy="316" r="16" fill={categoryPositions.fuel.color}/>
 
-          {/* Front Row Label */}
-          <rect x="500" y="200" width="160" height="50" fill="#3b82f6" rx="8"/>
-          <text x="580" y="220" textAnchor="middle" fill="white" fontSize="16" fontFamily="sans-serif" fontWeight="bold">Front Row</text>
-          <text x="580" y="238" textAnchor="middle" fill="white" fontSize="14" fontFamily="sans-serif">{roundDownForDisplay(convertWeightForDisplay(categoryWeights.frontRow, settings.weightUnits))} {settings.weightUnits} (32%)</text>
+                {/* Front Row Dot */}
+                <circle cx={categoryPositions.frontRow.x * 12.8 + 100} cy="391" r="16" fill={categoryPositions.frontRow.color}/>
 
-          {/* Back Row Label */}
-          <rect x="690" y="200" width="160" height="50" fill="#8b5cf6" rx="8"/>
-          <text x="770" y="220" textAnchor="middle" fill="white" fontSize="16" fontFamily="sans-serif" fontWeight="bold">Back Row</text>
-          <text x="770" y="238" textAnchor="middle" fill="white" fontSize="14" fontFamily="sans-serif">{roundDownForDisplay(convertWeightForDisplay(categoryWeights.backRow, settings.weightUnits))} {settings.weightUnits} (41%)</text>
+                {/* Back Row Dot */}
+                <circle cx={categoryPositions.backRow.x * 12.8 + 100} cy="394" r="16" fill={categoryPositions.backRow.color}/>
 
-          {/* Combined Baggage Label */}
-          <rect x="880" y="200" width="160" height="50" fill="#f97316" rx="8"/>
-          <text x="960" y="220" textAnchor="middle" fill="white" fontSize="16" fontFamily="sans-serif" fontWeight="bold">Baggage</text>
-          <text x="960" y="238" textAnchor="middle" fill="white" fontSize="14" fontFamily="sans-serif">{roundDownForDisplay(convertWeightForDisplay(categoryWeights.baggage, settings.weightUnits))} {settings.weightUnits} (47%)</text>
+                {/* Combined Baggage Dot */}
+                <circle cx={categoryPositions.baggage.x * 12.8 + 100} cy="477" r="16" fill={categoryPositions.baggage.color}/>
 
-          {/* Connector Lines from Labels to Dots */}
-          {/* Fuel Label to Fuel Dot */}
-          <line x1="400" y1="240" x2={categoryPositions.fuel.x * 12.8 + 100} y2="316" stroke="#22c55e" strokeWidth="3"/>
+                {/* Connector Lines from Labels to Dots */}
+                {/* Fuel Label to Fuel Dot */}
+                <line
+                  x1={groupStartX + labelWidth/2}
+                  y1={labelY + labelHeight}
+                  x2={categoryPositions.fuel.x * 12.8 + 100}
+                  y2="316"
+                  stroke="#22c55e"
+                  strokeWidth="6"
+                />
 
-          {/* Front Row Label to Front Row Dot */}
-          <line x1="580" y1="240" x2={categoryPositions.frontRow.x * 12.8 + 100} y2="391" stroke="#3b82f6" strokeWidth="3"/>
+                {/* Front Row Label to Front Row Dot */}
+                <line
+                  x1={groupStartX + labelWidth + labelGap + labelWidth/2}
+                  y1={labelY + labelHeight}
+                  x2={categoryPositions.frontRow.x * 12.8 + 100}
+                  y2="391"
+                  stroke="#3b82f6"
+                  strokeWidth="6"
+                />
 
-          {/* Back Row Label to Back Row Dot */}
-          <line x1="770" y1="240" x2={categoryPositions.backRow.x * 12.8 + 100} y2="394" stroke="#8b5cf6" strokeWidth="3"/>
+                {/* Back Row Label to Back Row Dot */}
+                <line
+                  x1={groupStartX + (labelWidth + labelGap) * 2 + labelWidth/2}
+                  y1={labelY + labelHeight}
+                  x2={categoryPositions.backRow.x * 12.8 + 100}
+                  y2="394"
+                  stroke="#8b5cf6"
+                  strokeWidth="6"
+                />
 
-          {/* Baggage Label to Baggage Dot */}
-          <line x1="960" y1="240" x2={categoryPositions.baggage.x * 12.8 + 100} y2="477" stroke="#f97316" strokeWidth="3"/>
+                {/* Baggage Label to Baggage Dot */}
+                <line
+                  x1={groupStartX + (labelWidth + labelGap) * 3 + labelWidth/2}
+                  y1={labelY + labelHeight}
+                  x2={categoryPositions.baggage.x * 12.8 + 100}
+                  y2="477"
+                  stroke="#f97316"
+                  strokeWidth="6"
+                />
+              </>
+            );
+          })()}
         </svg>
+      </div>
 
-        {/* Weight Summary - Top Left */}
-        <div className="absolute top-4 left-4 bg-white/90 rounded-lg p-3">
-          <div className="text-sm font-semibold mb-2">Total Weight</div>
-          <div className="text-lg font-bold">
+      {/* Bottom tiles with proper borders */}
+      <div className="grid grid-cols-2 gap-2 sm:gap-4 p-2 sm:p-4 border-t-2 border-gray-200">
+        {/* Total Weight Tile */}
+        <div className="bg-white rounded-lg p-3 sm:p-4 border border-gray-300 shadow-sm">
+          <div className="text-sm font-semibold text-gray-700 mb-1">Total Weight</div>
+          <div className="text-xl sm:text-2xl font-bold">
             {roundDownForDisplay(convertWeightForDisplay(totalWeight, settings.weightUnits))} {settings.weightUnits}
           </div>
           <div className="text-sm text-muted-foreground mt-1">
@@ -142,11 +195,11 @@ const AircraftSideView: React.FC<AircraftSideViewProps> = ({
           </div>
         </div>
 
-        {/* Balance Status - Top Right */}
-        <div className="absolute top-4 right-4 bg-white/90 rounded-lg p-3">
-          <div className="text-sm font-semibold mb-2">Balance Status</div>
+        {/* Balance Status Tile */}
+        <div className="bg-white rounded-lg p-3 sm:p-4 border border-gray-300 shadow-sm">
+          <div className="text-sm font-semibold text-gray-700 mb-1">Balance Status</div>
           <div className={cn(
-            "text-lg font-bold",
+            "text-xl sm:text-2xl font-bold",
             withinEnvelope ? "text-green-600" : "text-red-600"
           )}>
             {Math.abs(tiltAngle) < 1 ? "LEVEL" :
