@@ -31,52 +31,40 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
 }) => {
 
   return (
-    <div className="space-y-8">
-      {/* Front Row Seats */}
-      <div className="space-y-4">
-        <FrontRowSeatsCombined
-          pilot={loadingState.pilot}
-          frontPassenger={loadingState.frontPassenger}
-          onPilotChange={actions.updatePilot}
-          onFrontPassengerChange={actions.updateFrontPassenger}
-          settings={settings}
-        />
-      </div>
+    <div className="space-y-4">
+      <FrontRowSeatsCombined
+        pilot={loadingState.pilot}
+        frontPassenger={loadingState.frontPassenger}
+        onPilotChange={actions.updatePilot}
+        onFrontPassengerChange={actions.updateFrontPassenger}
+        settings={settings}
+      />
 
-      {/* Rear Row Seats */}
-      <div className="space-y-4">
-        <RearRowSeatsCombined
-          rearPassenger1={loadingState.rearPassenger1}
-          rearPassenger2={loadingState.rearPassenger2}
-          onRearPassenger1Change={actions.updateRearPassenger1}
-          onRearPassenger2Change={actions.updateRearPassenger2}
-          settings={settings}
-        />
-      </div>
+      <RearRowSeatsCombined
+        rearPassenger1={loadingState.rearPassenger1}
+        rearPassenger2={loadingState.rearPassenger2}
+        onRearPassenger1Change={actions.updateRearPassenger1}
+        onRearPassenger2Change={actions.updateRearPassenger2}
+        settings={settings}
+      />
 
-      {/* Baggage - Combined */}
-      <div className="space-y-4">
-        <BaggageTilesCombined
-          baggageA={loadingState.baggageA}
-          baggageB={loadingState.baggageB}
-          baggageC={loadingState.baggageC}
-          onBaggageAChange={actions.updateBaggageA}
-          onBaggageBChange={actions.updateBaggageB}
-          onBaggageCChange={actions.updateBaggageC}
-          settings={settings}
-        />
-      </div>
+      <BaggageTilesCombined
+        baggageA={loadingState.baggageA}
+        baggageB={loadingState.baggageB}
+        baggageC={loadingState.baggageC}
+        onBaggageAChange={actions.updateBaggageA}
+        onBaggageBChange={actions.updateBaggageB}
+        onBaggageCChange={actions.updateBaggageC}
+        settings={settings}
+      />
 
-      {/* Fuel - Combined */}
-      <div className="space-y-4">
-        <FuelTilesCombined
-          fuelLeft={loadingState.fuelLeft}
-          fuelRight={loadingState.fuelRight}
-          onFuelLeftChange={actions.updateFuelLeft}
-          onFuelRightChange={actions.updateFuelRight}
-          settings={settings}
-        />
-      </div>
+      <FuelTilesCombined
+        fuelLeft={loadingState.fuelLeft}
+        fuelRight={loadingState.fuelRight}
+        onFuelLeftChange={actions.updateFuelLeft}
+        onFuelRightChange={actions.updateFuelRight}
+        settings={settings}
+      />
     </div>
   );
 };

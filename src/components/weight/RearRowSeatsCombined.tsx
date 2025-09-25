@@ -68,7 +68,7 @@ const RearRowSeatsCombined: React.FC<RearRowSeatsCombinedProps> = ({
             type="number"
             value={currentValue}
             onChange={(e) => handleInputChange(e.target.value, seat)}
-            className={`w-16 h-8 text-center text-sm ${isOutOfRange ? 'text-red-500 border-red-500' : ''}`}
+            className={`w-20 h-8 text-center text-sm ${isOutOfRange ? 'text-red-500 border-red-500' : ''}`}
             min="0"
             max={maxWeight}
             step="1"
@@ -84,44 +84,43 @@ const RearRowSeatsCombined: React.FC<RearRowSeatsCombinedProps> = ({
 
   return (
     <Card className={cn("relative bg-surface-container border border-border shadow-sm", className)}>
-      <CardContent className="p-4 h-full flex flex-col">
-        {/* Top two-thirds with tabs */}
-        <div className="flex-[2] mb-3">
-          <div className="flex items-center mb-3">
-            <Users className="h-5 w-5 text-purple-600 mr-2" />
-            <span className="font-semibold">Rear Row Seats</span>
-          </div>
-
-          <Tabs defaultValue="rearPassenger1" className="w-full">
-            <TabsList variant="default" className="grid w-full grid-cols-2">
-              <TabsTrigger
-                value="rearPassenger1"
-                variant="colored"
-                activeColor={theme.sections.passengers.DEFAULT}
-              >
-                Rear Passenger 1
-              </TabsTrigger>
-              <TabsTrigger
-                value="rearPassenger2"
-                variant="colored"
-                activeColor={theme.sections.passengers.DEFAULT}
-              >
-                Rear Passenger 2
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="rearPassenger1" variant="colored" className="space-y-3 p-3">
-              {renderSeatControls('rearPassenger1')}
-            </TabsContent>
-
-            <TabsContent value="rearPassenger2" variant="colored" className="space-y-3 p-3">
-              {renderSeatControls('rearPassenger2')}
-            </TabsContent>
-          </Tabs>
+      <CardContent className="p-3 h-full flex flex-col">
+        {/* Header */}
+        <div className="flex items-center mb-2">
+          <Users className="h-5 w-5 text-purple-600 mr-2" />
+          <span className="font-semibold">Rear Row Seats</span>
         </div>
 
-        {/* Bottom third - single line total display */}
-        <div className="flex-[1] border-t pt-3 bg-muted/30 rounded-md p-2">
+        {/* Tabs */}
+        <Tabs defaultValue="rearPassenger1" className="w-full flex-1">
+          <TabsList variant="default" className="grid w-full grid-cols-2">
+            <TabsTrigger
+              value="rearPassenger1"
+              variant="colored"
+              activeColor={theme.sections.passengers.DEFAULT}
+            >
+              Rear Passenger 1
+            </TabsTrigger>
+            <TabsTrigger
+              value="rearPassenger2"
+              variant="colored"
+              activeColor={theme.sections.passengers.DEFAULT}
+            >
+              Rear Passenger 2
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="rearPassenger1" variant="colored" className="p-2">
+            {renderSeatControls('rearPassenger1')}
+          </TabsContent>
+
+          <TabsContent value="rearPassenger2" variant="colored" className="p-2">
+            {renderSeatControls('rearPassenger2')}
+          </TabsContent>
+        </Tabs>
+
+        {/* Total display without divider */}
+        <div className="mt-2 bg-muted/30 rounded-md p-2">
           <div className="text-center text-sm">
             <span className="font-semibold">Total Rear Row: </span>
             <span className="font-bold">{Math.floor(totalRearRowDisplay)} {settings.weightUnits}</span>

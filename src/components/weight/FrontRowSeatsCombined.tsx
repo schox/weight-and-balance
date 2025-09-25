@@ -69,7 +69,7 @@ const FrontRowSeatsCombined: React.FC<FrontRowSeatsCombinedProps> = ({
             type="number"
             value={currentValue}
             onChange={(e) => handleInputChange(e.target.value, seat)}
-            className={`w-16 h-8 text-center text-sm ${isOutOfRange ? 'text-red-500 border-red-500' : ''}`}
+            className={`w-20 h-8 text-center text-sm ${isOutOfRange ? 'text-red-500 border-red-500' : ''}`}
             min="0"
             max={maxWeight}
             step="1"
@@ -86,44 +86,43 @@ const FrontRowSeatsCombined: React.FC<FrontRowSeatsCombinedProps> = ({
 
   return (
     <Card className={cn("relative bg-surface-container border border-border shadow-sm", className)}>
-      <CardContent className="p-4 h-full flex flex-col">
-        {/* Top two-thirds with tabs */}
-        <div className="flex-[2] mb-3">
-          <div className="flex items-center mb-3">
-            <User className="h-5 w-5 text-blue-600 mr-2" />
-            <span className="font-semibold">Front Row Seats</span>
-          </div>
-
-          <Tabs defaultValue="pilot" className="w-full">
-            <TabsList variant="default" className="grid w-full grid-cols-2">
-              <TabsTrigger
-                value="pilot"
-                variant="colored"
-                activeColor={theme.sections.pilot.DEFAULT}
-              >
-                Pilot
-              </TabsTrigger>
-              <TabsTrigger
-                value="frontPassenger"
-                variant="colored"
-                activeColor={theme.sections.pilot.DEFAULT}
-              >
-                Front Passenger
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="pilot" variant="colored" className="space-y-3 p-3">
-              {renderSeatControls('pilot')}
-            </TabsContent>
-
-            <TabsContent value="frontPassenger" variant="colored" className="space-y-3 p-3">
-              {renderSeatControls('frontPassenger')}
-            </TabsContent>
-          </Tabs>
+      <CardContent className="p-3 h-full flex flex-col">
+        {/* Header */}
+        <div className="flex items-center mb-2">
+          <User className="h-5 w-5 text-blue-600 mr-2" />
+          <span className="font-semibold">Front Row Seats</span>
         </div>
 
-        {/* Bottom third - single line total display */}
-        <div className="flex-[1] border-t pt-3 bg-muted/30 rounded-md p-2">
+        {/* Tabs */}
+        <Tabs defaultValue="pilot" className="w-full flex-1">
+          <TabsList variant="default" className="grid w-full grid-cols-2">
+            <TabsTrigger
+              value="pilot"
+              variant="colored"
+              activeColor={theme.sections.pilot.DEFAULT}
+            >
+              Pilot
+            </TabsTrigger>
+            <TabsTrigger
+              value="frontPassenger"
+              variant="colored"
+              activeColor={theme.sections.pilot.DEFAULT}
+            >
+              Front Passenger
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="pilot" variant="colored" className="p-2">
+            {renderSeatControls('pilot')}
+          </TabsContent>
+
+          <TabsContent value="frontPassenger" variant="colored" className="p-2">
+            {renderSeatControls('frontPassenger')}
+          </TabsContent>
+        </Tabs>
+
+        {/* Total display without divider */}
+        <div className="mt-2 bg-muted/30 rounded-md p-2">
           <div className="text-center text-sm">
             <span className="font-semibold">Total Front Row: </span>
             <span className="font-bold">{Math.floor(totalFrontRowDisplay)} {settings.weightUnits}</span>

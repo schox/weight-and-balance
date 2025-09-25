@@ -14,7 +14,7 @@ const AircraftTab: React.FC<AircraftTabProps> = ({ aircraft, settings }) => {
   const { loadingState, calculations, actions } = useLoadingState(aircraft, settings);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Weight & CG Tiles */}
       <WeightCGTiles
         aircraft={aircraft}
