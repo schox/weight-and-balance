@@ -18,27 +18,27 @@ export const theme = {
     900: '#1e3a8a',
   },
 
-  // Semantic colors for different sections
+  // Semantic colors for different sections - using pastel colors
   sections: {
     pilot: {
-      DEFAULT: '#2563eb', // Blue 600
-      foreground: '#ffffff',
-      muted: '#dbeafe',    // Blue 100
+      DEFAULT: '#bfdbfe', // Blue 200 - pastel blue
+      foreground: '#1e3a8a',
+      muted: '#eff6ff',    // Blue 50
     },
     passengers: {
-      DEFAULT: '#7c3aed', // Violet 600
-      foreground: '#ffffff',
-      muted: '#ede9fe',    // Violet 100
+      DEFAULT: '#ddd6fe', // Violet 200 - pastel violet
+      foreground: '#5b21b6',
+      muted: '#f5f3ff',    // Violet 50
     },
     baggage: {
-      DEFAULT: '#ea580c', // Orange 600
-      foreground: '#ffffff',
-      muted: '#fed7aa',    // Orange 200
+      DEFAULT: '#fed7aa', // Orange 200 - pastel orange
+      foreground: '#9a3412',
+      muted: '#fff7ed',    // Orange 50
     },
     fuel: {
-      DEFAULT: '#16a34a', // Green 600
-      foreground: '#ffffff',
-      muted: '#bbf7d0',    // Green 200
+      DEFAULT: '#bbf7d0', // Green 200 - pastel green
+      foreground: '#14532d',
+      muted: '#f0fdf4',    // Green 50
     },
   },
 

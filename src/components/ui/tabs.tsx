@@ -53,9 +53,9 @@ const tabsTriggerVariants = cva(
           "data-[state=active]:z-10",
           "data-[state=active]:border-b-2",
           "data-[state=active]:border-b-white",
-          // Fix gap by extending active tab downward
-          "data-[state=active]:pb-[calc(0.5rem+2px)]",
-          "data-[state=active]:mb-[-2px]",
+          // Fix gap by extending active tab downward - increase overlap
+          "data-[state=active]:pb-[calc(0.5rem+3px)]",
+          "data-[state=active]:mb-[-3px]",
           // Inactive tabs - no bottom border
           "data-[state=inactive]:pb-[0.5rem]",
         ],
@@ -73,13 +73,12 @@ const tabsTriggerVariants = cva(
           "-mr-[2px]", // Overlap borders to prevent double thickness
           "last:mr-0", // Don't overlap the last tab
           // Active state - same gap fix for colored variant
-          "data-[state=active]:text-white",
           "data-[state=active]:z-10",
           "data-[state=active]:border-b-2",
           "data-[state=active]:border-b-transparent",
-          // Fix gap by extending active tab downward
-          "data-[state=active]:pb-[calc(0.5rem+2px)]",
-          "data-[state=active]:mb-[-2px]",
+          // Fix gap by extending active tab downward - increase overlap
+          "data-[state=active]:pb-[calc(0.5rem+3px)]",
+          "data-[state=active]:mb-[-3px]",
           // Inactive tabs - no bottom border
           "data-[state=inactive]:pb-[0.5rem]",
         ],
@@ -113,6 +112,10 @@ const TabsTrigger = React.forwardRef<
     return {
       ...style,
       '--active-bg': activeColor,
+      '--active-text': activeColor === '#bfdbfe' ? '#1e3a8a' :
+                       activeColor === '#ddd6fe' ? '#5b21b6' :
+                       activeColor === '#fed7aa' ? '#9a3412' :
+                       activeColor === '#bbf7d0' ? '#14532d' : '#000000'
     };
   }, [activeColor, variant, style]);
 
@@ -121,7 +124,7 @@ const TabsTrigger = React.forwardRef<
       ref={triggerRef}
       className={cn(
         tabsTriggerVariants({ variant }),
-        variant === 'colored' && activeColor && `data-[state=active]:bg-[var(--active-bg)]`,
+        variant === 'colored' && activeColor && `data-[state=active]:bg-[var(--active-bg)] data-[state=active]:text-[var(--active-text)]`,
         className
       )}
       style={dynamicStyle}
