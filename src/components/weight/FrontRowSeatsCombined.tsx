@@ -49,12 +49,6 @@ const FrontRowSeatsCombined: React.FC<FrontRowSeatsCombinedProps> = ({
     }
   };
 
-  const adjustWeight = (amount: number, seat: 'pilot' | 'frontPassenger') => {
-    const currentValue = Math.floor(seat === 'pilot' ? pilotDisplay : frontPassengerDisplay);
-    const maxWeight = getMaxWeight();
-    const newValue = Math.max(0, Math.min(currentValue + amount, maxWeight));
-    handleInputChange(newValue.toString(), seat);
-  };
 
   const getCurrentValue = (seat: 'pilot' | 'frontPassenger') => {
     return Math.floor(seat === 'pilot' ? pilotDisplay : frontPassengerDisplay);

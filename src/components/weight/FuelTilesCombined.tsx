@@ -1,6 +1,5 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { theme } from '@/lib/theme';
@@ -49,12 +48,6 @@ const FuelTilesCombined: React.FC<FuelTilesCombinedProps> = ({
     }
   };
 
-  const adjustFuel = (amount: number, isLeft: boolean) => {
-    const currentValue = Math.floor(isLeft ? fuelLeftDisplay : fuelRightDisplay); // Use integers
-    const newValue = Math.max(0, Math.min(currentValue + amount,
-      settings.fuelUnits === 'litres' ? 87 : 23));
-    handleInputChange(newValue.toString(), isLeft);
-  };
 
   const renderFuelTab = (isLeft: boolean) => {
     const currentValue = Math.floor(isLeft ? fuelLeftDisplay : fuelRightDisplay);

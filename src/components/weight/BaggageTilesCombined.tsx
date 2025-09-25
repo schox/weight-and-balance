@@ -1,6 +1,5 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { theme } from '@/lib/theme';
@@ -62,12 +61,6 @@ const BaggageTilesCombined: React.FC<BaggageTilesCombinedProps> = ({
     }
   };
 
-  const adjustWeight = (amount: number, area: 'A' | 'B' | 'C') => {
-    const currentValue = Math.floor(area === 'A' ? baggageADisplay : area === 'B' ? baggageBDisplay : baggageCDisplay);
-    const maxWeight = getMaxWeight(area);
-    const newValue = Math.max(0, Math.min(currentValue + amount, maxWeight));
-    handleInputChange(newValue.toString(), area);
-  };
 
 
   const getCurrentValue = (area: 'A' | 'B' | 'C') => {

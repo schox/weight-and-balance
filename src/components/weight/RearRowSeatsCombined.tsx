@@ -1,6 +1,5 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { theme } from '@/lib/theme';
@@ -50,12 +49,6 @@ const RearRowSeatsCombined: React.FC<RearRowSeatsCombinedProps> = ({
     }
   };
 
-  const adjustWeight = (amount: number, seat: 'rearPassenger1' | 'rearPassenger2') => {
-    const currentValue = Math.floor(seat === 'rearPassenger1' ? rearPassenger1Display : rearPassenger2Display);
-    const maxWeight = getMaxWeight();
-    const newValue = Math.max(0, Math.min(currentValue + amount, maxWeight));
-    handleInputChange(newValue.toString(), seat);
-  };
 
   const getCurrentValue = (seat: 'rearPassenger1' | 'rearPassenger2') => {
     return Math.floor(seat === 'rearPassenger1' ? rearPassenger1Display : rearPassenger2Display);
