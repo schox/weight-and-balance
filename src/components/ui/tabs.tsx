@@ -45,16 +45,18 @@ const tabsTriggerVariants = cva(
           "relative",
           "border-t-2 border-l-2 border-r-2 border-b-2 border-black",
           "rounded-t-lg",
-          "bg-gray-100 text-black",
           "pb-2", // Consistent padding for all tabs
           "-mr-[2px]", // Overlap borders to prevent double thickness
           "last:mr-0", // Don't overlap the last tab
-          // Active state - remove bottom border
-          "data-[state=active]:bg-white",
+          // Active state - matches page background
+          "data-[state=active]:bg-background",
+          "data-[state=active]:text-foreground",
           "data-[state=active]:z-10",
           "data-[state=active]:border-b-0",
           "data-[state=active]:pb-[calc(0.5rem+2px)]",
-          // Inactive state
+          // Inactive state - clearly different shading
+          "data-[state=inactive]:bg-muted",
+          "data-[state=inactive]:text-muted-foreground",
           "data-[state=inactive]:border-b-2",
         ],
         pills: [
@@ -67,15 +69,16 @@ const tabsTriggerVariants = cva(
           "relative",
           "border-t-2 border-l-2 border-r-2 border-b-2 border-black",
           "rounded-t-lg",
-          "bg-gray-100 text-black",
           "pb-2", // Consistent padding for all tabs
           "-mr-[2px]", // Overlap borders to prevent double thickness
           "last:mr-0", // Don't overlap the last tab
-          // Active state - remove bottom border
+          // Active state - colored background, no bottom border
           "data-[state=active]:z-10",
           "data-[state=active]:border-b-0",
           "data-[state=active]:pb-[calc(0.5rem+2px)]",
-          // Inactive state
+          // Inactive state - muted background
+          "data-[state=inactive]:bg-muted",
+          "data-[state=inactive]:text-muted-foreground",
           "data-[state=inactive]:border-b-2",
         ],
         borderless: [

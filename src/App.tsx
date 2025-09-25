@@ -60,11 +60,11 @@ function App() {
         <Tabs defaultValue="YPB" className="w-full">
           <div className="relative">
             {/* Container for tabs with lines */}
-            <div className="flex items-end justify-center">
-              {/* Left line */}
-              <div className="flex-1 h-[2px] bg-black mb-[2px]"></div>
+            <div className="flex items-end">
+              {/* Left line - extends from left edge to tabs */}
+              <div className="flex-1 h-[2px] bg-black"></div>
 
-              <TabsList variant="default" className="w-auto inline-flex relative z-10">
+              <TabsList variant="default" className="inline-flex relative z-10 gap-0">
                 <TabsTrigger
                   value="YPB"
                   variant="default"
@@ -85,8 +85,8 @@ function App() {
                 </TabsTrigger>
               </TabsList>
 
-              {/* Right line */}
-              <div className="flex-1 h-[2px] bg-black mb-[2px]"></div>
+              {/* Right line - extends from tabs to right edge */}
+              <div className="flex-1 h-[2px] bg-black"></div>
             </div>
           </div>
 
