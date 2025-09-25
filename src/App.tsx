@@ -57,16 +57,16 @@ function App() {
       </header>
 
       {/* Aircraft Tabs */}
-      <div className="bg-surface-container border-b">
+      <div className="bg-surface-container">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-center">
-            <div className="inline-flex border-2 border-black rounded-lg overflow-hidden">
+            <div className="inline-flex">
               <Button
                 variant="ghost"
-                className={`rounded-none text-lg font-bold flex items-center space-x-2 transition-all border-r-2 border-black px-6 py-3 ${
+                className={`text-lg font-bold flex items-center space-x-2 transition-all border-2 border-black px-6 py-3 ${
                   selectedAircraft === 'YPB'
-                    ? 'bg-white text-black'
-                    : 'bg-gray-100 text-black hover:bg-gray-200'
+                    ? 'bg-white text-black rounded-t-lg border-b-0 z-10'
+                    : 'bg-gray-100 text-black hover:bg-gray-200 rounded-lg mr-2'
                 }`}
                 onClick={() => setSelectedAircraft('YPB')}
               >
@@ -75,10 +75,10 @@ function App() {
               </Button>
               <Button
                 variant="ghost"
-                className={`rounded-none text-lg font-bold flex items-center space-x-2 transition-all px-6 py-3 ${
+                className={`text-lg font-bold flex items-center space-x-2 transition-all border-2 border-black px-6 py-3 ${
                   selectedAircraft === 'KXW'
-                    ? 'bg-white text-black'
-                    : 'bg-gray-100 text-black hover:bg-gray-200'
+                    ? 'bg-white text-black rounded-t-lg border-b-0 z-10'
+                    : 'bg-gray-100 text-black hover:bg-gray-200 rounded-lg'
                 }`}
                 onClick={() => setSelectedAircraft('KXW')}
               >
@@ -91,15 +91,17 @@ function App() {
       </div>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
-        {selectedAircraft === 'YPB' ? (
-          <AircraftTab aircraft={aircraft} settings={settings} />
-        ) : (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-muted-foreground mb-4">KXW C172SP</h2>
-            <p className="text-muted-foreground">Aircraft data coming soon...</p>
-          </div>
-        )}
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="border-2 border-black border-t-0 rounded-b-lg bg-white p-6 space-y-8">
+          {selectedAircraft === 'YPB' ? (
+            <AircraftTab aircraft={aircraft} settings={settings} />
+          ) : (
+            <div className="text-center py-12">
+              <h2 className="text-2xl font-bold text-muted-foreground mb-4">KXW C172SP</h2>
+              <p className="text-muted-foreground">Aircraft data coming soon...</p>
+            </div>
+          )}
+        </div>
       </main>
 
       {/* Footer */}
