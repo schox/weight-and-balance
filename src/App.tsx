@@ -58,34 +58,43 @@ function App() {
       {/* Main Content with Aircraft Tabs */}
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <Tabs defaultValue="YPB" className="w-full">
-          <div className="flex justify-center">
-            <TabsList variant="default" className="w-auto inline-flex">
-            <TabsTrigger
-              value="YPB"
-              variant="default"
-              className="text-base font-semibold px-6"
-            >
-              <Plane className="h-4 w-4 mr-2" />
-              YPB C182T
-              <Info className="h-4 w-4 ml-2" />
-            </TabsTrigger>
-            <TabsTrigger
-              value="KXW"
-              variant="default"
-              className="text-base font-semibold px-6"
-            >
-              <Plane className="h-4 w-4 mr-2" />
-              KXW C172SP
-              <Info className="h-4 w-4 ml-2" />
-            </TabsTrigger>
-            </TabsList>
+          <div className="relative">
+            {/* Container for tabs with lines */}
+            <div className="flex items-end justify-center">
+              {/* Left line */}
+              <div className="flex-1 h-[2px] bg-black mb-[2px]"></div>
+
+              <TabsList variant="default" className="w-auto inline-flex relative z-10">
+                <TabsTrigger
+                  value="YPB"
+                  variant="default"
+                  className="text-base font-semibold px-6"
+                >
+                  <Plane className="h-4 w-4 mr-2" />
+                  YPB C182T
+                  <Info className="h-4 w-4 ml-2" />
+                </TabsTrigger>
+                <TabsTrigger
+                  value="KXW"
+                  variant="default"
+                  className="text-base font-semibold px-6"
+                >
+                  <Plane className="h-4 w-4 mr-2" />
+                  KXW C172SP
+                  <Info className="h-4 w-4 ml-2" />
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Right line */}
+              <div className="flex-1 h-[2px] bg-black mb-[2px]"></div>
+            </div>
           </div>
 
-          <TabsContent value="YPB" variant="borderless" className="mt-0">
+          <TabsContent value="YPB" variant="borderless" className="mt-4">
             <AircraftTab aircraft={aircraft} settings={settings} />
           </TabsContent>
 
-          <TabsContent value="KXW" variant="borderless" className="mt-0">
+          <TabsContent value="KXW" variant="borderless" className="mt-4">
             <div className="text-center py-12">
               <h2 className="text-2xl font-bold text-muted-foreground mb-4">KXW C172SP</h2>
               <p className="text-muted-foreground">Aircraft data coming soon...</p>

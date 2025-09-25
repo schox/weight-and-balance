@@ -43,23 +43,19 @@ const tabsTriggerVariants = cva(
       variant: {
         default: [
           "relative",
-          "border-t-2 border-l-2 border-r-2 border-black",
+          "border-t-2 border-l-2 border-r-2 border-b-2 border-black",
           "rounded-t-lg",
           "bg-gray-100 text-black",
           "pb-2", // Consistent padding for all tabs
           "-mr-[2px]", // Overlap borders to prevent double thickness
           "last:mr-0", // Don't overlap the last tab
-          // Active state - extend content area only, not the tab itself
+          // Active state - remove bottom border
           "data-[state=active]:bg-white",
           "data-[state=active]:z-10",
-          "data-[state=active]:after:content-['']",
-          "data-[state=active]:after:absolute",
-          "data-[state=active]:after:bottom-[-2px]",
-          "data-[state=active]:after:left-0",
-          "data-[state=active]:after:right-0",
-          "data-[state=active]:after:h-[2px]",
-          "data-[state=active]:after:bg-white",
-          "data-[state=active]:after:z-10",
+          "data-[state=active]:border-b-0",
+          "data-[state=active]:pb-[calc(0.5rem+2px)]",
+          // Inactive state
+          "data-[state=inactive]:border-b-2",
         ],
         pills: [
           "rounded-md",
@@ -69,21 +65,18 @@ const tabsTriggerVariants = cva(
         ],
         colored: [
           "relative",
-          "border-t-2 border-l-2 border-r-2 border-black",
+          "border-t-2 border-l-2 border-r-2 border-b-2 border-black",
           "rounded-t-lg",
           "bg-gray-100 text-black",
           "pb-2", // Consistent padding for all tabs
           "-mr-[2px]", // Overlap borders to prevent double thickness
           "last:mr-0", // Don't overlap the last tab
-          // Active state - extend content area only, not the tab itself
+          // Active state - remove bottom border
           "data-[state=active]:z-10",
-          "data-[state=active]:after:content-['']",
-          "data-[state=active]:after:absolute",
-          "data-[state=active]:after:bottom-[-2px]",
-          "data-[state=active]:after:left-0",
-          "data-[state=active]:after:right-0",
-          "data-[state=active]:after:h-[2px]",
-          "data-[state=active]:after:z-10",
+          "data-[state=active]:border-b-0",
+          "data-[state=active]:pb-[calc(0.5rem+2px)]",
+          // Inactive state
+          "data-[state=inactive]:border-b-2",
         ],
         borderless: [
           "relative",
