@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import type { Aircraft, CalculationResult, Settings, LoadingState } from '@/types/aircraft';
 
@@ -37,8 +37,6 @@ const VisualizationTabs: React.FC<VisualizationTabsProps> = ({
   loadingState,
   className
 }) => {
-  const [activeTab, setActiveTab] = useState<VisualizationType>('envelope');
-
   const tabs: VisualizationTab[] = [
     {
       id: 'envelope',
@@ -54,50 +52,41 @@ const VisualizationTabs: React.FC<VisualizationTabsProps> = ({
     }
   ];
 
-  const activeTabData = tabs.find(tab => tab.id === activeTab);
-  const ActiveComponent = activeTabData?.component || CGEnvelopeChart;
-
   return (
     <Card className={cn("w-full border border-border shadow-sm", className)}>
       <CardHeader className="pb-3">
         <CardTitle>Weight & Balance Visualizations</CardTitle>
-
-        {/* Tab Navigation */}
-        <div className="flex flex-wrap gap-1 border-b pt-3">
-          {tabs.map((tab) => (
-            <Button
-              key={tab.id}
-              variant={activeTab === tab.id ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab(tab.id)}
-              className={cn(
-                "rounded-b-none",
-                activeTab === tab.id && "bg-primary text-primary-foreground"
-              )}
-            >
-              <span>{tab.label}</span>
-            </Button>
-          ))}
-        </div>
-
-        {/* Active tab description */}
-        {activeTabData && (
-          <div className="text-sm text-muted-foreground">
-            {activeTabData.description}
-          </div>
-        )}
       </CardHeader>
 
       <CardContent className="p-0">
-        {/* Render active visualization component */}
-        <div className="p-4 sm:p-6">
-          <ActiveComponent
-            aircraft={aircraft}
-            calculations={calculations}
-            settings={settings}
-            loadingState={loadingState}
-          />
-        </div>
+        <Tabs defaultValue="envelope" className="w-full">
+          <div className="px-4 sm:px-6 pb-3">
+            <TabsList className="w-full">
+              {tabs.map((tab) => (
+                <TabsTrigger key={tab.id} value={tab.id} className="flex-1">
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
+
+          {tabs.map((tab) => {
+            const TabComponent = tab.component;
+            return (
+              <TabsContent key={tab.id} value={tab.id} className="p-4 sm:p-6 mt-0">
+                <div className="text-sm text-muted-foreground mb-4">
+                  {tab.description}
+                </div>
+                <TabComponent
+                  aircraft={aircraft}
+                  calculations={calculations}
+                  settings={settings}
+                  loadingState={loadingState}
+                />
+              </TabsContent>
+            );
+          })}
+        </Tabs>
       </CardContent>
     </Card>
   );

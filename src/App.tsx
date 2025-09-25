@@ -58,32 +58,34 @@ function App() {
 
       {/* Aircraft Tabs */}
       <div className="bg-surface-container border-b">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center space-x-1">
-            <Button
-              variant={selectedAircraft === 'YPB' ? "default" : "ghost"}
-              className={`rounded-none rounded-t-lg text-lg font-bold flex items-center space-x-2 transition-all active:scale-95 ${
-                selectedAircraft === 'YPB'
-                  ? 'bg-white border-b-4 border-b-primary text-primary shadow-sm'
-                  : 'hover:bg-white/50 text-muted-foreground border-b-4 border-b-transparent'
-              }`}
-              onClick={() => setSelectedAircraft('YPB')}
-            >
-              <span>✈️ YPB C182T</span>
-              <Info className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={selectedAircraft === 'KXW' ? "default" : "ghost"}
-              className={`rounded-none rounded-t-lg text-lg font-bold flex items-center space-x-2 transition-all active:scale-95 ${
-                selectedAircraft === 'KXW'
-                  ? 'bg-white border-b-4 border-b-primary text-primary shadow-sm'
-                  : 'hover:bg-white/50 text-muted-foreground border-b-4 border-b-transparent'
-              }`}
-              onClick={() => setSelectedAircraft('KXW')}
-            >
-              <span>✈️ KXW C172SP</span>
-              <Info className="h-4 w-4" />
-            </Button>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex justify-center">
+            <div className="inline-flex border-2 border-black rounded-lg overflow-hidden">
+              <Button
+                variant="ghost"
+                className={`rounded-none text-lg font-bold flex items-center space-x-2 transition-all border-r-2 border-black px-6 py-3 ${
+                  selectedAircraft === 'YPB'
+                    ? 'bg-white text-black'
+                    : 'bg-gray-100 text-black hover:bg-gray-200'
+                }`}
+                onClick={() => setSelectedAircraft('YPB')}
+              >
+                <span>✈️ YPB C182T</span>
+                <Info className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                className={`rounded-none text-lg font-bold flex items-center space-x-2 transition-all px-6 py-3 ${
+                  selectedAircraft === 'KXW'
+                    ? 'bg-white text-black'
+                    : 'bg-gray-100 text-black hover:bg-gray-200'
+                }`}
+                onClick={() => setSelectedAircraft('KXW')}
+              >
+                <span>✈️ KXW C172SP</span>
+                <Info className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
