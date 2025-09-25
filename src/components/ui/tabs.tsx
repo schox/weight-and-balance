@@ -43,19 +43,21 @@ const tabsTriggerVariants = cva(
       variant: {
         default: [
           "relative",
-          "border-2 border-black",
+          "border-t-2 border-l-2 border-r-2 border-black",
           "rounded-t-lg",
           "bg-gray-100 text-black",
+          "-mr-[2px]", // Overlap borders to prevent double thickness
+          "last:mr-0", // Don't overlap the last tab
           // Active state - key changes for gap fix
           "data-[state=active]:bg-white",
           "data-[state=active]:z-10",
+          "data-[state=active]:border-b-2",
+          "data-[state=active]:border-b-white",
           // Fix gap by extending active tab downward
           "data-[state=active]:pb-[calc(0.5rem+2px)]",
           "data-[state=active]:mb-[-2px]",
-          "data-[state=active]:border-b-white",
-          // Inactive tabs
-          "data-[state=inactive]:border-r-0",
-          "last:data-[state=inactive]:border-r-2",
+          // Inactive tabs - no bottom border
+          "data-[state=inactive]:pb-[0.5rem]",
         ],
         pills: [
           "rounded-md",
@@ -65,18 +67,21 @@ const tabsTriggerVariants = cva(
         ],
         colored: [
           "relative",
-          "border-2 border-black",
+          "border-t-2 border-l-2 border-r-2 border-black",
           "rounded-t-lg",
           "bg-gray-100 text-black",
-          // Same gap fix for colored variant
+          "-mr-[2px]", // Overlap borders to prevent double thickness
+          "last:mr-0", // Don't overlap the last tab
+          // Active state - same gap fix for colored variant
           "data-[state=active]:text-white",
           "data-[state=active]:z-10",
+          "data-[state=active]:border-b-2",
+          "data-[state=active]:border-b-transparent",
+          // Fix gap by extending active tab downward
           "data-[state=active]:pb-[calc(0.5rem+2px)]",
           "data-[state=active]:mb-[-2px]",
-          "data-[state=active]:border-b-transparent",
-          // Inactive tabs
-          "data-[state=inactive]:border-r-0",
-          "last:data-[state=inactive]:border-r-2",
+          // Inactive tabs - no bottom border
+          "data-[state=inactive]:pb-[0.5rem]",
         ],
       },
     },
