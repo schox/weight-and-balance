@@ -77,8 +77,8 @@ const AircraftSideView: React.FC<AircraftSideViewProps> = ({
   return (
     <div className="flex flex-col h-full">
       {/* Aircraft Visualization - Everything in SVG with labels at top, aircraft centered */}
-      <div className="flex-1 bg-gradient-to-b from-sky-100 to-sky-50 rounded-lg p-2 sm:p-4 flex flex-col">
-        <svg viewBox="0 0 1480 840" className="w-full flex-1" preserveAspectRatio="xMidYMid meet">
+      <div className="bg-gradient-to-b from-sky-100 to-sky-50 rounded-lg mx-2 sm:mx-4 flex-1 p-2 sm:p-4 pb-6 sm:pb-8 flex flex-col">
+        <svg viewBox="0 0 1480 800" className="w-full flex-1" preserveAspectRatio="xMidYMid meet">
           {/* Labels at top - responsive sizing for small screens */}
           {/* Calculate label positions for even spacing */}
           {(() => {
@@ -88,7 +88,7 @@ const AircraftSideView: React.FC<AircraftSideViewProps> = ({
             const labelGap = 20; // Bigger gap between labels for better separation
             const labelWidth = (groupWidth - (labelGap * 3)) / 4; // Divide remaining space by 4
             const labelHeight = 140; // Much taller labels for bigger text
-            const labelY = 10;
+            const labelY = 135;
 
             return (
               <>
@@ -120,29 +120,29 @@ const AircraftSideView: React.FC<AircraftSideViewProps> = ({
                   {roundDownForDisplay(convertWeightForDisplay(categoryWeights.baggage, settings.weightUnits))} {settings.weightUnits}
                 </text>
 
-                {/* Airplane Image - KEEP ORIGINAL SIZE AND POSITION */}
-                <image href={airplaneImage} x="100" y="100" width="1280" height="640"/>
+                {/* Airplane Image - centered with equal top/bottom margins */}
+                <image href={airplaneImage} x="100" y="225" width="1280" height="640"/>
 
-                {/* Main Category Dots - KEEP ORIGINAL POSITIONS */}
+                {/* Main Category Dots - positioned with airplane */}
                 {/* Fuel Dot */}
-                <circle cx={categoryPositions.fuel.x * 12.8 + 100} cy="316" r="16" fill={categoryPositions.fuel.color}/>
+                <circle cx={categoryPositions.fuel.x * 12.8 + 100} cy="441" r="16" fill={categoryPositions.fuel.color}/>
 
                 {/* Front Row Dot */}
-                <circle cx={categoryPositions.frontRow.x * 12.8 + 100} cy="391" r="16" fill={categoryPositions.frontRow.color}/>
+                <circle cx={categoryPositions.frontRow.x * 12.8 + 100} cy="516" r="16" fill={categoryPositions.frontRow.color}/>
 
                 {/* Back Row Dot */}
-                <circle cx={categoryPositions.backRow.x * 12.8 + 100} cy="394" r="16" fill={categoryPositions.backRow.color}/>
+                <circle cx={categoryPositions.backRow.x * 12.8 + 100} cy="519" r="16" fill={categoryPositions.backRow.color}/>
 
                 {/* Combined Baggage Dot */}
-                <circle cx={categoryPositions.baggage.x * 12.8 + 100} cy="477" r="16" fill={categoryPositions.baggage.color}/>
+                <circle cx={categoryPositions.baggage.x * 12.8 + 100} cy="602" r="16" fill={categoryPositions.baggage.color}/>
 
-                {/* Connector Lines from Labels to Dots */}
+                {/* Connector Lines from Labels to Dots - updated Y positions */}
                 {/* Fuel Label to Fuel Dot */}
                 <line
                   x1={groupStartX + labelWidth/2}
                   y1={labelY + labelHeight}
                   x2={categoryPositions.fuel.x * 12.8 + 100}
-                  y2="316"
+                  y2="441"
                   stroke="#22c55e"
                   strokeWidth="6"
                 />
@@ -152,7 +152,7 @@ const AircraftSideView: React.FC<AircraftSideViewProps> = ({
                   x1={groupStartX + labelWidth + labelGap + labelWidth/2}
                   y1={labelY + labelHeight}
                   x2={categoryPositions.frontRow.x * 12.8 + 100}
-                  y2="391"
+                  y2="516"
                   stroke="#3b82f6"
                   strokeWidth="6"
                 />
@@ -162,7 +162,7 @@ const AircraftSideView: React.FC<AircraftSideViewProps> = ({
                   x1={groupStartX + (labelWidth + labelGap) * 2 + labelWidth/2}
                   y1={labelY + labelHeight}
                   x2={categoryPositions.backRow.x * 12.8 + 100}
-                  y2="394"
+                  y2="519"
                   stroke="#8b5cf6"
                   strokeWidth="6"
                 />
@@ -172,7 +172,7 @@ const AircraftSideView: React.FC<AircraftSideViewProps> = ({
                   x1={groupStartX + (labelWidth + labelGap) * 3 + labelWidth/2}
                   y1={labelY + labelHeight}
                   x2={categoryPositions.baggage.x * 12.8 + 100}
-                  y2="477"
+                  y2="602"
                   stroke="#f97316"
                   strokeWidth="6"
                 />
@@ -182,10 +182,10 @@ const AircraftSideView: React.FC<AircraftSideViewProps> = ({
         </svg>
       </div>
 
-      {/* Bottom tiles with proper borders */}
-      <div className="grid grid-cols-2 gap-2 sm:gap-4 p-2 sm:p-4 border-t-2 border-gray-200">
+      {/* Bottom tiles with proper borders - removed divider */}
+      <div className="grid grid-cols-2 gap-2 sm:gap-4 p-2 sm:p-4 pb-6 sm:pb-8">
         {/* Total Weight Tile */}
-        <div className="bg-white rounded-lg p-3 sm:p-4 border border-gray-300 shadow-sm">
+        <div className="bg-white rounded-lg p-3 sm:p-4 border border-gray-300 ">
           <div className="text-sm font-semibold text-gray-700 mb-1">Total Weight</div>
           <div className="text-xl sm:text-2xl font-bold">
             {roundDownForDisplay(convertWeightForDisplay(totalWeight, settings.weightUnits))} {settings.weightUnits}
@@ -196,7 +196,7 @@ const AircraftSideView: React.FC<AircraftSideViewProps> = ({
         </div>
 
         {/* Balance Status Tile */}
-        <div className="bg-white rounded-lg p-3 sm:p-4 border border-gray-300 shadow-sm">
+        <div className="bg-white rounded-lg p-3 sm:p-4 border border-gray-300 ">
           <div className="text-sm font-semibold text-gray-700 mb-1">Balance Status</div>
           <div className={cn(
             "text-xl sm:text-2xl font-bold",

@@ -55,7 +55,7 @@ const VisualizationTabs: React.FC<VisualizationTabsProps> = ({
   ];
 
   return (
-    <Card className={cn("relative bg-surface-container border border-border shadow-sm", className)}>
+    <Card className={cn("relative bg-surface-container border border-border ", className)}>
       <CardContent className="p-3 h-full flex flex-col">
         {/* Header */}
         <div className="flex items-center mb-2">
@@ -82,7 +82,7 @@ const VisualizationTabs: React.FC<VisualizationTabsProps> = ({
             const TabComponent = tab.component;
             return (
               <TabsContent key={tab.id} value={tab.id} variant="colored" className="p-2 mt-0">
-                <div className="text-sm text-muted-foreground mb-3">
+                <div className="text-sm text-muted-foreground mb-3 text-center">
                   {tab.description}
                 </div>
                 <TabComponent

@@ -25,7 +25,7 @@ function App() {
   return (
     <div className="min-h-screen bg-surface">
       {/* Header */}
-      <header className="bg-primary text-on-primary shadow-sm border-b">
+      <header className="bg-white text-black border-b">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
@@ -38,7 +38,7 @@ function App() {
             </div>
             <div className="flex items-center space-x-2">
               <InfoDialog>
-                <Button variant="ghost" size="icon" className="text-on-primary hover:bg-white/20">
+                <Button variant="ghost" size="icon" className="text-black hover:bg-gray-100">
                   <Info className="h-5 w-5" />
                 </Button>
               </InfoDialog>
@@ -46,7 +46,7 @@ function App() {
                 settings={settings}
                 onSettingsChange={handleSettingsChange}
               >
-                <Button variant="ghost" size="icon" className="text-on-primary hover:bg-white/20">
+                <Button variant="ghost" size="icon" className="text-black hover:bg-gray-100">
                   <Settings className="h-5 w-5" />
                 </Button>
               </SettingsDialog>
@@ -59,34 +59,37 @@ function App() {
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <Tabs defaultValue="YPB" className="w-full">
           <div className="relative">
-            {/* Container for tabs with lines */}
+            {/* Container for tabs with lines using flex distribution */}
             <div className="flex items-end">
-              {/* Left line - extends from left edge to tabs */}
-              <div className="flex-1 h-[2px] bg-black self-end mb-0"></div>
+              {/* Left spacer with bottom border - flex: 1 */}
+              <div className="flex-1 border-b border-black pb-2"></div>
 
-              <TabsList variant="default" className="inline-flex relative z-10 gap-0">
-                <TabsTrigger
-                  value="YPB"
-                  variant="default"
-                  className="text-base font-semibold px-6"
-                >
-                  <Plane className="h-4 w-4 mr-2" />
-                  YPB C182T
-                  <Info className="h-4 w-4 ml-2" />
-                </TabsTrigger>
-                <TabsTrigger
-                  value="KXW"
-                  variant="default"
-                  className="text-base font-semibold px-6"
-                >
-                  <Plane className="h-4 w-4 mr-2" />
-                  KXW C172SP
-                  <Info className="h-4 w-4 ml-2" />
-                </TabsTrigger>
-              </TabsList>
+              {/* Tabs container - flex: 18 (9+9) */}
+              <div className="flex-[18]">
+                <TabsList variant="default" className="inline-flex gap-0 w-full">
+                  <TabsTrigger
+                    value="YPB"
+                    variant="default"
+                    className="text-base font-semibold px-6 flex-1"
+                  >
+                    <Plane className="h-4 w-4 mr-2" />
+                    YPB C182T
+                    <Info className="h-4 w-4 ml-2" />
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="KXW"
+                    variant="default"
+                    className="text-base font-semibold px-6 flex-1"
+                  >
+                    <Plane className="h-4 w-4 mr-2" />
+                    KXW C172SP
+                    <Info className="h-4 w-4 ml-2" />
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
-              {/* Right line - extends from tabs to right edge */}
-              <div className="flex-1 h-[2px] bg-black self-end mb-0"></div>
+              {/* Right spacer with bottom border - flex: 1 */}
+              <div className="flex-1 border-b border-black pb-2"></div>
             </div>
           </div>
 

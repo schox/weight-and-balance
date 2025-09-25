@@ -43,48 +43,49 @@ const tabsTriggerVariants = cva(
       variant: {
         default: [
           "relative",
-          "border-t-2 border-l-2 border-r-2 border-black",
+          "border-t border-l border-r border-black",
           "rounded-t-lg",
-          "bg-gray-100 text-black",
           "pb-2", // Consistent padding for all tabs
-          "-mr-[2px]", // Overlap borders to prevent double thickness
+          "-mr-[1px]", // Overlap borders to prevent double thickness
           "last:mr-0", // Don't overlap the last tab
-          // Active state - white background, no bottom border
-          "data-[state=active]:bg-white",
+          // Active state - matches main app background
+          "data-[state=active]:bg-background",
+          "data-[state=active]:text-foreground",
           "data-[state=active]:z-10",
           "data-[state=active]:after:content-['']",
           "data-[state=active]:after:absolute",
-          "data-[state=active]:after:bottom-[-2px]",
+          "data-[state=active]:after:bottom-[-1px]",
           "data-[state=active]:after:left-0",
           "data-[state=active]:after:right-0",
-          "data-[state=active]:after:h-[2px]",
-          "data-[state=active]:after:bg-white",
+          "data-[state=active]:after:h-[1px]",
+          "data-[state=active]:after:bg-background",
           "data-[state=active]:after:z-10",
-          // Inactive state - no bottom border
+          // Inactive state - visually distinct and subdued
+          "data-[state=inactive]:bg-gray-300",
+          "data-[state=inactive]:text-gray-600",
           "data-[state=inactive]:pb-[0.5rem]",
         ],
         pills: [
           "rounded-md",
           "data-[state=active]:bg-background",
-          "data-[state=active]:shadow-sm",
           "data-[state=inactive]:hover:bg-muted/50",
         ],
         colored: [
           "relative",
-          "border-t-2 border-l-2 border-r-2 border-black",
+          "border-t border-l border-r border-black",
           "rounded-t-lg",
           "bg-gray-100 text-black",
           "pb-2", // Consistent padding for all tabs
-          "-mr-[2px]", // Overlap borders to prevent double thickness
+          "-mr-[1px]", // Overlap borders to prevent double thickness
           "last:mr-0", // Don't overlap the last tab
           // Active state - colored background with extension
           "data-[state=active]:z-10",
           "data-[state=active]:after:content-['']",
           "data-[state=active]:after:absolute",
-          "data-[state=active]:after:bottom-[-2px]",
+          "data-[state=active]:after:bottom-[-1px]",
           "data-[state=active]:after:left-0",
           "data-[state=active]:after:right-0",
-          "data-[state=active]:after:h-[2px]",
+          "data-[state=active]:after:h-[1px]",
           "data-[state=active]:after:z-10",
           // Inactive state - no bottom border
           "data-[state=inactive]:pb-[0.5rem]",
@@ -162,9 +163,9 @@ const tabsContentVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-2 border-black border-t-2 rounded-b-lg bg-white pt-0",
+        default: "border border-black border-t rounded-b-lg bg-white pt-0",
         pills: "mt-2",
-        colored: "border-2 border-black border-t-2 rounded-b-lg bg-white pt-0",
+        colored: "border border-black border-t rounded-b-lg bg-white pt-0",
         borderless: "pt-0", // New variant without borders
       },
     },

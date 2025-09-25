@@ -51,7 +51,7 @@ const WeightCGTiles: React.FC<WeightCGTilesProps> = ({
   return (
     <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6", className)}>
       {/* Weight Data Tile */}
-      <Card className="bg-surface-container border border-border shadow-sm">
+      <Card className="bg-surface-container border border-border ">
         <CardContent className="p-4 sm:p-6">
           <h3 className="text-lg font-semibold mb-4 text-on-surface-container">Weight Data</h3>
           <div className="grid grid-cols-2 gap-4">
@@ -107,10 +107,10 @@ const WeightCGTiles: React.FC<WeightCGTilesProps> = ({
                 {mtowPercentage.toFixed(1)}% of MTOW
               </span>
             </div>
-            <div className="w-full bg-muted rounded-full h-3">
+            <div className="w-full bg-gray-200 border border-gray-300 rounded-full h-3">
               <div
                 className={cn(
-                  "h-3 rounded-full transition-all duration-300",
+                  "h-full rounded-full transition-all duration-300",
                   mtowPercentage > 100 ? "bg-danger" :
                   mtowPercentage > 90 ? "bg-warning" :
                   mtowPercentage > 75 ? "bg-info" : "bg-success"
@@ -123,7 +123,7 @@ const WeightCGTiles: React.FC<WeightCGTilesProps> = ({
       </Card>
 
       {/* CG Data Tile */}
-      <Card className="bg-surface-container border border-border shadow-sm">
+      <Card className="bg-surface-container border border-border ">
         <CardContent className="p-4 sm:p-6">
           <h3 className="text-lg font-semibold mb-4 text-on-surface-container">Centre of Gravity</h3>
           <div className="grid grid-cols-2 gap-4">
@@ -178,7 +178,7 @@ const WeightCGTiles: React.FC<WeightCGTilesProps> = ({
 
       {/* Errors and Warnings - Span across both tiles if present */}
       {(errors.length > 0 || warnings.length > 0) && (
-        <Card className="col-span-1 md:col-span-2 bg-surface-container border border-border shadow-sm">
+        <Card className="col-span-1 md:col-span-2 bg-surface-container border border-border ">
           <CardContent className="p-4">
             <div className="space-y-2">
               {errors.map((error, index) => (

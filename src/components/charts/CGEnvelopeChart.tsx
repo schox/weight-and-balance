@@ -106,19 +106,20 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
   }
 
   return (
-    <Card className={cn("w-full border border-border shadow-sm", className)}>
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center justify-between text-sm sm:text-base">
-          <span>Centre of Gravity Envelope</span>
-          <div className={cn(
-            "text-sm font-medium px-2 py-1 rounded",
-            withinEnvelope ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-          )}>
-            {withinEnvelope ? "WITHIN LIMITS" : "OUT OF LIMITS"}
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-4 sm:p-6">
+    <div className={cn("w-full", className)}>
+      {/* Header content above graph */}
+      <div className="flex items-center justify-between text-sm sm:text-base mb-4">
+        <span className="font-semibold">Centre of Gravity Envelope</span>
+        <div className={cn(
+          "text-sm font-medium px-2 py-1 rounded",
+          withinEnvelope ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+        )}>
+          {withinEnvelope ? "WITHIN LIMITS" : "OUT OF LIMITS"}
+        </div>
+      </div>
+
+      {/* Graph content */}
+      <div className="mb-4">
         <div className="w-full">
           <svg
             viewBox={`0 0 ${svgWidth} ${svgHeight}`}
@@ -180,6 +181,50 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
                 strokeWidth="2"
               />
 
+              {/* Top Limit Line (connecting highest weight points) */}
+              {(() => {
+                const maxWeight = Math.max(...[...forwardLimitPoints, ...aftLimitPoints].map(p => p.weight));
+                const topPoints = [...forwardLimitPoints, ...aftLimitPoints]
+                  .filter(p => Math.abs(p.weight - maxWeight) < 1) // Points at max weight
+                  .sort((a, b) => a.cgPosition - b.cgPosition);
+
+                if (topPoints.length >= 2) {
+                  return (
+                    <line
+                      x1={xScale(topPoints[0].cgPosition)}
+                      y1={yScale(topPoints[0].weight)}
+                      x2={xScale(topPoints[topPoints.length - 1].cgPosition)}
+                      y2={yScale(topPoints[topPoints.length - 1].weight)}
+                      stroke="#dc2626"
+                      strokeWidth="2"
+                    />
+                  );
+                }
+                return null;
+              })()}
+
+              {/* Bottom Limit Line (connecting lowest weight points) */}
+              {(() => {
+                const minWeight = Math.min(...[...forwardLimitPoints, ...aftLimitPoints].map(p => p.weight));
+                const bottomPoints = [...forwardLimitPoints, ...aftLimitPoints]
+                  .filter(p => Math.abs(p.weight - minWeight) < 1) // Points at min weight
+                  .sort((a, b) => a.cgPosition - b.cgPosition);
+
+                if (bottomPoints.length >= 2) {
+                  return (
+                    <line
+                      x1={xScale(bottomPoints[0].cgPosition)}
+                      y1={yScale(bottomPoints[0].weight)}
+                      x2={xScale(bottomPoints[bottomPoints.length - 1].cgPosition)}
+                      y2={yScale(bottomPoints[bottomPoints.length - 1].weight)}
+                      stroke="#dc2626"
+                      strokeWidth="2"
+                    />
+                  );
+                }
+                return null;
+              })()}
+
               {/* Darker shaded area for MTOW/MLW at top */}
               {(() => {
                 const mlwWeight = convertWeightForDisplay(2950, settings.weightUnits);  // MLW
@@ -206,27 +251,6 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
                 );
               })()}
 
-              {/* Centre of gravity limits text in middle of envelope */}
-              {(() => {
-                // Calculate center of envelope
-                const centerCG = (Math.min(...allCGs) + Math.max(...allCGs)) / 2;
-                const centerWeight = (minWeight + maxWeight) / 2;
-                const centerX = xScale(centerCG);
-                const centerY = yScale(centerWeight);
-
-                return (
-                  <text
-                    x={centerX}
-                    y={centerY}
-                    textAnchor="middle"
-                    fontSize="16"
-                    fontWeight="bold"
-                    fill="#374151"
-                  >
-                    Centre of gravity limits
-                  </text>
-                );
-              })()}
 
               {/* Current Position Dot */}
               <circle
@@ -243,7 +267,7 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
                 x={currentX}
                 y={currentY - 15}
                 textAnchor="middle"
-                fontSize="12"
+                fontSize="14"
                 fontWeight="bold"
                 fill={withinEnvelope ? "#16a34a" : "#dc2626"}
               >
@@ -299,38 +323,38 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
             </g>
           </svg>
         </div>
+      </div>
 
-        {/* Legend and Current Position Info */}
-        <div className="mt-4 space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center">
-                <div className="w-4 h-4 border-2 border-red-500 bg-red-500/10 mr-2"></div>
-                <span>CG Envelope</span>
-              </div>
-              <div className="flex items-center">
-                <div className={cn(
-                  "w-3 h-3 rounded-full mr-2",
-                  withinEnvelope ? "bg-green-500" : "bg-red-500"
-                )}></div>
-                <span>Current Position</span>
-              </div>
+      {/* Content below graph */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-center text-sm">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center">
+              <div className="w-4 h-4 border-2 border-red-500 bg-red-500/10 mr-2"></div>
+              <span>CG Envelope</span>
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 p-3 bg-muted rounded-lg text-sm">
-            <div>
-              <span className="font-medium">Current Weight:</span>
-              <span className="ml-2">{roundDownForDisplay(currentPosition.weight)} {settings.weightUnits}</span>
-            </div>
-            <div>
-              <span className="font-medium">Current CG:</span>
-              <span className="ml-2">{currentPosition.cgPosition.toFixed(1)} {getCGUnit()} from datum</span>
+            <div className="flex items-center">
+              <div className={cn(
+                "w-3 h-3 rounded-full mr-2",
+                withinEnvelope ? "bg-green-500" : "bg-red-500"
+              )}></div>
+              <span>Current Position</span>
             </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+
+        <div className="grid grid-cols-2 gap-4 p-3 bg-muted rounded-lg text-sm">
+          <div>
+            <span className="font-medium">Current Weight:</span>
+            <span className="ml-2">{roundDownForDisplay(currentPosition.weight)} {settings.weightUnits}</span>
+          </div>
+          <div>
+            <span className="font-medium">Current CG:</span>
+            <span className="ml-2">{currentPosition.cgPosition.toFixed(1)} {getCGUnit()} from datum</span>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

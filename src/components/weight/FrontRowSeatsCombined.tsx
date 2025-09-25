@@ -85,7 +85,7 @@ const FrontRowSeatsCombined: React.FC<FrontRowSeatsCombinedProps> = ({
   };
 
   return (
-    <Card className={cn("relative bg-surface-container border border-border shadow-sm", className)}>
+    <Card className={cn("relative bg-surface-container border border-border", className)}>
       <CardContent className="p-3 h-full flex flex-col">
         {/* Header */}
         <div className="flex items-center mb-2">

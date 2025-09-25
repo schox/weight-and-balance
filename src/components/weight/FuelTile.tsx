@@ -101,7 +101,7 @@ const FuelTile: React.FC<FuelTileProps> = ({
 
   return (
     <Card className={cn(
-      "transition-all duration-200 hover:shadow-md bg-surface-container",
+      "transition-all duration-200  bg-surface-container",
       isSynced && "ring-2 ring-info/50",
       bothTanksEmpty && "border-warning bg-yellow-50",
       className

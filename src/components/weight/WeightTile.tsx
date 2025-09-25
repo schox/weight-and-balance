@@ -98,7 +98,7 @@ const WeightTile: React.FC<WeightTileProps> = ({
 
   return (
     <Card className={cn(
-      "transition-all duration-200 hover:shadow-md bg-surface-container",
+      "transition-all duration-200  bg-surface-container",
       isOverLimit && "border-danger bg-red-50",
       isApproachingLimit && !isOverLimit && "border-warning bg-yellow-50",
       isRequired && value === 0 && "border-info bg-blue-50",
