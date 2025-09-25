@@ -1,7 +1,9 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { theme } from '@/lib/theme';
 import type { Aircraft, CalculationResult, Settings, LoadingState } from '@/types/aircraft';
 
 // Import visualization components
@@ -53,28 +55,34 @@ const VisualizationTabs: React.FC<VisualizationTabsProps> = ({
   ];
 
   return (
-    <Card className={cn("w-full border border-border shadow-sm", className)}>
-      <CardHeader className="pb-3">
-        <CardTitle>Weight & Balance Visualizations</CardTitle>
-      </CardHeader>
+    <Card className={cn("relative bg-surface-container border border-border shadow-sm", className)}>
+      <CardContent className="p-3 h-full flex flex-col">
+        {/* Header */}
+        <div className="flex items-center mb-2">
+          <BarChart3 className="h-5 w-5 text-blue-600 mr-2" />
+          <span className="font-semibold">Graphical Views</span>
+        </div>
 
-      <CardContent className="p-0">
-        <Tabs defaultValue="envelope" className="w-full">
-          <div className="px-4 sm:px-6 pb-3">
-            <TabsList className="w-full">
-              {tabs.map((tab) => (
-                <TabsTrigger key={tab.id} value={tab.id} className="flex-1">
-                  {tab.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </div>
+        {/* Tabs */}
+        <Tabs defaultValue="envelope" className="w-full flex-1">
+          <TabsList variant="default" className="grid w-full grid-cols-2">
+            {tabs.map((tab) => (
+              <TabsTrigger
+                key={tab.id}
+                value={tab.id}
+                variant="colored"
+                activeColor={theme.sections.pilot.DEFAULT}
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
 
           {tabs.map((tab) => {
             const TabComponent = tab.component;
             return (
-              <TabsContent key={tab.id} value={tab.id} className="p-4 sm:p-6 mt-0">
-                <div className="text-sm text-muted-foreground mb-4">
+              <TabsContent key={tab.id} value={tab.id} variant="colored" className="p-2 mt-0">
+                <div className="text-sm text-muted-foreground mb-3">
                   {tab.description}
                 </div>
                 <TabComponent
