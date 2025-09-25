@@ -43,21 +43,25 @@ const tabsTriggerVariants = cva(
       variant: {
         default: [
           "relative",
-          "border-t-2 border-l-2 border-r-2 border-b-2 border-black",
+          "border-t-2 border-l-2 border-r-2 border-black",
           "rounded-t-lg",
+          "bg-gray-100 text-black",
           "pb-2", // Consistent padding for all tabs
           "-mr-[2px]", // Overlap borders to prevent double thickness
           "last:mr-0", // Don't overlap the last tab
-          // Active state - matches page background
-          "data-[state=active]:bg-background",
-          "data-[state=active]:text-foreground",
+          // Active state - white background, no bottom border
+          "data-[state=active]:bg-white",
           "data-[state=active]:z-10",
-          "data-[state=active]:border-b-0",
-          "data-[state=active]:pb-[calc(0.5rem+2px)]",
-          // Inactive state - clearly different shading
-          "data-[state=inactive]:bg-muted",
-          "data-[state=inactive]:text-muted-foreground",
-          "data-[state=inactive]:border-b-2",
+          "data-[state=active]:after:content-['']",
+          "data-[state=active]:after:absolute",
+          "data-[state=active]:after:bottom-[-2px]",
+          "data-[state=active]:after:left-0",
+          "data-[state=active]:after:right-0",
+          "data-[state=active]:after:h-[2px]",
+          "data-[state=active]:after:bg-white",
+          "data-[state=active]:after:z-10",
+          // Inactive state - no bottom border
+          "data-[state=inactive]:pb-[0.5rem]",
         ],
         pills: [
           "rounded-md",
@@ -67,19 +71,23 @@ const tabsTriggerVariants = cva(
         ],
         colored: [
           "relative",
-          "border-t-2 border-l-2 border-r-2 border-b-2 border-black",
+          "border-t-2 border-l-2 border-r-2 border-black",
           "rounded-t-lg",
+          "bg-gray-100 text-black",
           "pb-2", // Consistent padding for all tabs
           "-mr-[2px]", // Overlap borders to prevent double thickness
           "last:mr-0", // Don't overlap the last tab
-          // Active state - colored background, no bottom border
+          // Active state - colored background with extension
           "data-[state=active]:z-10",
-          "data-[state=active]:border-b-0",
-          "data-[state=active]:pb-[calc(0.5rem+2px)]",
-          // Inactive state - muted background
-          "data-[state=inactive]:bg-muted",
-          "data-[state=inactive]:text-muted-foreground",
-          "data-[state=inactive]:border-b-2",
+          "data-[state=active]:after:content-['']",
+          "data-[state=active]:after:absolute",
+          "data-[state=active]:after:bottom-[-2px]",
+          "data-[state=active]:after:left-0",
+          "data-[state=active]:after:right-0",
+          "data-[state=active]:after:h-[2px]",
+          "data-[state=active]:after:z-10",
+          // Inactive state - no bottom border
+          "data-[state=inactive]:pb-[0.5rem]",
         ],
         borderless: [
           "relative",

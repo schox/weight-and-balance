@@ -62,7 +62,7 @@ function App() {
             {/* Container for tabs with lines */}
             <div className="flex items-end">
               {/* Left line - extends from left edge to tabs */}
-              <div className="flex-1 h-[2px] bg-black"></div>
+              <div className="flex-1 h-[2px] bg-black self-end mb-0"></div>
 
               <TabsList variant="default" className="inline-flex relative z-10 gap-0">
                 <TabsTrigger
@@ -86,7 +86,7 @@ function App() {
               </TabsList>
 
               {/* Right line - extends from tabs to right edge */}
-              <div className="flex-1 h-[2px] bg-black"></div>
+              <div className="flex-1 h-[2px] bg-black self-end mb-0"></div>
             </div>
           </div>
 
