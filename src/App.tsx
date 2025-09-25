@@ -65,7 +65,7 @@ function App() {
                 variant="ghost"
                 className={`text-lg font-bold flex items-center space-x-2 transition-all border-2 border-black px-6 py-3 rounded-t-lg mr-2 bg-gray-100 text-black hover:bg-gray-200 ${
                   selectedAircraft === 'YPB'
-                    ? 'bg-white border-b-white relative z-10 -mb-0.5'
+                    ? 'bg-white border-b-0 relative z-10 mb-[-2px]'
                     : ''
                 }`}
                 onClick={() => setSelectedAircraft('YPB')}
@@ -77,7 +77,7 @@ function App() {
                 variant="ghost"
                 className={`text-lg font-bold flex items-center space-x-2 transition-all border-2 border-black px-6 py-3 rounded-t-lg bg-gray-100 text-black hover:bg-gray-200 ${
                   selectedAircraft === 'KXW'
-                    ? 'bg-white border-b-white relative z-10 -mb-0.5'
+                    ? 'bg-white border-b-0 relative z-10 mb-[-2px]'
                     : ''
                 }`}
                 onClick={() => setSelectedAircraft('KXW')}
