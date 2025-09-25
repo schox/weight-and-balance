@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { theme } from '@/lib/theme';
 import { Plus, Minus, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { convertWeightForDisplay, convertWeightToLbs, roundDownForDisplay } from '@/utils/conversions';
@@ -74,7 +75,7 @@ const BaggageTilesCombined: React.FC<BaggageTilesCombinedProps> = ({
   };
 
   const renderBaggageTab = (area: 'A' | 'B' | 'C') => (
-    <TabsContent value={area.toLowerCase()} className="space-y-3">
+    <TabsContent value={area.toLowerCase()} variant="colored" className="space-y-3 p-3">
       <div className="flex items-center justify-between">
         <Button
           variant="outline"
@@ -127,14 +128,26 @@ const BaggageTilesCombined: React.FC<BaggageTilesCombinedProps> = ({
           </div>
 
           <Tabs defaultValue="a" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="a" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+            <TabsList variant="default" className="grid w-full grid-cols-3">
+              <TabsTrigger
+                value="a"
+                variant="colored"
+                activeColor={theme.sections.baggage.DEFAULT}
+              >
                 Area A
               </TabsTrigger>
-              <TabsTrigger value="b" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+              <TabsTrigger
+                value="b"
+                variant="colored"
+                activeColor={theme.sections.baggage.DEFAULT}
+              >
                 Area B
               </TabsTrigger>
-              <TabsTrigger value="c" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+              <TabsTrigger
+                value="c"
+                variant="colored"
+                activeColor={theme.sections.baggage.DEFAULT}
+              >
                 Area C
               </TabsTrigger>
             </TabsList>

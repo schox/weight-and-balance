@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Settings, Info } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Settings, Info, Plane } from "lucide-react";
 import { vhYpbAircraft } from '@/data/aircraft';
+import { theme } from '@/lib/theme';
 import type { Settings as SettingsType } from '@/types/aircraft';
 import AircraftTab from '@/components/aircraft/AircraftTab';
 import SettingsDialog from '@/components/dialogs/SettingsDialog';
@@ -13,8 +15,6 @@ function App() {
     weightUnits: 'kg',
     distanceUnits: 'inches'
   });
-
-  const [selectedAircraft, setSelectedAircraft] = useState<'YPB' | 'KXW'>('YPB');
 
   const aircraft = vhYpbAircraft; // In the future, this would be selected based on selectedAircraft
 
@@ -56,52 +56,43 @@ function App() {
         </div>
       </header>
 
-      {/* Aircraft Tabs */}
-      <div className="bg-surface-container">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      {/* Main Content with Aircraft Tabs */}
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <Tabs defaultValue="YPB" className="w-full">
           <div className="flex justify-center">
-            <div className="inline-flex">
-              <Button
-                variant="ghost"
-                className={`text-lg font-bold flex items-center space-x-2 transition-all border-2 border-black px-6 py-3 rounded-t-lg bg-gray-100 text-black hover:bg-gray-200 ${
-                  selectedAircraft === 'YPB'
-                    ? 'bg-white border-b-0 relative z-10 border-r-2'
-                    : 'border-r-0'
-                }`}
-                onClick={() => setSelectedAircraft('YPB')}
+            <TabsList variant="default" className="w-auto inline-flex">
+              <TabsTrigger
+                value="YPB"
+                variant="default"
+                className="text-base font-semibold px-6"
               >
-                <span>✈️ YPB C182T</span>
-                <Info className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                className={`text-lg font-bold flex items-center space-x-2 transition-all border-2 border-black px-6 py-3 rounded-t-lg bg-gray-100 text-black hover:bg-gray-200 border-r-2 ${
-                  selectedAircraft === 'KXW'
-                    ? 'bg-white border-b-0 relative z-10'
-                    : ''
-                }`}
-                onClick={() => setSelectedAircraft('KXW')}
+                <Plane className="h-4 w-4 mr-2" />
+                YPB C182T
+                <Info className="h-4 w-4 ml-2" />
+              </TabsTrigger>
+              <TabsTrigger
+                value="KXW"
+                variant="default"
+                className="text-base font-semibold px-6"
               >
-                <span>✈️ KXW C172SP</span>
-                <Info className="h-4 w-4" />
-              </Button>
-            </div>
+                <Plane className="h-4 w-4 mr-2" />
+                KXW C172SP
+                <Info className="h-4 w-4 ml-2" />
+              </TabsTrigger>
+            </TabsList>
           </div>
-        </div>
-      </div>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="border-2 border-black border-t-0 rounded-b-lg bg-white p-6 space-y-8">
-          {selectedAircraft === 'YPB' ? (
+          <TabsContent value="YPB" variant="default" className="mt-0 p-6">
             <AircraftTab aircraft={aircraft} settings={settings} />
-          ) : (
+          </TabsContent>
+
+          <TabsContent value="KXW" variant="default" className="mt-0 p-6">
             <div className="text-center py-12">
               <h2 className="text-2xl font-bold text-muted-foreground mb-4">KXW C172SP</h2>
               <p className="text-muted-foreground">Aircraft data coming soon...</p>
             </div>
-          )}
-        </div>
+          </TabsContent>
+        </Tabs>
       </main>
 
       {/* Footer */}

@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { theme } from '@/lib/theme';
 import { Plus, Minus, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { convertWeightForDisplay, convertWeightToLbs, roundDownForDisplay } from '@/utils/conversions';
@@ -118,20 +119,28 @@ const FrontRowSeatsCombined: React.FC<FrontRowSeatsCombinedProps> = ({
           </div>
 
           <Tabs defaultValue="pilot" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="pilot" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+            <TabsList variant="default" className="grid w-full grid-cols-2">
+              <TabsTrigger
+                value="pilot"
+                variant="colored"
+                activeColor={theme.sections.pilot.DEFAULT}
+              >
                 Pilot
               </TabsTrigger>
-              <TabsTrigger value="frontPassenger" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+              <TabsTrigger
+                value="frontPassenger"
+                variant="colored"
+                activeColor={theme.sections.pilot.DEFAULT}
+              >
                 Front Passenger
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="pilot" className="space-y-3">
+            <TabsContent value="pilot" variant="colored" className="space-y-3 p-3">
               {renderSeatControls('pilot')}
             </TabsContent>
 
-            <TabsContent value="frontPassenger" className="space-y-3">
+            <TabsContent value="frontPassenger" variant="colored" className="space-y-3 p-3">
               {renderSeatControls('frontPassenger')}
             </TabsContent>
           </Tabs>

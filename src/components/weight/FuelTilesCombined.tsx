@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { theme } from '@/lib/theme';
 import { Plus, Minus, Fuel } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { convertFuelForDisplay, convertFuelToWeight, roundDownForDisplay } from '@/utils/conversions';
@@ -66,16 +67,24 @@ const FuelTilesCombined: React.FC<FuelTilesCombinedProps> = ({
           </div>
 
           <Tabs defaultValue="left" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="left" className="data-[state=active]:bg-green-500 data-[state=active]:text-white">
+            <TabsList variant="default" className="grid w-full grid-cols-2">
+              <TabsTrigger
+                value="left"
+                variant="colored"
+                activeColor={theme.sections.fuel.DEFAULT}
+              >
                 Left Wing
               </TabsTrigger>
-              <TabsTrigger value="right" className="data-[state=active]:bg-green-500 data-[state=active]:text-white">
+              <TabsTrigger
+                value="right"
+                variant="colored"
+                activeColor={theme.sections.fuel.DEFAULT}
+              >
                 Right Wing
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="left" className="space-y-3">
+            <TabsContent value="left" variant="colored" className="space-y-3 p-3">
               <div className="flex items-center justify-between">
                 <Button
                   variant="outline"
@@ -116,7 +125,7 @@ const FuelTilesCombined: React.FC<FuelTilesCombinedProps> = ({
               </div>
             </TabsContent>
 
-            <TabsContent value="right" className="space-y-3">
+            <TabsContent value="right" variant="colored" className="space-y-3 p-3">
               <div className="flex items-center justify-between">
                 <Button
                   variant="outline"

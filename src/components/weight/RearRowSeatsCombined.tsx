@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { theme } from '@/lib/theme';
 import { Plus, Minus, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { convertWeightForDisplay, convertWeightToLbs, roundDownForDisplay } from '@/utils/conversions';
@@ -116,20 +117,28 @@ const RearRowSeatsCombined: React.FC<RearRowSeatsCombinedProps> = ({
           </div>
 
           <Tabs defaultValue="rearPassenger1" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="rearPassenger1" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white">
+            <TabsList variant="default" className="grid w-full grid-cols-2">
+              <TabsTrigger
+                value="rearPassenger1"
+                variant="colored"
+                activeColor={theme.sections.passengers.DEFAULT}
+              >
                 Rear Passenger 1
               </TabsTrigger>
-              <TabsTrigger value="rearPassenger2" className="data-[state=active]:bg-purple-500 data-[state=active]:text-white">
+              <TabsTrigger
+                value="rearPassenger2"
+                variant="colored"
+                activeColor={theme.sections.passengers.DEFAULT}
+              >
                 Rear Passenger 2
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="rearPassenger1">
+            <TabsContent value="rearPassenger1" variant="colored" className="space-y-3 p-3">
               {renderSeatControls('rearPassenger1')}
             </TabsContent>
 
-            <TabsContent value="rearPassenger2">
+            <TabsContent value="rearPassenger2" variant="colored" className="space-y-3 p-3">
               {renderSeatControls('rearPassenger2')}
             </TabsContent>
           </Tabs>
