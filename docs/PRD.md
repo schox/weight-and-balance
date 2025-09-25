@@ -128,6 +128,23 @@ Each weight station displayed as an interactive card/tile with:
   - Color intensity showing weight concentration
   - Real-time updates as loading changes
 
+**Tabular Data View (Calculation Breakdown)**
+- **Detailed Calculation Table**:
+  - Item-by-item breakdown of all loading stations
+  - Columns: Item, Weight, Arm (inches/mm from datum), Moment
+  - Rows for: Pilot, Front Passenger, Rear Passengers, Baggage Areas, Fuel Tanks
+  - Total summations row with calculated CG position
+  - Weight unit conversions displayed where applicable
+- **Professional Format**:
+  - Clean table styling with alternating row colors
+  - Bold totals row for emphasis
+  - Export-ready formatting for official documentation
+  - Real-time updates as inputs change
+- **Educational Value**:
+  - Shows the mathematical foundation behind the calculations
+  - Helps users understand moment calculations
+  - Useful for training and verification purposes
+
 ### 2.6 Flight Animation
 
 **Animation Concepts:**
