@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Settings, Info, Plane } from "lucide-react";
 import { vhYpbAircraft } from '@/data/aircraft';
-import { theme } from '@/lib/theme';
 import type { Settings as SettingsType } from '@/types/aircraft';
 import AircraftTab from '@/components/aircraft/AircraftTab';
 import SettingsDialog from '@/components/dialogs/SettingsDialog';
