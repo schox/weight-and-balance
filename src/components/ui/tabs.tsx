@@ -85,6 +85,22 @@ const tabsTriggerVariants = cva(
           "data-[state=active]:after:h-[2px]",
           "data-[state=active]:after:z-10",
         ],
+        borderless: [
+          "relative",
+          "rounded-lg",
+          "text-muted-foreground",
+          "hover:text-foreground",
+          "data-[state=active]:text-foreground",
+          "data-[state=active]:bg-transparent",
+          // Underline for active state
+          "data-[state=active]:after:content-['']",
+          "data-[state=active]:after:absolute",
+          "data-[state=active]:after:bottom-0",
+          "data-[state=active]:after:left-0",
+          "data-[state=active]:after:right-0",
+          "data-[state=active]:after:h-[2px]",
+          "data-[state=active]:after:bg-primary",
+        ],
       },
     },
     defaultVariants: {
@@ -145,6 +161,7 @@ const tabsContentVariants = cva(
         default: "border-2 border-black border-t-2 rounded-b-lg bg-white pt-0",
         pills: "mt-2",
         colored: "border-2 border-black border-t-2 rounded-b-lg bg-white pt-0",
+        borderless: "pt-0", // New variant without borders
       },
     },
     defaultVariants: {

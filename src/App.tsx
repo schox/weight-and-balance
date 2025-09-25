@@ -55,44 +55,49 @@ function App() {
         </div>
       </header>
 
-      {/* Main Content with Aircraft Tabs */}
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <Tabs defaultValue="YPB" className="w-full">
-          <div className="flex justify-center">
-            <TabsList variant="default" className="w-auto inline-flex">
-              <TabsTrigger
-                value="YPB"
-                variant="default"
-                className="text-base font-semibold px-6"
-              >
-                <Plane className="h-4 w-4 mr-2" />
-                YPB C182T
-                <Info className="h-4 w-4 ml-2" />
-              </TabsTrigger>
-              <TabsTrigger
-                value="KXW"
-                variant="default"
-                className="text-base font-semibold px-6"
-              >
-                <Plane className="h-4 w-4 mr-2" />
-                KXW C172SP
-                <Info className="h-4 w-4 ml-2" />
-              </TabsTrigger>
-            </TabsList>
+      {/* Aircraft Tabs - Full Width */}
+      <Tabs defaultValue="YPB" className="w-full">
+        <div className="bg-surface-container border-b">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-center py-3">
+              <TabsList variant="default" className="w-auto inline-flex bg-transparent gap-4">
+                <TabsTrigger
+                  value="YPB"
+                  variant="borderless"
+                  className="text-base font-semibold px-4"
+                >
+                  <Plane className="h-4 w-4 mr-2" />
+                  YPB C182T
+                  <Info className="h-4 w-4 ml-2" />
+                </TabsTrigger>
+                <TabsTrigger
+                  value="KXW"
+                  variant="borderless"
+                  className="text-base font-semibold px-4"
+                >
+                  <Plane className="h-4 w-4 mr-2" />
+                  KXW C172SP
+                  <Info className="h-4 w-4 ml-2" />
+                </TabsTrigger>
+              </TabsList>
+            </div>
           </div>
+        </div>
 
-          <TabsContent value="YPB" variant="default" className="mt-0 p-6">
+        {/* Main Content */}
+        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <TabsContent value="YPB" className="mt-0">
             <AircraftTab aircraft={aircraft} settings={settings} />
           </TabsContent>
 
-          <TabsContent value="KXW" variant="default" className="mt-0 p-6">
+          <TabsContent value="KXW" className="mt-0">
             <div className="text-center py-12">
               <h2 className="text-2xl font-bold text-muted-foreground mb-4">KXW C172SP</h2>
               <p className="text-muted-foreground">Aircraft data coming soon...</p>
             </div>
           </TabsContent>
-        </Tabs>
-      </main>
+        </main>
+      </Tabs>
 
       {/* Footer */}
       <footer className="bg-surface-container border-t mt-12">
