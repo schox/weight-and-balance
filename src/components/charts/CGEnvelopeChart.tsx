@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { convertWeightForDisplay, roundDownForDisplay } from '@/utils/conversions';
 import type { Aircraft, CalculationResult, Settings, LoadingState } from '@/types/aircraft';
 import { cn } from '@/lib/utils';
