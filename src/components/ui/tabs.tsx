@@ -46,18 +46,20 @@ const tabsTriggerVariants = cva(
           "border-t-2 border-l-2 border-r-2 border-black",
           "rounded-t-lg",
           "bg-gray-100 text-black",
+          "pb-2", // Consistent padding for all tabs
           "-mr-[2px]", // Overlap borders to prevent double thickness
           "last:mr-0", // Don't overlap the last tab
-          // Active state - key changes for gap fix
+          // Active state - extend content area only, not the tab itself
           "data-[state=active]:bg-white",
           "data-[state=active]:z-10",
-          "data-[state=active]:border-b-2",
-          "data-[state=active]:border-b-white",
-          // Fix gap by extending active tab downward - increase overlap
-          "data-[state=active]:pb-[calc(0.5rem+3px)]",
-          "data-[state=active]:mb-[-3px]",
-          // Inactive tabs - no bottom border
-          "data-[state=inactive]:pb-[0.5rem]",
+          "data-[state=active]:after:content-['']",
+          "data-[state=active]:after:absolute",
+          "data-[state=active]:after:bottom-[-2px]",
+          "data-[state=active]:after:left-0",
+          "data-[state=active]:after:right-0",
+          "data-[state=active]:after:h-[2px]",
+          "data-[state=active]:after:bg-white",
+          "data-[state=active]:after:z-10",
         ],
         pills: [
           "rounded-md",
@@ -70,17 +72,18 @@ const tabsTriggerVariants = cva(
           "border-t-2 border-l-2 border-r-2 border-black",
           "rounded-t-lg",
           "bg-gray-100 text-black",
+          "pb-2", // Consistent padding for all tabs
           "-mr-[2px]", // Overlap borders to prevent double thickness
           "last:mr-0", // Don't overlap the last tab
-          // Active state - same gap fix for colored variant
+          // Active state - extend content area only, not the tab itself
           "data-[state=active]:z-10",
-          "data-[state=active]:border-b-2",
-          "data-[state=active]:border-b-transparent",
-          // Fix gap by extending active tab downward - increase overlap
-          "data-[state=active]:pb-[calc(0.5rem+3px)]",
-          "data-[state=active]:mb-[-3px]",
-          // Inactive tabs - no bottom border
-          "data-[state=inactive]:pb-[0.5rem]",
+          "data-[state=active]:after:content-['']",
+          "data-[state=active]:after:absolute",
+          "data-[state=active]:after:bottom-[-2px]",
+          "data-[state=active]:after:left-0",
+          "data-[state=active]:after:right-0",
+          "data-[state=active]:after:h-[2px]",
+          "data-[state=active]:after:z-10",
         ],
       },
     },
@@ -124,7 +127,7 @@ const TabsTrigger = React.forwardRef<
       ref={triggerRef}
       className={cn(
         tabsTriggerVariants({ variant }),
-        variant === 'colored' && activeColor && `data-[state=active]:bg-[var(--active-bg)] data-[state=active]:text-[var(--active-text)]`,
+        variant === 'colored' && activeColor && `data-[state=active]:bg-[var(--active-bg)] data-[state=active]:text-[var(--active-text)] data-[state=active]:after:bg-[var(--active-bg)]`,
         className
       )}
       style={dynamicStyle}
