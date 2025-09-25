@@ -74,7 +74,7 @@ const BaggageTilesCombined: React.FC<BaggageTilesCombinedProps> = ({
   };
 
   const renderBaggageTab = (area: 'A' | 'B' | 'C') => (
-    <TabsContent value={area.toLowerCase()} className="mt-3 space-y-3">
+    <TabsContent value={area.toLowerCase()} className="space-y-3">
       <div className="flex items-center justify-between">
         <Button
           variant="outline"

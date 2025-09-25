@@ -125,11 +125,11 @@ const RearRowSeatsCombined: React.FC<RearRowSeatsCombinedProps> = ({
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="rearPassenger1" className="mt-3">
+            <TabsContent value="rearPassenger1">
               {renderSeatControls('rearPassenger1')}
             </TabsContent>
 
-            <TabsContent value="rearPassenger2" className="mt-3">
+            <TabsContent value="rearPassenger2">
               {renderSeatControls('rearPassenger2')}
             </TabsContent>
           </Tabs>

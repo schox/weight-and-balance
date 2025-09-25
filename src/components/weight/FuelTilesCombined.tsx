@@ -75,7 +75,7 @@ const FuelTilesCombined: React.FC<FuelTilesCombinedProps> = ({
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="left" className="mt-3 space-y-3">
+            <TabsContent value="left" className="space-y-3">
               <div className="flex items-center justify-between">
                 <Button
                   variant="outline"
@@ -116,7 +116,7 @@ const FuelTilesCombined: React.FC<FuelTilesCombinedProps> = ({
               </div>
             </TabsContent>
 
-            <TabsContent value="right" className="mt-3 space-y-3">
+            <TabsContent value="right" className="space-y-3">
               <div className="flex items-center justify-between">
                 <Button
                   variant="outline"
