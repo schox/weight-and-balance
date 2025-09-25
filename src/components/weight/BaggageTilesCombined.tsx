@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { theme } from '@/lib/theme';
-import { Plus, Minus, Package } from 'lucide-react';
+import { Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { convertWeightForDisplay, convertWeightToLbs, roundDownForDisplay } from '@/utils/conversions';
 import type { Settings } from '@/types/aircraft';
@@ -74,48 +74,31 @@ const BaggageTilesCombined: React.FC<BaggageTilesCombinedProps> = ({
     return Math.floor(area === 'A' ? baggageADisplay : area === 'B' ? baggageBDisplay : baggageCDisplay);
   };
 
-  const renderBaggageTab = (area: 'A' | 'B' | 'C') => (
-    <TabsContent value={area.toLowerCase()} variant="colored" className="space-y-3 p-3">
-      <div className="flex items-center justify-between">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => adjustWeight(-5, area)}
-          className="h-8 w-8 p-0"
-        >
-          <Minus className="h-4 w-4" />
-        </Button>
+  const renderBaggageTab = (area: 'A' | 'B' | 'C') => {
+    const currentValue = getCurrentValue(area);
+    const maxWeight = getMaxWeight(area);
+    const isOutOfRange = currentValue < 0 || currentValue > maxWeight;
 
-        <div className="flex-1 mx-2">
+    return (
+      <TabsContent value={area.toLowerCase()} variant="colored" className="space-y-3 p-3">
+        <div className="flex items-center justify-center gap-2 text-sm">
           <Input
             type="number"
-            value={getCurrentValue(area)}
+            value={currentValue}
             onChange={(e) => handleInputChange(e.target.value, area)}
-            className="text-center"
+            className={`w-16 h-8 text-center text-sm ${isOutOfRange ? 'text-red-500 border-red-500' : ''}`}
             min="0"
-            max={getMaxWeight(area)}
+            max={maxWeight}
             step="1"
           />
-          <div className="text-xs text-center text-muted-foreground mt-1">
-            {settings.weightUnits}
-          </div>
+          <span className="text-muted-foreground">{settings.weightUnits}</span>
+          <span className={`text-sm ${isOutOfRange ? 'text-red-500' : 'text-muted-foreground'}`}>
+            Max: {maxWeight} {settings.weightUnits}
+          </span>
         </div>
-
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => adjustWeight(5, area)}
-          className="h-8 w-8 p-0"
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
-      </div>
-
-      <div className="text-sm text-muted-foreground text-center">
-        Max: {getMaxWeight(area)} {settings.weightUnits}
-      </div>
-    </TabsContent>
-  );
+      </TabsContent>
+    );
+  };
 
   return (
     <Card className={cn("relative bg-surface-container border border-border shadow-sm", className)}>

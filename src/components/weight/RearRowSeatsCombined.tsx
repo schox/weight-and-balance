@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { theme } from '@/lib/theme';
-import { Plus, Minus, Users } from 'lucide-react';
+import { Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { convertWeightForDisplay, convertWeightToLbs, roundDownForDisplay } from '@/utils/conversions';
 import type { Settings } from '@/types/aircraft';
@@ -63,48 +63,31 @@ const RearRowSeatsCombined: React.FC<RearRowSeatsCombinedProps> = ({
 
   const renderSeatControls = (
     seat: 'rearPassenger1' | 'rearPassenger2'
-  ) => (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => adjustWeight(-5, seat)}
-          className="h-8 w-8 p-0"
-        >
-          <Minus className="h-4 w-4" />
-        </Button>
+  ) => {
+    const currentValue = getCurrentValue(seat);
+    const maxWeight = getMaxWeight();
+    const isOutOfRange = currentValue < 0 || currentValue > maxWeight;
 
-        <div className="flex-1 mx-2">
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-center gap-2 text-sm">
           <Input
             type="number"
-            value={getCurrentValue(seat)}
+            value={currentValue}
             onChange={(e) => handleInputChange(e.target.value, seat)}
-            className="text-center"
+            className={`w-16 h-8 text-center text-sm ${isOutOfRange ? 'text-red-500 border-red-500' : ''}`}
             min="0"
-            max={getMaxWeight()}
+            max={maxWeight}
             step="1"
           />
-          <div className="text-xs text-center text-muted-foreground mt-1">
-            {settings.weightUnits}
-          </div>
+          <span className="text-muted-foreground">{settings.weightUnits}</span>
+          <span className={`text-sm ${isOutOfRange ? 'text-red-500' : 'text-muted-foreground'}`}>
+            Max: {maxWeight} {settings.weightUnits}
+          </span>
         </div>
-
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => adjustWeight(5, seat)}
-          className="h-8 w-8 p-0"
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
       </div>
-
-      <div className="text-sm text-muted-foreground text-center">
-        Max: {getMaxWeight()} {settings.weightUnits}
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <Card className={cn("relative bg-surface-container border border-border shadow-sm", className)}>
