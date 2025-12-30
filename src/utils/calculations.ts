@@ -1,5 +1,8 @@
-import type { Aircraft, LoadingState, CalculationResult, CGEnvelopePoint, Settings } from '@/types/aircraft';
+import type { Aircraft, LoadingState, CalculationResult, CGEnvelopePoint, Settings, LoadPathPoint, FuelBurnState } from '@/types/aircraft';
 import { getFuelWeightLbs, roundToPrecision } from './conversions';
+
+// Fuel weight constant
+const AVGAS_LBS_PER_GALLON = 6.0;
 
 // Calculate total weight in pounds
 export const calculateTotalWeight = (
@@ -197,6 +200,164 @@ const getStationWeight = (loadingState: LoadingState, stationId: string): number
   }
 };
 
+// Calculate cumulative load path - shows how CG moves as each station is added
+export const calculateCumulativeLoadPath = (
+  loadingState: LoadingState,
+  aircraft: Aircraft,
+  _settings: Settings
+): LoadPathPoint[] => {
+  const points: LoadPathPoint[] = [];
+
+  // Helper to get station arm
+  const getStationArm = (id: string): number => {
+    const station = aircraft.loadingStations.find(s => s.id === id);
+    return station?.armMm || 0;
+  };
+
+  // Start with empty aircraft
+  let totalWeightLbs = aircraft.emptyWeightLbs;
+  let totalWeightKg = totalWeightLbs * 0.453592;
+  let totalMomentKgMm = totalWeightKg * aircraft.emptyCGMm;
+
+  points.push({
+    weight: totalWeightLbs,
+    cgPosition: aircraft.emptyCGMm,
+    label: 'Empty'
+  });
+
+  // Define the order of stations to add (matching Excel's sequential approach)
+  const stationOrder: { id: string; label: string; getValue: () => number }[] = [
+    { id: 'pilot', label: 'Pilot', getValue: () => loadingState.pilot },
+    { id: 'frontPassenger', label: 'Front Pax', getValue: () => loadingState.frontPassenger },
+    { id: 'rearPassenger1', label: 'Rear Pax 1', getValue: () => loadingState.rearPassenger1 },
+    { id: 'rearPassenger2', label: 'Rear Pax 2', getValue: () => loadingState.rearPassenger2 },
+    { id: 'baggageA', label: 'Bag A', getValue: () => loadingState.baggageA },
+    { id: 'baggageB', label: 'Bag B', getValue: () => loadingState.baggageB },
+    { id: 'baggageC', label: 'Bag C', getValue: () => loadingState.baggageC },
+  ];
+
+  // Add each station sequentially
+  for (const station of stationOrder) {
+    const weightLbs = station.getValue();
+    if (weightLbs > 0) {
+      const weightKg = weightLbs * 0.453592;
+      const arm = getStationArm(station.id);
+      const moment = weightKg * arm;
+
+      totalWeightLbs += weightLbs;
+      totalWeightKg += weightKg;
+      totalMomentKgMm += moment;
+
+      const cg = totalMomentKgMm / totalWeightKg;
+
+      points.push({
+        weight: totalWeightLbs,
+        cgPosition: cg,
+        label: station.label
+      });
+    }
+  }
+
+  return points;
+};
+
+// Calculate zero-fuel weight and CG
+export const calculateZeroFuelWeightAndCG = (
+  loadingState: LoadingState,
+  aircraft: Aircraft
+): { weight: number; cgPosition: number } => {
+  const getStationArm = (id: string): number => {
+    const station = aircraft.loadingStations.find(s => s.id === id);
+    return station?.armMm || 0;
+  };
+
+  // Calculate weight without fuel
+  const weightLbs = aircraft.emptyWeightLbs +
+    loadingState.pilot +
+    loadingState.frontPassenger +
+    loadingState.rearPassenger1 +
+    loadingState.rearPassenger2 +
+    loadingState.baggageA +
+    loadingState.baggageB +
+    loadingState.baggageC;
+
+  // Calculate moment without fuel
+  const emptyWeightKg = aircraft.emptyWeightLbs * 0.453592;
+  const emptyMoment = emptyWeightKg * aircraft.emptyCGMm;
+
+  const pilotKg = loadingState.pilot * 0.453592;
+  const frontPassengerKg = loadingState.frontPassenger * 0.453592;
+  const rearPassenger1Kg = loadingState.rearPassenger1 * 0.453592;
+  const rearPassenger2Kg = loadingState.rearPassenger2 * 0.453592;
+  const baggageAKg = loadingState.baggageA * 0.453592;
+  const baggageBKg = loadingState.baggageB * 0.453592;
+  const baggageCKg = loadingState.baggageC * 0.453592;
+
+  const totalMoment = emptyMoment +
+    pilotKg * getStationArm('pilot') +
+    frontPassengerKg * getStationArm('frontPassenger') +
+    rearPassenger1Kg * getStationArm('rearPassenger1') +
+    rearPassenger2Kg * getStationArm('rearPassenger2') +
+    baggageAKg * getStationArm('baggageA') +
+    baggageBKg * getStationArm('baggageB') +
+    baggageCKg * getStationArm('baggageC');
+
+  const totalWeightKg = weightLbs * 0.453592;
+  const cgPosition = totalWeightKg > 0 ? totalMoment / totalWeightKg : 0;
+
+  return { weight: weightLbs, cgPosition };
+};
+
+// Calculate landing weight and CG after fuel burn
+export const calculateLandingWeightAndCG = (
+  loadingState: LoadingState,
+  aircraft: Aircraft,
+  settings: Settings,
+  fuelBurnState: FuelBurnState
+): { weight: number; cgPosition: number; fuelRemaining: number } => {
+  const getStationArm = (id: string): number => {
+    const station = aircraft.loadingStations.find(s => s.id === id);
+    return station?.armMm || 0;
+  };
+
+  // Calculate fuel burned in gallons
+  const fuelBurnedGallons = fuelBurnState.burnRateGPH * fuelBurnState.flightDurationHours;
+  const fuelBurnedLbs = fuelBurnedGallons * AVGAS_LBS_PER_GALLON;
+
+  // Get current fuel weight
+  const currentFuelLbs =
+    getFuelWeightLbs(loadingState.fuelLeft, settings.fuelUnits) +
+    getFuelWeightLbs(loadingState.fuelRight, settings.fuelUnits);
+
+  // Calculate remaining fuel (can't burn more than we have)
+  const remainingFuelLbs = Math.max(0, currentFuelLbs - fuelBurnedLbs);
+  const remainingFuelGallons = remainingFuelLbs / AVGAS_LBS_PER_GALLON;
+
+  // Calculate zero-fuel weight first
+  const zeroFuel = calculateZeroFuelWeightAndCG(loadingState, aircraft);
+
+  // Add remaining fuel
+  const landingWeightLbs = zeroFuel.weight + remainingFuelLbs;
+
+  // Calculate landing moment (fuel at fuel arm)
+  const fuelArm = getStationArm('fuelLeft'); // Both tanks same arm
+  const zeroFuelWeightKg = zeroFuel.weight * 0.453592;
+  const zeroFuelMoment = zeroFuelWeightKg * zeroFuel.cgPosition;
+
+  const remainingFuelKg = remainingFuelLbs * 0.453592;
+  const fuelMoment = remainingFuelKg * fuelArm;
+
+  const totalMoment = zeroFuelMoment + fuelMoment;
+  const totalWeightKg = landingWeightLbs * 0.453592;
+  const landingCG = totalWeightKg > 0 ? totalMoment / totalWeightKg : 0;
+
+  return {
+    weight: landingWeightLbs,
+    cgPosition: landingCG,
+    fuelRemaining: remainingFuelGallons
+  };
+};
+
 // Calculate combined baggage weight, moment, and CG
 export const calculateCombinedBaggage = (
   loadingState: LoadingState,
@@ -266,7 +427,11 @@ export const calculateWeightAndBalance = (
     errors.push(`Total weight (${totalWeight.toFixed(1)} lbs) exceeds MTOW (${aircraft.maxTakeoffWeightLbs} lbs)`);
   }
 
-  // CG status is already clearly shown in the CG tile, no need for redundant message
+  // Calculate cumulative load path for visualization
+  const loadPath = calculateCumulativeLoadPath(loadingState, aircraft, settings);
+
+  // Calculate zero-fuel weight and CG
+  const zeroFuel = calculateZeroFuelWeightAndCG(loadingState, aircraft);
 
   return {
     isValid: errors.length === 0,
@@ -280,6 +445,10 @@ export const calculateWeightAndBalance = (
       aft: roundToPrecision(cgLimits.aft - cgPosition, 1)
     },
     warnings,
-    errors
+    errors,
+    // New fields for enhanced visualization
+    zeroFuelWeight: roundToPrecision(zeroFuel.weight, 1),
+    zeroFuelCG: roundToPrecision(zeroFuel.cgPosition, 1),
+    loadPath
   };
 };

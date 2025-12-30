@@ -89,6 +89,19 @@ export interface AnimationState {
   playbackSpeed: number;        // 1x, 2x, 5x, 10x
 }
 
+// Point on the CG envelope chart (for load path, fuel burn, etc.)
+export interface LoadPathPoint {
+  weight: number;               // Weight in lbs
+  cgPosition: number;           // CG position in mm
+  label?: string;               // Optional label for the point
+}
+
+// Fuel burn planning state
+export interface FuelBurnState {
+  burnRateGPH: number;          // Fuel burn rate in gallons per hour
+  flightDurationHours: number;  // Planned flight duration in hours
+}
+
 // Calculation result for display
 export interface CalculationResult {
   isValid: boolean;
@@ -103,6 +116,12 @@ export interface CalculationResult {
   };
   warnings: string[];
   errors: string[];
+  // New: detailed breakdown for visualizations
+  zeroFuelWeight?: number;      // Weight without fuel
+  zeroFuelCG?: number;          // CG without fuel
+  loadPath?: LoadPathPoint[];   // Cumulative load path points
+  landingWeight?: number;       // Weight after fuel burn
+  landingCG?: number;           // CG after fuel burn
 }
 
 // Fuel conversion utilities interface
