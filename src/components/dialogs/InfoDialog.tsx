@@ -24,7 +24,7 @@ const InfoDialog: React.FC<InfoDialogProps> = ({ children }) => {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-[360px] bg-white">
+      <DialogContent className="max-w-[360px]">
         <DialogHeader>
           <DialogTitle>Application Information</DialogTitle>
           <DialogDescription>
