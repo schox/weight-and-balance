@@ -68,15 +68,15 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-6 py-4">
+        <div className="grid gap-5 py-4">
           {/* Fuel Units */}
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="fuel-units" className="text-right font-medium">
+          <div className="grid grid-cols-3 items-start gap-3">
+            <Label htmlFor="fuel-units" className="text-right font-medium text-sm pt-2">
               Fuel Units
             </Label>
-            <div className="col-span-3">
+            <div className="col-span-2">
               <Select value={settings.fuelUnits} onValueChange={handleFuelUnitsChange}>
-                <SelectTrigger>
+                <SelectTrigger className="h-9">
                   <SelectValue placeholder="Select fuel units" />
                 </SelectTrigger>
                 <SelectContent>
@@ -85,19 +85,19 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground mt-1">
-                Volume units for fuel quantity display and input
+                For fuel quantity display
               </p>
             </div>
           </div>
 
           {/* Weight Units */}
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="weight-units" className="text-right font-medium">
+          <div className="grid grid-cols-3 items-start gap-3">
+            <Label htmlFor="weight-units" className="text-right font-medium text-sm pt-2">
               Weight Units
             </Label>
-            <div className="col-span-3">
+            <div className="col-span-2">
               <Select value={settings.weightUnits} onValueChange={handleWeightUnitsChange}>
-                <SelectTrigger>
+                <SelectTrigger className="h-9">
                   <SelectValue placeholder="Select weight units" />
                 </SelectTrigger>
                 <SelectContent>
@@ -106,19 +106,19 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground mt-1">
-                Weight units for all weight displays and inputs
+                For all weight displays
               </p>
             </div>
           </div>
 
           {/* Distance Units */}
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="distance-units" className="text-right font-medium">
+          <div className="grid grid-cols-3 items-start gap-3">
+            <Label htmlFor="distance-units" className="text-right font-medium text-sm pt-2">
               Distance Units
             </Label>
-            <div className="col-span-3">
+            <div className="col-span-2">
               <Select value={settings.distanceUnits} onValueChange={handleDistanceUnitsChange}>
-                <SelectTrigger>
+                <SelectTrigger className="h-9">
                   <SelectValue placeholder="Select distance units" />
                 </SelectTrigger>
                 <SelectContent>
@@ -127,7 +127,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground mt-1">
-                Distance units for CG position and arm measurements
+                For CG and arm positions
               </p>
             </div>
           </div>
