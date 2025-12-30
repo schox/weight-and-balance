@@ -60,7 +60,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-md w-full bg-white">
+      <DialogContent className="max-w-[360px] bg-white">
         <DialogHeader>
           <DialogTitle>Application Settings</DialogTitle>
           <DialogDescription>

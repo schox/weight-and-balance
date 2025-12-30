@@ -24,7 +24,7 @@ function AppLayout() {
     <div className="min-h-screen bg-surface flex flex-col">
       {/* Header */}
       <header className="bg-white text-black border-b">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex flex-col hover:opacity-80 transition-opacity">
               <h1 className="text-lg sm:text-xl lg:text-2xl font-bold">
@@ -54,7 +54,7 @@ function AppLayout() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex-1">
+      <main className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-4 flex-1">
         <Routes>
           <Route path="/" element={<HomePage settings={settings} />} />
           <Route path="/terms" element={<TermsPage />} />
@@ -64,7 +64,7 @@ function AppLayout() {
 
       {/* Footer */}
       <footer className="bg-surface-container border-t mt-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-6">
           <div className="text-center text-sm text-muted-foreground space-y-3">
             <p>
               <strong className="text-warning">Disclaimer:</strong> This calculator is for planning purposes only.
