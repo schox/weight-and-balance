@@ -90,25 +90,51 @@ export const calculateCGPosition = (
   return totalMoment / totalWeightKg;
 };
 
-// Check if point is within CG envelope
+// VH-YPB CG Envelope constants (from POH)
+// Forward limit: 33.0" constant for weights ≤ 2,250 lbs
+// Forward limit: Linear from 33.0" at 2,250 lbs to 40.9" at 3,100 lbs
+// Aft limit: 46.0" constant at all weights
+const CG_ENVELOPE = {
+  minWeight: 2007,           // Basic Empty Weight
+  maxWeight: 3100,           // MTOW
+  forwardFlatLimit: 838.2,   // 33.0" in mm
+  forwardFlatMaxWeight: 2250, // Weight at which forward limit starts to taper
+  forwardTaperLimit: 1038.86, // 40.9" in mm at MTOW
+  aftLimit: 1168.4,          // 46.0" in mm (constant)
+};
+
+// Calculate the forward CG limit at a given weight
+export const getForwardCGLimit = (weight: number): number => {
+  // Below or at 2,250 lbs: forward limit is flat at 33.0" (838.2mm)
+  if (weight <= CG_ENVELOPE.forwardFlatMaxWeight) {
+    return CG_ENVELOPE.forwardFlatLimit;
+  }
+
+  // Above 2,250 lbs: linear interpolation from 33.0" at 2,250 lbs to 40.9" at 3,100 lbs
+  const ratio = (weight - CG_ENVELOPE.forwardFlatMaxWeight) /
+                (CG_ENVELOPE.maxWeight - CG_ENVELOPE.forwardFlatMaxWeight);
+  return CG_ENVELOPE.forwardFlatLimit +
+         ratio * (CG_ENVELOPE.forwardTaperLimit - CG_ENVELOPE.forwardFlatLimit);
+};
+
+// Check if point is within CG envelope using proper interpolated limits
 export const isWithinCGEnvelope = (
   weight: number,
   cgPosition: number,
   envelope: CGEnvelopePoint[]
 ): boolean => {
-  if (envelope.length < 6) return true; // Safety check
+  if (envelope.length < 5) return true; // Safety check
 
-  // For now, implement a simple rectangular check
-  // In production, this would be a proper polygon point-in-polygon test
-  const minWeight = Math.min(...envelope.map(p => p.weight));
-  const maxWeight = Math.max(...envelope.map(p => p.weight));
-  const minCG = Math.min(...envelope.map(p => p.cgPosition));
-  const maxCG = Math.max(...envelope.map(p => p.cgPosition));
+  // Weight must be within valid range
+  if (weight < CG_ENVELOPE.minWeight || weight > CG_ENVELOPE.maxWeight) {
+    return false;
+  }
 
-  return weight >= minWeight &&
-         weight <= maxWeight &&
-         cgPosition >= minCG &&
-         cgPosition <= maxCG;
+  // Calculate the forward limit at this weight
+  const forwardLimit = getForwardCGLimit(weight);
+
+  // CG must be between forward limit and aft limit (46.0")
+  return cgPosition >= forwardLimit && cgPosition <= CG_ENVELOPE.aftLimit;
 };
 
 // Calculate percent Mean Aerodynamic Chord (simplified)
@@ -121,45 +147,22 @@ export const calculatePercentMAC = (cgPosition: number): number => {
   return ((cgPosition - macStart) / macLength) * 100;
 };
 
-// Get CG limits for current weight
+// Get CG limits for current weight using proper POH envelope data
 export const getCGLimits = (
   weight: number,
-  envelope: CGEnvelopePoint[]
+  _envelope: CGEnvelopePoint[]
 ): { forward: number; aft: number } => {
-  // Simplified linear interpolation between envelope points
-  // In production, this would be more sophisticated
-
-  if (envelope.length < 6) {
-    return { forward: 889, aft: 1201 }; // Default C182T limits in mm
-  }
-
-  // Find forward and aft limits for the given weight
-  const forwardPoints = envelope.slice(0, 3); // First half of envelope
-  const aftPoints = envelope.slice(3, 6);     // Second half of envelope
-
-  const interpolate = (points: CGEnvelopePoint[], targetWeight: number): number => {
-    if (points.length < 2) return points[0]?.cgPosition || 0;
-
-    // Find the two points to interpolate between
-    for (let i = 0; i < points.length - 1; i++) {
-      const p1 = points[i];
-      const p2 = points[i + 1];
-
-      if (targetWeight >= p1.weight && targetWeight <= p2.weight) {
-        const ratio = (targetWeight - p1.weight) / (p2.weight - p1.weight);
-        return p1.cgPosition + ratio * (p2.cgPosition - p1.cgPosition);
-      }
-    }
-
-    // If outside range, return nearest point
-    return targetWeight < points[0].weight ? points[0].cgPosition : points[points.length - 1].cgPosition;
-  };
-
+  // Use the proper forward limit calculation based on POH data
+  // Forward limit: 33.0" constant for ≤2,250 lbs, linear taper to 40.9" at 3,100 lbs
+  // Aft limit: 46.0" constant at all weights
   return {
-    forward: interpolate(forwardPoints, weight),
-    aft: interpolate(aftPoints, weight)
+    forward: getForwardCGLimit(weight),
+    aft: CG_ENVELOPE.aftLimit
   };
 };
+
+// Combined baggage limit (from POH)
+const MAX_COMBINED_BAGGAGE_LBS = 200;
 
 // Validate loading limits
 export const validateLoading = (
@@ -175,6 +178,12 @@ export const validateLoading = (
       warnings.push(`${station.name} exceeds maximum weight of ${station.maxWeightLbs} lbs`);
     }
   });
+
+  // Check combined baggage limit (POH states max combined is 200 lbs)
+  const totalBaggage = loadingState.baggageA + loadingState.baggageB + loadingState.baggageC;
+  if (totalBaggage > MAX_COMBINED_BAGGAGE_LBS) {
+    warnings.push(`Combined baggage (${totalBaggage} lbs) exceeds ${MAX_COMBINED_BAGGAGE_LBS} lb limit`);
+  }
 
   // Check for unrealistic data
 

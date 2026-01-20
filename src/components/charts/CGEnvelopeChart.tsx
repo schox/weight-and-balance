@@ -38,8 +38,9 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
   }));
 
   // For drawing individual limit lines
-  const forwardLimitPoints = envelopePoints.slice(0, 5); // First 5 points for forward curve
-  const aftLimitPoints = envelopePoints.slice(5, 7); // Points 5-6 for aft limit
+  // New envelope structure: points 0-2 are forward limit, points 3-4 are aft limit
+  const forwardLimitPoints = envelopePoints.slice(0, 3); // Forward limit (BEW to MTOW)
+  const aftLimitPoints = envelopePoints.slice(3, 5); // Aft limit (MTOW to BEW)
 
   // Current aircraft position
   const currentPosition = {

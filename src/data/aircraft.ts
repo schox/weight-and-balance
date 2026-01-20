@@ -62,7 +62,7 @@ const vhYpbLoadingStations: LoadingStation[] = [
     id: 'fuelLeft',
     name: 'Fuel - Left Wing',
     armMm: 1181,                // 46.5" converted to mm (46.5 * 25.4)
-    maxWeightLbs: 522,          // 87 gallons * 6 lbs/gal
+    maxWeightLbs: 261,          // ~43.5 gallons per tank * 6 lbs/gal (87 gal total / 2 tanks)
     isRequired: false,
     category: 'fuel'
   },
@@ -70,26 +70,33 @@ const vhYpbLoadingStations: LoadingStation[] = [
     id: 'fuelRight',
     name: 'Fuel - Right Wing',
     armMm: 1181,                // Same as left wing
-    maxWeightLbs: 522,          // 87 gallons * 6 lbs/gal
+    maxWeightLbs: 261,          // ~43.5 gallons per tank * 6 lbs/gal (87 gal total / 2 tanks)
     isRequired: false,
     category: 'fuel'
   }
 ];
 
 // CG Envelope points for VH-YPB (Normal Category)
-// Based on actual handbook data with proper shape including two angular changes
+// Based on Cessna 182T POH Figure 6-8 Center-of-Gravity Limits
+// POH specs:
+//   - Forward limit: 33.0" constant for weights ≤ 2,250 lbs
+//   - Forward limit: Linear taper from 33.0" at 2,250 lbs to 40.9" at 3,100 lbs
+//   - Aft limit: 46.0" constant at all weights
+//   - Minimum weight: 2,007 lbs (Basic Empty Weight)
+// Tracing the envelope clockwise starting from bottom-left
 const vhYpbCGEnvelope: CGEnvelopePoint[] = [
-  // Forward limit line (with two angular changes as shown in handbook)
-  { weight: 2007, cgPosition: 940 },   // BEW vertical line start ~37.0"
-  { weight: 2200, cgPosition: 940 },   // Vertical line at BEW CG
-  { weight: 2600, cgPosition: 978 },   // First angular change ~38.5"
-  { weight: 2950, cgPosition: 1016 },  // Second angular change ~40.0"
-  { weight: 3100, cgPosition: 1042 },  // Top of envelope ~41.0"
-
-  // Aft limit line (straight vertical line) - make narrower
-  { weight: 2007, cgPosition: 1168 },  // BEW level ~46.0"
-  { weight: 2950, cgPosition: 1168 },  // Same CG all the way up
-  { weight: 3100, cgPosition: 1168 }   // Top ~46.0"
+  // Bottom-left corner (empty weight, forward limit)
+  { weight: 2007, cgPosition: 838.2 },   // 33.0" at BEW
+  // Forward limit stays flat until 2,250 lbs (vertical line up)
+  { weight: 2250, cgPosition: 838.2 },   // 33.0" at 2,250 lbs
+  // Forward limit tapers linearly to MTOW (diagonal line up-right)
+  { weight: 3100, cgPosition: 1038.86 }, // 40.9" at MTOW
+  // Top-right (aft limit at MTOW)
+  { weight: 3100, cgPosition: 1168.4 },  // 46.0"
+  // Bottom-right (aft limit at BEW - vertical line down)
+  { weight: 2007, cgPosition: 1168.4 },  // 46.0"
+  // Close polygon back to start
+  { weight: 2007, cgPosition: 838.2 },   // 33.0"
 ];
 
 // VH-YPB Aircraft Definition
@@ -98,8 +105,8 @@ export const vhYpbAircraft: Aircraft = {
   model: 'Cessna 182T NAV III',
   emptyWeightLbs: 2007.0,           // From load data sheet
   emptyCGMm: 975,                   // 38.4" converted to mm (38.4 * 25.4)
-  maxTakeoffWeightLbs: 3100,        // From envelope graph
-  maxLandingWeightLbs: 2950,        // From envelope graph
+  maxTakeoffWeightLbs: 3100,        // From POH Figure 6-8
+  maxLandingWeightLbs: 2950,        // From POH Figure 6-8
   maxRampWeightLbs: 3110,           // From sample loading problem
   fuelCapacityGallons: 87,          // Maximum usable fuel
   fuelCapacityLitres: 329.3,        // 87 gallons converted to litres
