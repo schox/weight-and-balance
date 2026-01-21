@@ -77,7 +77,7 @@ const HelpPage: React.FC = () => {
               </ul>
               <p className="font-medium">Supported aircraft:</p>
               <ul className="list-disc pl-5 space-y-1">
-                <li><strong>VH-YPB</strong> - Cessna 182T NAV III</li>
+                <li><strong>VH-YPB</strong> - Cessna 182T</li>
                 <li><strong>VH-KXW</strong> - Cessna 172P</li>
               </ul>
             </CardContent>
