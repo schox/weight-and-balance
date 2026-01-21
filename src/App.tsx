@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Settings, Info } from "lucide-react";
+import { Settings, Info, HelpCircle } from "lucide-react";
 import type { Settings as SettingsType } from '@/types/aircraft';
 import SettingsDialog from '@/components/dialogs/SettingsDialog';
 import InfoDialog from '@/components/dialogs/InfoDialog';
@@ -9,6 +9,7 @@ import HomePage from '@/pages/HomePage';
 import TermsPage from '@/pages/TermsPage';
 import PrivacyPage from '@/pages/PrivacyPage';
 import AircraftInfoPage from '@/pages/AircraftInfoPage';
+import HelpPage from '@/pages/HelpPage';
 
 function AppLayout() {
   const [settings, setSettings] = useState<SettingsType>({
@@ -36,8 +37,13 @@ function AppLayout() {
               </p>
             </Link>
             <div className="flex items-center space-x-2">
+              <Link to="/help">
+                <Button variant="ghost" size="icon" className="text-black hover:bg-gray-100" title="Help">
+                  <HelpCircle className="h-5 w-5" />
+                </Button>
+              </Link>
               <InfoDialog>
-                <Button variant="ghost" size="icon" className="text-black hover:bg-gray-100">
+                <Button variant="ghost" size="icon" className="text-black hover:bg-gray-100" title="About">
                   <Info className="h-5 w-5" />
                 </Button>
               </InfoDialog>
@@ -45,7 +51,7 @@ function AppLayout() {
                 settings={settings}
                 onSettingsChange={handleSettingsChange}
               >
-                <Button variant="ghost" size="icon" className="text-black hover:bg-gray-100">
+                <Button variant="ghost" size="icon" className="text-black hover:bg-gray-100" title="Settings">
                   <Settings className="h-5 w-5" />
                 </Button>
               </SettingsDialog>
@@ -59,6 +65,7 @@ function AppLayout() {
         <Routes>
           <Route path="/" element={<HomePage settings={settings} />} />
           <Route path="/aircraft/:registration" element={<AircraftInfoPage />} />
+          <Route path="/help" element={<HelpPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
         </Routes>
