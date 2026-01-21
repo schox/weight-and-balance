@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { convertWeightForDisplay, roundDownForDisplay } from '@/utils/conversions';
+import { convertWeightForDisplay, roundDownForDisplay, convertCGForDisplay, getDistanceUnitLabel } from '@/utils/conversions';
 import type { Aircraft, CalculationResult, Settings } from '@/types/aircraft';
 import { cn } from '@/lib/utils';
 import { CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
@@ -124,7 +124,7 @@ const WeightSummary: React.FC<WeightSummaryProps> = ({
               "text-lg font-bold",
               !withinEnvelope ? "text-danger" : "text-on-surface-container"
             )}>
-              {cgPosition.toFixed(1)}"
+              {convertCGForDisplay(cgPosition, settings.distanceUnits).toFixed(1)}{getDistanceUnitLabel(settings.distanceUnits)}
             </div>
             <div className="text-xs text-muted-foreground">
               {percentMAC.toFixed(1)}% MAC

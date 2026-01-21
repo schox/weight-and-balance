@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { BarChart3, Fuel, Clock } from 'lucide-react';
+import { BarChart3, Fuel, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { theme } from '@/lib/theme';
-import type { Aircraft, CalculationResult, Settings, LoadingState, FuelBurnState } from '@/types/aircraft';
+import type { Aircraft, CalculationResult, Settings, LoadingState, FuelBurnState, FuelUnit } from '@/types/aircraft';
+import { fuelConversions } from '@/utils/conversions';
 
 // Import visualization components
 import CGEnvelopeChart from '@/components/charts/CGEnvelopeChart';
@@ -37,10 +38,22 @@ interface VisualizationTab {
 const FuelBurnPanel: React.FC<{
   fuelBurnState: FuelBurnState;
   onUpdate: (state: FuelBurnState) => void;
-}> = ({ fuelBurnState, onUpdate }) => {
+  fuelUnits: FuelUnit;
+  isExpanded: boolean;
+  onToggleExpand: () => void;
+}> = ({ fuelBurnState, onUpdate, fuelUnits, isExpanded, onToggleExpand }) => {
+  // Convert burn rate for display based on user's fuel unit preference
+  const burnRateDisplay = fuelUnits === 'litres'
+    ? fuelConversions.gallonsToLitres(fuelBurnState.burnRateGPH)
+    : fuelBurnState.burnRateGPH;
+
   const handleBurnRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value) || 0;
-    onUpdate({ ...fuelBurnState, burnRateGPH: Math.max(0, value) });
+    // Convert from display units back to GPH for storage
+    const valueInGPH = fuelUnits === 'litres'
+      ? fuelConversions.litresToGallons(value)
+      : value;
+    onUpdate({ ...fuelBurnState, burnRateGPH: Math.max(0, valueInGPH) });
   };
 
   const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,49 +61,79 @@ const FuelBurnPanel: React.FC<{
     onUpdate({ ...fuelBurnState, flightDurationHours: Math.max(0, value) });
   };
 
+  // Calculate fuel burn and convert to user's preferred units
+  const fuelBurnGallons = fuelBurnState.burnRateGPH * fuelBurnState.flightDurationHours;
+  const fuelBurnDisplay = fuelUnits === 'litres'
+    ? fuelConversions.gallonsToLitres(fuelBurnGallons)
+    : fuelBurnGallons;
+
+  const burnRateUnit = fuelUnits === 'litres' ? 'L/hr' : 'GPH';
+
   return (
     <div className="mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
-      <div className="flex items-center mb-2">
-        <Fuel className="h-4 w-4 text-emerald-600 mr-2" />
-        <span className="text-sm font-medium text-emerald-800">Flight Planning</span>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-xs text-emerald-700 mb-1">
-            Fuel Burn Rate (GPH)
-          </label>
-          <input
-            type="number"
-            min="0"
-            max="50"
-            step="0.5"
-            value={fuelBurnState.burnRateGPH || ''}
-            onChange={handleBurnRateChange}
-            placeholder="e.g., 14"
-            className="w-full px-2 py-1.5 text-sm border border-emerald-300 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          />
+      {/* Collapsible header */}
+      <button
+        onClick={onToggleExpand}
+        className="w-full flex items-center justify-between text-left"
+      >
+        <div className="flex items-center">
+          <Fuel className="h-4 w-4 text-emerald-600 mr-2" />
+          <span className="text-sm font-medium text-emerald-800">Flight Planning</span>
+          {!isExpanded && fuelBurnState.burnRateGPH > 0 && fuelBurnState.flightDurationHours > 0 && (
+            <span className="ml-2 text-xs text-emerald-600">
+              ({fuelBurnDisplay.toFixed(1)} {fuelUnits} burn)
+            </span>
+          )}
         </div>
-        <div>
-          <label className="block text-xs text-emerald-700 mb-1 flex items-center">
-            <Clock className="h-3 w-3 mr-1" />
-            Flight Duration (hrs)
-          </label>
-          <input
-            type="number"
-            min="0"
-            max="10"
-            step="0.1"
-            value={fuelBurnState.flightDurationHours || ''}
-            onChange={handleDurationChange}
-            placeholder="e.g., 2.5"
-            className="w-full px-2 py-1.5 text-sm border border-emerald-300 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          />
-        </div>
-      </div>
-      {fuelBurnState.burnRateGPH > 0 && fuelBurnState.flightDurationHours > 0 && (
-        <div className="mt-2 text-xs text-emerald-700">
-          Fuel burn: {(fuelBurnState.burnRateGPH * fuelBurnState.flightDurationHours).toFixed(1)} gallons
-        </div>
+        {isExpanded ? (
+          <ChevronUp className="h-4 w-4 text-emerald-600" />
+        ) : (
+          <ChevronDown className="h-4 w-4 text-emerald-600" />
+        )}
+      </button>
+
+      {/* Collapsible content */}
+      {isExpanded && (
+        <>
+          <div className="grid grid-cols-2 gap-3 mt-3">
+            <div>
+              <label className="block text-xs text-emerald-700 mb-1">
+                Fuel Burn Rate ({burnRateUnit})
+              </label>
+              <input
+                type="number"
+                min="0"
+                max={fuelUnits === 'litres' ? 190 : 50}
+                step="0.5"
+                value={burnRateDisplay ? burnRateDisplay.toFixed(1) : ''}
+                onChange={handleBurnRateChange}
+                placeholder={fuelUnits === 'litres' ? 'e.g., 53' : 'e.g., 14'}
+                className="w-full px-2 py-1.5 text-sm border border-emerald-300 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-emerald-700 mb-1 flex items-center">
+                <Clock className="h-3 w-3 mr-1" />
+                Flight Duration (hrs)
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="10"
+                step="0.1"
+                value={fuelBurnState.flightDurationHours || ''}
+                onChange={handleDurationChange}
+                placeholder="e.g., 1.0"
+                className="w-full px-2 py-1.5 text-sm border border-emerald-300 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+          </div>
+          {fuelBurnState.burnRateGPH > 0 && fuelBurnState.flightDurationHours > 0 && (
+            <div className="mt-2 text-xs text-emerald-700">
+              Total fuel burn: {fuelBurnDisplay.toFixed(1)} {fuelUnits}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -103,11 +146,22 @@ const VisualizationTabs: React.FC<VisualizationTabsProps> = ({
   loadingState,
   className
 }) => {
-  // Fuel burn state for flight planning
+  // Fuel burn state for flight planning - initialize with aircraft defaults
   const [fuelBurnState, setFuelBurnState] = useState<FuelBurnState>({
-    burnRateGPH: 0,
-    flightDurationHours: 0
+    burnRateGPH: aircraft.defaultFuelBurnRateGPH,
+    flightDurationHours: 1.0
   });
+
+  // Track if flight planning panel is expanded (controls visibility on chart)
+  const [isFlightPlanningExpanded, setIsFlightPlanningExpanded] = useState(true);
+
+  // Update fuel burn rate when aircraft changes
+  useEffect(() => {
+    setFuelBurnState(prev => ({
+      ...prev,
+      burnRateGPH: aircraft.defaultFuelBurnRateGPH
+    }));
+  }, [aircraft.registration, aircraft.defaultFuelBurnRateGPH]);
 
   const tabs: VisualizationTab[] = [
     {
@@ -160,13 +214,16 @@ const VisualizationTabs: React.FC<VisualizationTabsProps> = ({
                   calculations={calculations}
                   settings={settings}
                   loadingState={loadingState}
-                  fuelBurnState={fuelBurnState}
+                  fuelBurnState={isFlightPlanningExpanded ? fuelBurnState : undefined}
                 />
                 {/* Show fuel burn panel only on envelope tab */}
                 {tab.id === 'envelope' && (
                   <FuelBurnPanel
                     fuelBurnState={fuelBurnState}
                     onUpdate={setFuelBurnState}
+                    fuelUnits={settings.fuelUnits}
+                    isExpanded={isFlightPlanningExpanded}
+                    onToggleExpand={() => setIsFlightPlanningExpanded(!isFlightPlanningExpanded)}
                   />
                 )}
               </TabsContent>

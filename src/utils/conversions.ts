@@ -129,3 +129,30 @@ export const convertFuelToWeight = (
   // Then convert to display units
   return convertWeightForDisplay(weightLbs, settings.weightUnits);
 };
+
+// Convert CG position (stored in mm) for display based on user's distance unit preference
+export const convertCGForDisplay = (
+  cgMm: number,
+  targetUnit: 'inches' | 'mm'
+): number => {
+  if (targetUnit === 'inches') {
+    return distanceConversions.mmToInches(cgMm);
+  }
+  return cgMm;
+};
+
+// Get the display string for distance units
+export const getDistanceUnitLabel = (unit: 'inches' | 'mm'): string => {
+  return unit === 'inches' ? '"' : ' mm';
+};
+
+// Convert fuel quantity for display (from internal litres to user's preference)
+export const convertFuelQuantityForDisplay = (
+  fuelLitres: number,
+  targetUnit: 'litres' | 'gallons'
+): number => {
+  if (targetUnit === 'gallons') {
+    return fuelConversions.litresToGallons(fuelLitres);
+  }
+  return fuelLitres;
+};

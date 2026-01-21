@@ -39,6 +39,8 @@ export interface Aircraft {
   fuelCapacityLitres: number;
   loadingStations: LoadingStation[];
   cgEnvelope: CGEnvelopePoint[];
+  // Flight planning defaults
+  defaultFuelBurnRateGPH: number;  // Default fuel burn rate in gallons per hour
   // Additional specs from POH
   dateApproved: string;
   workOrder: string;

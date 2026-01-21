@@ -1,5 +1,5 @@
 import type { Aircraft, LoadingState, CalculationResult, CGEnvelopePoint, Settings, LoadPathPoint, FuelBurnState } from '@/types/aircraft';
-import { getFuelWeightLbs, roundToPrecision } from './conversions';
+import { getFuelWeightLbs, roundToPrecision, convertWeightForDisplay } from './conversions';
 
 // Fuel weight constant
 const AVGAS_LBS_PER_GALLON = 6.0;
@@ -167,22 +167,27 @@ const MAX_COMBINED_BAGGAGE_LBS = 200;
 // Validate loading limits
 export const validateLoading = (
   loadingState: LoadingState,
-  aircraft: Aircraft
+  aircraft: Aircraft,
+  settings: Settings
 ): string[] => {
   const warnings: string[] = [];
+  const weightUnit = settings.weightUnits;
 
   // Check individual station limits
   aircraft.loadingStations.forEach(station => {
     const weight = getStationWeight(loadingState, station.id);
     if (weight > station.maxWeightLbs) {
-      warnings.push(`${station.name} exceeds maximum weight of ${station.maxWeightLbs} lbs`);
+      const displayMax = Math.round(convertWeightForDisplay(station.maxWeightLbs, weightUnit));
+      warnings.push(`${station.name} exceeds maximum weight of ${displayMax} ${weightUnit}`);
     }
   });
 
   // Check combined baggage limit (POH states max combined is 200 lbs)
   const totalBaggage = loadingState.baggageA + loadingState.baggageB + loadingState.baggageC;
   if (totalBaggage > MAX_COMBINED_BAGGAGE_LBS) {
-    warnings.push(`Combined baggage (${totalBaggage} lbs) exceeds ${MAX_COMBINED_BAGGAGE_LBS} lb limit`);
+    const displayTotal = Math.round(convertWeightForDisplay(totalBaggage, weightUnit));
+    const displayMax = Math.round(convertWeightForDisplay(MAX_COMBINED_BAGGAGE_LBS, weightUnit));
+    warnings.push(`Combined baggage (${displayTotal} ${weightUnit}) exceeds ${displayMax} ${weightUnit} limit`);
   }
 
   // Check for unrealistic data
@@ -427,13 +432,15 @@ export const calculateWeightAndBalance = (
   const percentMAC = calculatePercentMAC(cgPosition);
   const withinEnvelope = isWithinCGEnvelope(totalWeight, cgPosition, aircraft.cgEnvelope);
   const cgLimits = getCGLimits(totalWeight, aircraft.cgEnvelope);
-  const warnings = validateLoading(loadingState, aircraft);
+  const warnings = validateLoading(loadingState, aircraft, settings);
   const errors: string[] = [];
 
   // Check weight limits
   const withinWeightLimits = totalWeight <= aircraft.maxTakeoffWeightLbs;
   if (!withinWeightLimits) {
-    errors.push(`Total weight (${totalWeight.toFixed(1)} lbs) exceeds MTOW (${aircraft.maxTakeoffWeightLbs} lbs)`);
+    const displayWeight = Math.round(convertWeightForDisplay(totalWeight, settings.weightUnits));
+    const displayMTOW = Math.round(convertWeightForDisplay(aircraft.maxTakeoffWeightLbs, settings.weightUnits));
+    errors.push(`Total weight (${displayWeight} ${settings.weightUnits}) exceeds MTOW (${displayMTOW} ${settings.weightUnits})`);
   }
 
   // Calculate cumulative load path for visualization

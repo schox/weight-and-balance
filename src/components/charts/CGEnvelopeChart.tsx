@@ -23,13 +23,12 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
 }) => {
   const { totalWeight, cgPosition, withinEnvelope, loadPath, zeroFuelWeight, zeroFuelCG } = calculations;
 
-  // Convert envelope points to display units
-  // Convert CG based on weight unit preference: kg->mm, lbs->inches
+  // Convert envelope points to display units based on user's distance unit preference
   const convertCGForDisplay = (cgMm: number) => {
-    return settings.weightUnits === 'kg' ? cgMm : cgMm / 25.4; // mm for kg, inches for lbs
+    return settings.distanceUnits === 'mm' ? cgMm : cgMm / 25.4;
   };
 
-  const getCGUnit = () => settings.weightUnits === 'kg' ? 'mm' : 'inches';
+  const getCGUnit = () => settings.distanceUnits;
 
   // Convert all envelope points to display units for plotting
   const envelopePoints = aircraft.cgEnvelope.map(point => ({

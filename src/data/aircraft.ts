@@ -112,6 +112,7 @@ export const vhYpbAircraft: Aircraft = {
   fuelCapacityLitres: 329.3,        // 87 gallons converted to litres
   loadingStations: vhYpbLoadingStations,
   cgEnvelope: vhYpbCGEnvelope,
+  defaultFuelBurnRateGPH: 14,       // Typical cruise fuel burn rate
   dateApproved: '01-Nov-11',        // From load data sheet
   workOrder: 'WB-5014'              // From load data sheet
 };
@@ -129,6 +130,7 @@ export const secondAircraft: Aircraft = {
   fuelCapacityLitres: 246.1,
   loadingStations: [], // To be defined later
   cgEnvelope: [],      // To be defined later
+  defaultFuelBurnRateGPH: 12,       // Placeholder - to be defined per aircraft
   dateApproved: 'TBD',
   workOrder: 'TBD'
 };
