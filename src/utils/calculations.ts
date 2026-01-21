@@ -90,51 +90,85 @@ export const calculateCGPosition = (
   return totalMoment / totalWeightKg;
 };
 
-// VH-YPB CG Envelope constants (from POH)
-// Forward limit: 33.0" constant for weights ≤ 2,250 lbs
-// Forward limit: Linear from 33.0" at 2,250 lbs to 40.9" at 3,100 lbs
-// Aft limit: 46.0" constant at all weights
-const CG_ENVELOPE = {
-  minWeight: 2007,           // Basic Empty Weight
-  maxWeight: 3100,           // MTOW
-  forwardFlatLimit: 838.2,   // 33.0" in mm
-  forwardFlatMaxWeight: 2250, // Weight at which forward limit starts to taper
-  forwardTaperLimit: 1038.86, // 40.9" in mm at MTOW
-  aftLimit: 1168.4,          // 46.0" in mm (constant)
-};
+// Extract CG envelope limits from aircraft data
+// The envelope is defined as a polygon with forward limit points first, then aft limit points
+// Standard format: [BEW fwd, breakpoint fwd, MTOW fwd, MTOW aft, BEW aft, close polygon]
+interface CGEnvelopeLimits {
+  minWeight: number;           // Basic Empty Weight
+  maxWeight: number;           // MTOW
+  forwardFlatLimit: number;    // Forward limit at/below breakpoint weight (mm)
+  forwardFlatMaxWeight: number; // Weight at which forward limit starts to taper
+  forwardTaperLimit: number;   // Forward limit at MTOW (mm)
+  aftLimit: number;            // Aft limit (constant, mm)
+}
 
-// Calculate the forward CG limit at a given weight
-export const getForwardCGLimit = (weight: number): number => {
-  // Below or at 2,250 lbs: forward limit is flat at 33.0" (838.2mm)
-  if (weight <= CG_ENVELOPE.forwardFlatMaxWeight) {
-    return CG_ENVELOPE.forwardFlatLimit;
+// Extract envelope limits from aircraft CG envelope points
+export const extractEnvelopeLimits = (aircraft: Aircraft): CGEnvelopeLimits => {
+  const envelope = aircraft.cgEnvelope;
+  if (envelope.length < 5) {
+    // Fallback for incomplete envelopes
+    return {
+      minWeight: aircraft.emptyWeightLbs,
+      maxWeight: aircraft.maxTakeoffWeightLbs,
+      forwardFlatLimit: envelope[0]?.cgPosition || 889,
+      forwardFlatMaxWeight: envelope[1]?.weight || aircraft.emptyWeightLbs,
+      forwardTaperLimit: envelope[2]?.cgPosition || 1003.3,
+      aftLimit: envelope[3]?.cgPosition || 1201.4,
+    };
   }
 
-  // Above 2,250 lbs: linear interpolation from 33.0" at 2,250 lbs to 40.9" at 3,100 lbs
-  const ratio = (weight - CG_ENVELOPE.forwardFlatMaxWeight) /
-                (CG_ENVELOPE.maxWeight - CG_ENVELOPE.forwardFlatMaxWeight);
-  return CG_ENVELOPE.forwardFlatLimit +
-         ratio * (CG_ENVELOPE.forwardTaperLimit - CG_ENVELOPE.forwardFlatLimit);
+  // Standard envelope format:
+  // Point 0: BEW at forward limit
+  // Point 1: Breakpoint weight at forward limit (flat section ends here)
+  // Point 2: MTOW at forward limit (tapered)
+  // Point 3: MTOW at aft limit
+  // Point 4: BEW at aft limit
+  // Point 5: Close polygon (same as point 0)
+  return {
+    minWeight: envelope[0].weight,
+    maxWeight: envelope[2].weight,
+    forwardFlatLimit: envelope[0].cgPosition,
+    forwardFlatMaxWeight: envelope[1].weight,
+    forwardTaperLimit: envelope[2].cgPosition,
+    aftLimit: envelope[3].cgPosition,
+  };
+};
+
+// Calculate the forward CG limit at a given weight for a specific aircraft
+export const getForwardCGLimit = (weight: number, aircraft: Aircraft): number => {
+  const limits = extractEnvelopeLimits(aircraft);
+
+  // Below or at breakpoint weight: forward limit is flat
+  if (weight <= limits.forwardFlatMaxWeight) {
+    return limits.forwardFlatLimit;
+  }
+
+  // Above breakpoint: linear interpolation to MTOW
+  const ratio = (weight - limits.forwardFlatMaxWeight) /
+                (limits.maxWeight - limits.forwardFlatMaxWeight);
+  return limits.forwardFlatLimit +
+         ratio * (limits.forwardTaperLimit - limits.forwardFlatLimit);
 };
 
 // Check if point is within CG envelope using proper interpolated limits
 export const isWithinCGEnvelope = (
   weight: number,
   cgPosition: number,
-  envelope: CGEnvelopePoint[]
+  _envelope: CGEnvelopePoint[],
+  aircraft: Aircraft
 ): boolean => {
-  if (envelope.length < 5) return true; // Safety check
+  const limits = extractEnvelopeLimits(aircraft);
 
   // Weight must be within valid range
-  if (weight < CG_ENVELOPE.minWeight || weight > CG_ENVELOPE.maxWeight) {
+  if (weight < limits.minWeight || weight > limits.maxWeight) {
     return false;
   }
 
   // Calculate the forward limit at this weight
-  const forwardLimit = getForwardCGLimit(weight);
+  const forwardLimit = getForwardCGLimit(weight, aircraft);
 
-  // CG must be between forward limit and aft limit (46.0")
-  return cgPosition >= forwardLimit && cgPosition <= CG_ENVELOPE.aftLimit;
+  // CG must be between forward limit and aft limit
+  return cgPosition >= forwardLimit && cgPosition <= limits.aftLimit;
 };
 
 // Calculate percent Mean Aerodynamic Chord (simplified)
@@ -147,22 +181,18 @@ export const calculatePercentMAC = (cgPosition: number): number => {
   return ((cgPosition - macStart) / macLength) * 100;
 };
 
-// Get CG limits for current weight using proper POH envelope data
+// Get CG limits for current weight using aircraft-specific envelope data
 export const getCGLimits = (
   weight: number,
-  _envelope: CGEnvelopePoint[]
+  _envelope: CGEnvelopePoint[],
+  aircraft: Aircraft
 ): { forward: number; aft: number } => {
-  // Use the proper forward limit calculation based on POH data
-  // Forward limit: 33.0" constant for ≤2,250 lbs, linear taper to 40.9" at 3,100 lbs
-  // Aft limit: 46.0" constant at all weights
+  const limits = extractEnvelopeLimits(aircraft);
   return {
-    forward: getForwardCGLimit(weight),
-    aft: CG_ENVELOPE.aftLimit
+    forward: getForwardCGLimit(weight, aircraft),
+    aft: limits.aftLimit
   };
 };
-
-// Combined baggage limit (from POH)
-const MAX_COMBINED_BAGGAGE_LBS = 200;
 
 // Validate loading limits
 export const validateLoading = (
@@ -182,11 +212,14 @@ export const validateLoading = (
     }
   });
 
-  // Check combined baggage limit (POH states max combined is 200 lbs)
-  const totalBaggage = loadingState.baggageA + loadingState.baggageB + loadingState.baggageC;
-  if (totalBaggage > MAX_COMBINED_BAGGAGE_LBS) {
+  // Check combined baggage limit (aircraft-specific)
+  // Only count baggageC if the aircraft has that station
+  const hasBaggageC = aircraft.loadingStations.some(s => s.id === 'baggageC');
+  const totalBaggage = loadingState.baggageA + loadingState.baggageB + (hasBaggageC ? loadingState.baggageC : 0);
+  const maxCombinedBaggage = aircraft.combinedBaggageLimitLbs || 200; // Default to 200 if not specified
+  if (totalBaggage > maxCombinedBaggage) {
     const displayTotal = Math.round(convertWeightForDisplay(totalBaggage, weightUnit));
-    const displayMax = Math.round(convertWeightForDisplay(MAX_COMBINED_BAGGAGE_LBS, weightUnit));
+    const displayMax = Math.round(convertWeightForDisplay(maxCombinedBaggage, weightUnit));
     warnings.push(`Combined baggage (${displayTotal} ${weightUnit}) exceeds ${displayMax} ${weightUnit} limit`);
   }
 
@@ -240,7 +273,8 @@ export const calculateCumulativeLoadPath = (
   });
 
   // Define the order of stations to add (matching Excel's sequential approach)
-  const stationOrder: { id: string; label: string; getValue: () => number }[] = [
+  // Only include stations that exist for this aircraft
+  const allStations: { id: string; label: string; getValue: () => number }[] = [
     { id: 'pilot', label: 'Pilot', getValue: () => loadingState.pilot },
     { id: 'frontPassenger', label: 'Front Pax', getValue: () => loadingState.frontPassenger },
     { id: 'rearPassenger1', label: 'Rear Pax 1', getValue: () => loadingState.rearPassenger1 },
@@ -249,6 +283,11 @@ export const calculateCumulativeLoadPath = (
     { id: 'baggageB', label: 'Bag B', getValue: () => loadingState.baggageB },
     { id: 'baggageC', label: 'Bag C', getValue: () => loadingState.baggageC },
   ];
+
+  // Filter to only include stations that exist for this aircraft
+  const stationOrder = allStations.filter(station =>
+    aircraft.loadingStations.some(s => s.id === station.id)
+  );
 
   // Add each station sequentially
   for (const station of stationOrder) {
@@ -383,10 +422,13 @@ export const calculateCombinedBaggage = (
     return station?.armMm || 0;
   };
 
-  // Individual baggage weights in lbs
+  // Check if aircraft has baggageC station
+  const hasBaggageC = aircraft.loadingStations.some(s => s.id === 'baggageC');
+
+  // Individual baggage weights in lbs (only count baggageC if aircraft has it)
   const baggageAWeight = loadingState.baggageA;
   const baggageBWeight = loadingState.baggageB;
-  const baggageCWeight = loadingState.baggageC;
+  const baggageCWeight = hasBaggageC ? loadingState.baggageC : 0;
 
   // Total baggage weight
   const totalBaggageWeight = baggageAWeight + baggageBWeight + baggageCWeight;
@@ -430,8 +472,8 @@ export const calculateWeightAndBalance = (
   const totalMoment = calculateTotalMoment(loadingState, aircraft, settings);
   const cgPosition = calculateCGPosition(totalWeight, totalMoment);
   const percentMAC = calculatePercentMAC(cgPosition);
-  const withinEnvelope = isWithinCGEnvelope(totalWeight, cgPosition, aircraft.cgEnvelope);
-  const cgLimits = getCGLimits(totalWeight, aircraft.cgEnvelope);
+  const withinEnvelope = isWithinCGEnvelope(totalWeight, cgPosition, aircraft.cgEnvelope, aircraft);
+  const cgLimits = getCGLimits(totalWeight, aircraft.cgEnvelope, aircraft);
   const warnings = validateLoading(loadingState, aircraft, settings);
   const errors: string[] = [];
 

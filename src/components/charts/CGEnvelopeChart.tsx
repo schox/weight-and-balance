@@ -229,9 +229,9 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
                 return null;
               })()}
 
-              {/* Darker shaded area for MTOW/MLW at top */}
-              {(() => {
-                const mlwWeight = convertWeightForDisplay(2950, settings.weightUnits);  // MLW
+              {/* Darker shaded area for MTOW/MLW at top (only if MLW < MTOW) */}
+              {aircraft.maxLandingWeightLbs < aircraft.maxTakeoffWeightLbs && (() => {
+                const mlwWeight = convertWeightForDisplay(aircraft.maxLandingWeightLbs, settings.weightUnits);
 
                 // Create darker polygon for the top area between MLW and MTOW
                 const topAreaPoints = envelopePoints
@@ -251,8 +251,8 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
                 return null;
               })()}
 
-              {/* Max Landing Weight Line */}
-              {(() => {
+              {/* Max Landing Weight Line (only if MLW < MTOW) */}
+              {aircraft.maxLandingWeightLbs < aircraft.maxTakeoffWeightLbs && (() => {
                 const mlwLbs = aircraft.maxLandingWeightLbs;
                 const mlwDisplay = convertWeightForDisplay(mlwLbs, settings.weightUnits);
 
@@ -523,10 +523,12 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
               <span>Landing</span>
             </div>
           )}
-          <div className="flex items-center">
-            <div className="w-4 h-0.5 bg-red-500 mr-2" style={{ borderStyle: 'dashed', borderWidth: '1px', borderColor: '#dc2626' }}></div>
-            <span>MLW</span>
-          </div>
+          {aircraft.maxLandingWeightLbs < aircraft.maxTakeoffWeightLbs && (
+            <div className="flex items-center">
+              <div className="w-4 h-0.5 bg-red-500 mr-2" style={{ borderStyle: 'dashed', borderWidth: '1px', borderColor: '#dc2626' }}></div>
+              <span>MLW</span>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-4 p-3 bg-muted rounded-lg text-sm">

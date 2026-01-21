@@ -41,6 +41,8 @@ export interface Aircraft {
   cgEnvelope: CGEnvelopePoint[];
   // Flight planning defaults
   defaultFuelBurnRateGPH: number;  // Default fuel burn rate in gallons per hour
+  // Baggage limits
+  combinedBaggageLimitLbs?: number;  // Combined baggage limit (if different from sum of individual limits)
   // Additional specs from POH
   dateApproved: string;
   workOrder: string;

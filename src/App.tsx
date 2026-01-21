@@ -8,6 +8,7 @@ import InfoDialog from '@/components/dialogs/InfoDialog';
 import HomePage from '@/pages/HomePage';
 import TermsPage from '@/pages/TermsPage';
 import PrivacyPage from '@/pages/PrivacyPage';
+import AircraftInfoPage from '@/pages/AircraftInfoPage';
 
 function AppLayout() {
   const [settings, setSettings] = useState<SettingsType>({
@@ -57,6 +58,7 @@ function AppLayout() {
       <main className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-4 flex-1">
         <Routes>
           <Route path="/" element={<HomePage settings={settings} />} />
+          <Route path="/aircraft/:registration" element={<AircraftInfoPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
         </Routes>

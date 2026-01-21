@@ -24,7 +24,7 @@ interface LoadingStationGridProps {
 }
 
 const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
-  aircraft: _aircraft,
+  aircraft,
   loadingState,
   settings,
   actions
@@ -49,6 +49,7 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
       />
 
       <BaggageTilesCombined
+        aircraft={aircraft}
         baggageA={loadingState.baggageA}
         baggageB={loadingState.baggageB}
         baggageC={loadingState.baggageC}
@@ -59,6 +60,7 @@ const LoadingStationGrid: React.FC<LoadingStationGridProps> = ({
       />
 
       <FuelTilesCombined
+        aircraft={aircraft}
         fuelLeft={loadingState.fuelLeft}
         fuelRight={loadingState.fuelRight}
         onFuelLeftChange={actions.updateFuelLeft}

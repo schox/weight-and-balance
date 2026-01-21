@@ -1,6 +1,7 @@
+import { Link } from 'react-router-dom';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Plane, Info } from "lucide-react";
-import { vhYpbAircraft } from '@/data/aircraft';
+import { vhYpbAircraft, vhKxwAircraft } from '@/data/aircraft';
 import type { Settings as SettingsType } from '@/types/aircraft';
 import AircraftTab from '@/components/aircraft/AircraftTab';
 
@@ -9,8 +10,6 @@ interface HomePageProps {
 }
 
 const HomePage: React.FC<HomePageProps> = ({ settings }) => {
-  const aircraft = vhYpbAircraft;
-
   return (
     <Tabs defaultValue="YPB" className="w-full">
       <div className="relative">
@@ -29,7 +28,14 @@ const HomePage: React.FC<HomePageProps> = ({ settings }) => {
               >
                 <Plane className="h-4 w-4 mr-2" />
                 YPB C182T
-                <Info className="h-4 w-4 ml-2" />
+                <Link
+                  to="/aircraft/VH-YPB"
+                  className="ml-2 p-1 rounded hover:bg-black/10 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                  title="View aircraft data"
+                >
+                  <Info className="h-4 w-4" />
+                </Link>
               </TabsTrigger>
               <TabsTrigger
                 value="KXW"
@@ -37,8 +43,15 @@ const HomePage: React.FC<HomePageProps> = ({ settings }) => {
                 className="text-base font-semibold px-6 flex-1"
               >
                 <Plane className="h-4 w-4 mr-2" />
-                KXW C172SP
-                <Info className="h-4 w-4 ml-2" />
+                KXW C172P
+                <Link
+                  to="/aircraft/VH-KXW"
+                  className="ml-2 p-1 rounded hover:bg-black/10 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                  title="View aircraft data"
+                >
+                  <Info className="h-4 w-4" />
+                </Link>
               </TabsTrigger>
             </TabsList>
           </div>
@@ -49,14 +62,11 @@ const HomePage: React.FC<HomePageProps> = ({ settings }) => {
       </div>
 
       <TabsContent value="YPB" variant="borderless" className="mt-4">
-        <AircraftTab aircraft={aircraft} settings={settings} />
+        <AircraftTab aircraft={vhYpbAircraft} settings={settings} />
       </TabsContent>
 
       <TabsContent value="KXW" variant="borderless" className="mt-4">
-        <div className="text-center py-12">
-          <h2 className="text-2xl font-bold text-muted-foreground mb-4">KXW C172SP</h2>
-          <p className="text-muted-foreground">Aircraft data coming soon...</p>
-        </div>
+        <AircraftTab aircraft={vhKxwAircraft} settings={settings} />
       </TabsContent>
     </Tabs>
   );

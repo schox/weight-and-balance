@@ -6,9 +6,10 @@ import { theme } from '@/lib/theme';
 import { Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { convertWeightForDisplay, convertWeightToLbs, roundDownForDisplay } from '@/utils/conversions';
-import type { Settings } from '@/types/aircraft';
+import type { Settings, Aircraft } from '@/types/aircraft';
 
 interface BaggageTilesCombinedProps {
+  aircraft: Aircraft;
   baggageA: number;
   baggageB: number;
   baggageC: number;
@@ -20,6 +21,7 @@ interface BaggageTilesCombinedProps {
 }
 
 const BaggageTilesCombined: React.FC<BaggageTilesCombinedProps> = ({
+  aircraft,
   baggageA,
   baggageB,
   baggageC,
@@ -29,16 +31,27 @@ const BaggageTilesCombined: React.FC<BaggageTilesCombinedProps> = ({
   settings,
   className
 }) => {
+  // Check if aircraft has baggageC station
+  const hasBaggageC = aircraft.loadingStations.some(s => s.id === 'baggageC');
+
+  // Get max weight for each baggage area from aircraft loading stations
+  const getBaggageStation = (id: string) => aircraft.loadingStations.find(s => s.id === id);
+  const baggageAStation = getBaggageStation('baggageA');
+  const baggageBStation = getBaggageStation('baggageB');
+  const baggageCStation = getBaggageStation('baggageC');
 
   // Convert values for display
   const baggageADisplay = convertWeightForDisplay(baggageA, settings.weightUnits);
   const baggageBDisplay = convertWeightForDisplay(baggageB, settings.weightUnits);
-  const baggageCDisplay = convertWeightForDisplay(baggageC, settings.weightUnits);
+  const baggageCDisplay = hasBaggageC ? convertWeightForDisplay(baggageC, settings.weightUnits) : 0;
   const totalBaggageDisplay = baggageADisplay + baggageBDisplay + baggageCDisplay;
 
   // Max weights for each baggage area (in display units)
   const getMaxWeight = (area: 'A' | 'B' | 'C') => {
-    const maxLbs = area === 'A' ? 120 : 80; // Area A: 120 lbs, Areas B&C: 80 lbs each
+    let maxLbs = 0;
+    if (area === 'A' && baggageAStation) maxLbs = baggageAStation.maxWeightLbs;
+    else if (area === 'B' && baggageBStation) maxLbs = baggageBStation.maxWeightLbs;
+    else if (area === 'C' && baggageCStation) maxLbs = baggageCStation.maxWeightLbs;
     return roundDownForDisplay(convertWeightForDisplay(maxLbs, settings.weightUnits));
   };
 
@@ -104,33 +117,35 @@ const BaggageTilesCombined: React.FC<BaggageTilesCombinedProps> = ({
 
         {/* Tabs */}
         <Tabs defaultValue="a" className="w-full flex-1">
-          <TabsList variant="default" className="grid w-full grid-cols-3">
+          <TabsList variant="default" className={`grid w-full ${hasBaggageC ? 'grid-cols-3' : 'grid-cols-2'}`}>
             <TabsTrigger
               value="a"
               variant="colored"
               activeColor={theme.sections.baggage.DEFAULT}
             >
-              Area A
+              {baggageAStation?.name.replace('Baggage ', '') || 'Area 1'}
             </TabsTrigger>
             <TabsTrigger
               value="b"
               variant="colored"
               activeColor={theme.sections.baggage.DEFAULT}
             >
-              Area B
+              {baggageBStation?.name.replace('Baggage ', '') || 'Area 2'}
             </TabsTrigger>
-            <TabsTrigger
-              value="c"
-              variant="colored"
-              activeColor={theme.sections.baggage.DEFAULT}
-            >
-              Area C
-            </TabsTrigger>
+            {hasBaggageC && (
+              <TabsTrigger
+                value="c"
+                variant="colored"
+                activeColor={theme.sections.baggage.DEFAULT}
+              >
+                {baggageCStation?.name.replace('Baggage ', '') || 'Area C'}
+              </TabsTrigger>
+            )}
           </TabsList>
 
           {renderBaggageTab('A')}
           {renderBaggageTab('B')}
-          {renderBaggageTab('C')}
+          {hasBaggageC && renderBaggageTab('C')}
         </Tabs>
 
         {/* Total display without divider */}

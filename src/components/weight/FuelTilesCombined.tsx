@@ -6,9 +6,10 @@ import { theme } from '@/lib/theme';
 import { Fuel } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { convertFuelForDisplay, convertFuelToWeight, roundDownForDisplay } from '@/utils/conversions';
-import type { Settings } from '@/types/aircraft';
+import type { Settings, Aircraft } from '@/types/aircraft';
 
 interface FuelTilesCombinedProps {
+  aircraft: Aircraft;
   fuelLeft: number;
   fuelRight: number;
   onFuelLeftChange: (value: number) => void;
@@ -18,6 +19,7 @@ interface FuelTilesCombinedProps {
 }
 
 const FuelTilesCombined: React.FC<FuelTilesCombinedProps> = ({
+  aircraft,
   fuelLeft,
   fuelRight,
   onFuelLeftChange,
@@ -25,6 +27,9 @@ const FuelTilesCombined: React.FC<FuelTilesCombinedProps> = ({
   settings,
   className
 }) => {
+  // Get max fuel per tank from aircraft (half of total capacity)
+  const maxFuelPerTankGallons = aircraft.fuelCapacityGallons / 2;
+  const maxFuelPerTankLitres = aircraft.fuelCapacityLitres / 2;
 
   // Convert values for display
   const fuelLeftDisplay = convertFuelForDisplay(fuelLeft, settings.fuelUnits);
@@ -36,10 +41,14 @@ const FuelTilesCombined: React.FC<FuelTilesCombinedProps> = ({
   const fuelRightWeight = convertFuelToWeight(fuelRight, settings);
   const totalFuelWeight = fuelLeftWeight + fuelRightWeight;
 
+  // Max fuel per tank in current display units
+  const maxFuelPerTank = settings.fuelUnits === 'litres'
+    ? Math.floor(maxFuelPerTankLitres)
+    : Math.floor(maxFuelPerTankGallons);
+
   const handleInputChange = (value: string, isLeft: boolean) => {
     const numValue = Math.floor(parseFloat(value) || 0); // Use integers only
-    const maxFuel = settings.fuelUnits === 'litres' ? 87 : 23; // 87L or 23 gallons max per tank
-    const clampedValue = Math.max(0, Math.min(numValue, maxFuel));
+    const clampedValue = Math.max(0, Math.min(numValue, maxFuelPerTank));
 
     if (isLeft) {
       onFuelLeftChange(settings.fuelUnits === 'litres' ? clampedValue : clampedValue * 3.78541);
@@ -51,7 +60,7 @@ const FuelTilesCombined: React.FC<FuelTilesCombinedProps> = ({
 
   const renderFuelTab = (isLeft: boolean) => {
     const currentValue = Math.floor(isLeft ? fuelLeftDisplay : fuelRightDisplay);
-    const maxFuel = settings.fuelUnits === 'litres' ? 87 : 23;
+    const maxFuel = maxFuelPerTank;
     const weight = roundDownForDisplay(isLeft ? fuelLeftWeight : fuelRightWeight);
     const isOutOfRange = currentValue < 0 || currentValue > maxFuel;
 

@@ -113,24 +113,118 @@ export const vhYpbAircraft: Aircraft = {
   loadingStations: vhYpbLoadingStations,
   cgEnvelope: vhYpbCGEnvelope,
   defaultFuelBurnRateGPH: 14,       // Typical cruise fuel burn rate
+  combinedBaggageLimitLbs: 200,     // Combined baggage limit for Areas A, B, and C
   dateApproved: '01-Nov-11',        // From load data sheet
   workOrder: 'WB-5014'              // From load data sheet
 };
 
-// Second aircraft placeholder (for future expansion)
-export const secondAircraft: Aircraft = {
-  registration: 'VH-XXX',
-  model: 'Aircraft 2',
-  emptyWeightLbs: 1800,
-  emptyCGMm: 914,                   // 36.0" converted to mm (36.0 * 25.4)
-  maxTakeoffWeightLbs: 2800,
-  maxLandingWeightLbs: 2700,
-  maxRampWeightLbs: 2810,
-  fuelCapacityGallons: 65,
-  fuelCapacityLitres: 246.1,
-  loadingStations: [], // To be defined later
-  cgEnvelope: [],      // To be defined later
-  defaultFuelBurnRateGPH: 12,       // Placeholder - to be defined per aircraft
+// VH-KXW Cessna 172P Loading Stations
+const vhKxwLoadingStations: LoadingStation[] = [
+  {
+    id: 'pilot',
+    name: 'Pilot',
+    armMm: 940,                 // 37.0" converted to mm
+    maxWeightLbs: 400,
+    isRequired: true,
+    category: 'pilot'
+  },
+  {
+    id: 'frontPassenger',
+    name: 'Front Passenger',
+    armMm: 940,                 // Same as pilot (front seats)
+    maxWeightLbs: 400,
+    isRequired: false,
+    category: 'passenger'
+  },
+  {
+    id: 'rearPassenger1',
+    name: 'Rear Passenger 1',
+    armMm: 1854,                // 73.0" converted to mm
+    maxWeightLbs: 400,
+    isRequired: false,
+    category: 'passenger'
+  },
+  {
+    id: 'rearPassenger2',
+    name: 'Rear Passenger 2',
+    armMm: 1854,                // Same as rear passenger 1
+    maxWeightLbs: 400,
+    isRequired: false,
+    category: 'passenger'
+  },
+  {
+    id: 'baggageA',
+    name: 'Baggage Area 1',
+    armMm: 2413,                // 95.0" converted to mm
+    maxWeightLbs: 120,
+    isRequired: false,
+    category: 'baggage'
+  },
+  {
+    id: 'baggageB',
+    name: 'Baggage Area 2',
+    armMm: 3124,                // 123.0" converted to mm
+    maxWeightLbs: 50,
+    isRequired: false,
+    category: 'baggage'
+  },
+  // Note: No baggageC for KXW (only 2 baggage areas)
+  {
+    id: 'fuelLeft',
+    name: 'Fuel - Left Tank',
+    armMm: 1219,                // 48.0" converted to mm
+    maxWeightLbs: 159,          // ~26.5 gallons * 6 lbs/gal
+    isRequired: false,
+    category: 'fuel'
+  },
+  {
+    id: 'fuelRight',
+    name: 'Fuel - Right Tank',
+    armMm: 1219,                // Same as left tank
+    maxWeightLbs: 159,          // ~26.5 gallons * 6 lbs/gal
+    isRequired: false,
+    category: 'fuel'
+  }
+];
+
+// CG Envelope points for VH-KXW (Normal Category)
+// Based on Cessna 172P POH
+// POH specs:
+//   - Forward limit: 35.0" constant for weights ≤ 1,950 lbs
+//   - Forward limit: Linear taper from 35.0" at 1,950 lbs to 39.5" at 2,400 lbs
+//   - Aft limit: 47.3" constant at all weights
+//   - Minimum weight: 1,746 lbs (Basic Empty Weight)
+// Tracing the envelope clockwise starting from bottom-left
+const vhKxwCGEnvelope: CGEnvelopePoint[] = [
+  // Bottom-left corner (empty weight, forward limit)
+  { weight: 1746, cgPosition: 889 },     // 35.0" at BEW
+  // Forward limit stays flat until 1,950 lbs (vertical line up)
+  { weight: 1950, cgPosition: 889 },     // 35.0" at 1,950 lbs
+  // Forward limit tapers linearly to MTOW (diagonal line up-right)
+  { weight: 2400, cgPosition: 1003.3 },  // 39.5" at MTOW
+  // Top-right (aft limit at MTOW)
+  { weight: 2400, cgPosition: 1201.4 },  // 47.3"
+  // Bottom-right (aft limit at BEW - vertical line down)
+  { weight: 1746, cgPosition: 1201.4 },  // 47.3"
+  // Close polygon back to start
+  { weight: 1746, cgPosition: 889 },     // 35.0"
+];
+
+// VH-KXW Aircraft Definition
+export const vhKxwAircraft: Aircraft = {
+  registration: 'VH-KXW',
+  model: 'Cessna 172P',
+  emptyWeightLbs: 1745.8,
+  emptyCGMm: 1057,                   // 41.6" converted to mm
+  maxTakeoffWeightLbs: 2400,
+  maxLandingWeightLbs: 2400,
+  maxRampWeightLbs: 2410,            // Typical +10 lbs for taxi
+  fuelCapacityGallons: 53,           // ~53 gallons usable (26.5 per tank)
+  fuelCapacityLitres: 200.6,         // 53 gallons converted to litres
+  loadingStations: vhKxwLoadingStations,
+  cgEnvelope: vhKxwCGEnvelope,
+  defaultFuelBurnRateGPH: 9,
+  combinedBaggageLimitLbs: 120,      // Different from YPB's 200 lbs
   dateApproved: 'TBD',
   workOrder: 'TBD'
 };
@@ -138,7 +232,7 @@ export const secondAircraft: Aircraft = {
 // Aircraft database
 export const aircraftDatabase: Record<string, Aircraft> = {
   'VH-YPB': vhYpbAircraft,
-  'VH-XXX': secondAircraft
+  'VH-KXW': vhKxwAircraft
 };
 
 // Get aircraft by registration
