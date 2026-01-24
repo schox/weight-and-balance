@@ -1,7 +1,13 @@
 {
-  "name": "weight-and-balance-app",
+  "name": "weight-and-balance",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Aircraft weight and balance calculator for the Curtin Flying Club",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/schox/weight-and-balance.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
