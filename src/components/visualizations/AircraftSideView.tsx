@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Aircraft, CalculationResult, Settings, LoadingState } from '@/types/aircraft';
 import { calculateCombinedBaggage } from '@/utils/calculations';
-import { convertWeightForDisplay, roundDownForDisplay } from '@/utils/conversions';
+import { convertWeightForDisplay, roundDownForDisplay, getFuelWeightLbs } from '@/utils/conversions';
 import { cn } from '@/lib/utils';
 import airplaneImage from '/assets/airplane-1295210_1280-pixabay.png';
 
@@ -22,9 +22,9 @@ const AircraftSideView: React.FC<AircraftSideViewProps> = ({
   // Calculate combined baggage if we have loading state
   const combinedBaggage = loadingState ? calculateCombinedBaggage(loadingState, aircraft) : null;
 
-  // Calculate weights for each category
+  // Calculate weights for each category (all in lbs for display conversion)
   const categoryWeights = loadingState ? {
-    fuel: (loadingState.fuelLeft || 0) + (loadingState.fuelRight || 0),
+    fuel: getFuelWeightLbs(loadingState.fuelLeft || 0, 'litres') + getFuelWeightLbs(loadingState.fuelRight || 0, 'litres'),
     frontRow: (loadingState.pilot || 0) + (loadingState.frontPassenger || 0),
     backRow: (loadingState.rearPassenger1 || 0) + (loadingState.rearPassenger2 || 0),
     baggage: combinedBaggage?.weight || 0

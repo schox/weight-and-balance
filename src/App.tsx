@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Settings, Info, HelpCircle } from "lucide-react";
 import type { Settings as SettingsType } from '@/types/aircraft';
@@ -10,6 +10,18 @@ import TermsPage from '@/pages/TermsPage';
 import PrivacyPage from '@/pages/PrivacyPage';
 import AircraftInfoPage from '@/pages/AircraftInfoPage';
 import HelpPage from '@/pages/HelpPage';
+
+// Wrapper that keeps HomePage always mounted but hidden when on other routes
+function HomePageWrapper({ settings }: { settings: SettingsType }) {
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+
+  return (
+    <div style={{ display: isHome ? 'block' : 'none' }}>
+      <HomePage settings={settings} />
+    </div>
+  );
+}
 
 function AppLayout() {
   const [settings, setSettings] = useState<SettingsType>({
@@ -62,8 +74,10 @@ function AppLayout() {
 
       {/* Main Content */}
       <main className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-4 flex-1">
+        {/* HomePage is always mounted to preserve loading state across navigation */}
+        <HomePageWrapper settings={settings} />
         <Routes>
-          <Route path="/" element={<HomePage settings={settings} />} />
+          <Route path="/" element={null} />
           <Route path="/aircraft/:registration" element={<AircraftInfoPage />} />
           <Route path="/help" element={<HelpPage />} />
           <Route path="/terms" element={<TermsPage />} />
