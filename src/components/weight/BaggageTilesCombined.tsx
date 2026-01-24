@@ -77,7 +77,7 @@ const BaggageTilesCombined: React.FC<BaggageTilesCombinedProps> = ({
 
 
   const getCurrentValue = (area: 'A' | 'B' | 'C') => {
-    return Math.floor(area === 'A' ? baggageADisplay : area === 'B' ? baggageBDisplay : baggageCDisplay);
+    return Math.round(area === 'A' ? baggageADisplay : area === 'B' ? baggageBDisplay : baggageCDisplay);
   };
 
   const renderBaggageTab = (area: 'A' | 'B' | 'C') => {
@@ -152,7 +152,7 @@ const BaggageTilesCombined: React.FC<BaggageTilesCombinedProps> = ({
         <div className="mt-2 bg-muted/30 rounded-md p-2">
           <div className="text-center text-sm">
             <span className="font-semibold">Total Baggage: </span>
-            <span className="font-bold">{Math.floor(totalBaggageDisplay)} {settings.weightUnits}</span>
+            <span className="font-bold">{Math.round(totalBaggageDisplay)} {settings.weightUnits}</span>
           </div>
         </div>
       </CardContent>

@@ -51,7 +51,7 @@ const RearRowSeatsCombined: React.FC<RearRowSeatsCombinedProps> = ({
 
 
   const getCurrentValue = (seat: 'rearPassenger1' | 'rearPassenger2') => {
-    return Math.floor(seat === 'rearPassenger1' ? rearPassenger1Display : rearPassenger2Display);
+    return Math.round(seat === 'rearPassenger1' ? rearPassenger1Display : rearPassenger2Display);
   };
 
   const renderSeatControls = (
@@ -123,7 +123,7 @@ const RearRowSeatsCombined: React.FC<RearRowSeatsCombinedProps> = ({
         <div className="mt-2 bg-muted/30 rounded-md p-2">
           <div className="text-center text-sm">
             <span className="font-semibold">Total Rear Row: </span>
-            <span className="font-bold">{Math.floor(totalRearRowDisplay)} {settings.weightUnits}</span>
+            <span className="font-bold">{Math.round(totalRearRowDisplay)} {settings.weightUnits}</span>
           </div>
         </div>
       </CardContent>

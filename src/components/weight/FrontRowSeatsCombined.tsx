@@ -51,7 +51,7 @@ const FrontRowSeatsCombined: React.FC<FrontRowSeatsCombinedProps> = ({
 
 
   const getCurrentValue = (seat: 'pilot' | 'frontPassenger') => {
-    return Math.floor(seat === 'pilot' ? pilotDisplay : frontPassengerDisplay);
+    return Math.round(seat === 'pilot' ? pilotDisplay : frontPassengerDisplay);
   };
 
   const renderSeatControls = (
@@ -125,7 +125,7 @@ const FrontRowSeatsCombined: React.FC<FrontRowSeatsCombinedProps> = ({
         <div className="mt-2 bg-muted/30 rounded-md p-2">
           <div className="text-center text-sm">
             <span className="font-semibold">Total Front Row: </span>
-            <span className="font-bold">{Math.floor(totalFrontRowDisplay)} {settings.weightUnits}</span>
+            <span className="font-bold">{Math.round(totalFrontRowDisplay)} {settings.weightUnits}</span>
           </div>
         </div>
       </CardContent>
