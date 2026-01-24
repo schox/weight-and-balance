@@ -268,6 +268,25 @@ export const generateWeightBalancePDF = (options: PDFOptions): void => {
   const usableWidth = pageWidth - 2 * margin; // 273mm
   let y = margin;
 
+  // Unit preferences
+  const useKg = settings.weightUnits === 'kg';
+  const useMm = settings.distanceUnits === 'mm';
+  const useLitres = settings.fuelUnits === 'litres';
+
+  // Unit display helpers
+  const fmtWeight = (lbs: number): string =>
+    useKg ? (lbs * LBS_TO_KG).toFixed(1) : lbs.toFixed(1);
+  const fmtArm = (mm: number): string =>
+    useMm ? mm.toFixed(0) : (mm * MM_TO_INCHES).toFixed(1);
+  const fmtFuel = (gallons: number): string =>
+    useLitres ? (gallons * GALLONS_TO_LITRES).toFixed(1) : gallons.toFixed(1);
+  const fmtBurnRate = (gph: number): string =>
+    useLitres ? (gph * GALLONS_TO_LITRES).toFixed(1) : gph.toFixed(1);
+  const weightUnit = useKg ? 'kg' : 'lbs';
+  const armUnit = useMm ? 'mm' : 'in';
+  const fuelUnit = useLitres ? 'L' : 'gal';
+  const burnRateUnit = useLitres ? 'L/hr' : 'GPH';
+
   // Helper: get station arm
   const getStationArm = (id: string): number => {
     const station = aircraft.loadingStations.find(s => s.id === id);
@@ -397,10 +416,8 @@ export const generateWeightBalancePDF = (options: PDFOptions): void => {
     totalMomentKgMm += moment;
     return [
       row.label,
-      row.weightLbs.toFixed(1),
-      (row.weightLbs * LBS_TO_KG).toFixed(1),
-      (row.armMm * MM_TO_INCHES).toFixed(1),
-      row.armMm.toFixed(0),
+      fmtWeight(row.weightLbs),
+      fmtArm(row.armMm),
       moment.toFixed(0),
     ];
   });
@@ -409,10 +426,8 @@ export const generateWeightBalancePDF = (options: PDFOptions): void => {
   const cgMm = totalMomentKgMm / (totalWeightLbs * LBS_TO_KG);
   tableBody.push([
     'TOTALS',
-    totalWeightLbs.toFixed(1),
-    (totalWeightLbs * LBS_TO_KG).toFixed(1),
-    (cgMm * MM_TO_INCHES).toFixed(1),
-    cgMm.toFixed(0),
+    fmtWeight(totalWeightLbs),
+    fmtArm(cgMm),
     totalMomentKgMm.toFixed(0),
   ]);
 
@@ -423,15 +438,13 @@ export const generateWeightBalancePDF = (options: PDFOptions): void => {
     theme: 'grid',
     styles: { fontSize: 7.5, cellPadding: 1.3 },
     headStyles: { fillColor: [66, 66, 66], fontSize: 7 },
-    head: [['Station', 'Wt (lbs)', 'Wt (kg)', 'Arm (in)', 'Arm (mm)', 'Mom (kg.mm)']],
+    head: [['Station', `Wt (${weightUnit})`, `Arm (${armUnit})`, 'Mom (kg.mm)']],
     body: tableBody,
     columnStyles: {
-      0: { cellWidth: tableWidth * 0.25 },
-      1: { halign: 'right', cellWidth: tableWidth * 0.13 },
-      2: { halign: 'right', cellWidth: tableWidth * 0.13 },
-      3: { halign: 'right', cellWidth: tableWidth * 0.13 },
-      4: { halign: 'right', cellWidth: tableWidth * 0.13 },
-      5: { halign: 'right', cellWidth: tableWidth * 0.23 },
+      0: { cellWidth: tableWidth * 0.35 },
+      1: { halign: 'right', cellWidth: tableWidth * 0.18 },
+      2: { halign: 'right', cellWidth: tableWidth * 0.18 },
+      3: { halign: 'right', cellWidth: tableWidth * 0.29 },
     },
     didParseCell: (data) => {
       if (data.row.index === tableBody.length - 1 && data.section === 'body') {
@@ -451,12 +464,16 @@ export const generateWeightBalancePDF = (options: PDFOptions): void => {
   const overallStatus = withinWeight && withinCG ? 'WITHIN LIMITS' : 'OUTSIDE LIMITS';
 
   const weightMarginLbs = aircraft.maxTakeoffWeightLbs - calculations.totalWeight;
+  const weightMarginDisplay = useKg
+    ? (weightMarginLbs * LBS_TO_KG).toFixed(0)
+    : weightMarginLbs.toFixed(0);
 
   const resultsBody: string[][] = [
-    ['Total Weight', `${calculations.totalWeight.toFixed(1)} lbs / ${(calculations.totalWeight * LBS_TO_KG).toFixed(1)} kg`],
-    ['Weight Margin', withinWeight ? `${weightMarginLbs.toFixed(0)} lbs below MTOW` : `${(-weightMarginLbs).toFixed(0)} lbs OVER MTOW`],
-    ['CG Position', `${(calculations.cgPosition * MM_TO_INCHES).toFixed(1)}" / ${calculations.cgPosition.toFixed(0)} mm`],
-    ['Fwd Limit (at wt)', `${(forwardLimit * MM_TO_INCHES).toFixed(1)}" / Aft Limit: ${(limits.aftLimit * MM_TO_INCHES).toFixed(1)}"`],
+    ['Total Weight', `${fmtWeight(calculations.totalWeight)} ${weightUnit} (MTOW ${fmtWeight(aircraft.maxTakeoffWeightLbs)})`],
+    ['Weight Margin', withinWeight ? `${weightMarginDisplay} ${weightUnit} below MTOW` : `${weightMarginDisplay.replace('-', '')} ${weightUnit} OVER MTOW`],
+    ['CG Position', `${fmtArm(calculations.cgPosition)} ${armUnit}`],
+    ['Fwd CG Limit', `${fmtArm(forwardLimit)} ${armUnit} (at current weight)`],
+    ['Aft CG Limit', `${fmtArm(limits.aftLimit)} ${armUnit}`],
     ['Status', overallStatus],
   ];
 
@@ -474,17 +491,14 @@ export const generateWeightBalancePDF = (options: PDFOptions): void => {
       1: { cellWidth: tableWidth * 0.68 },
     },
     didParseCell: (data) => {
+      if (data.section !== 'body' || data.column.index !== 1) return;
       // Color the status row
-      if (data.row.index === resultsBody.length - 1 && data.column.index === 1 && data.section === 'body') {
+      if (data.row.index === resultsBody.length - 1) {
         data.cell.styles.fontStyle = 'bold';
-        if (overallStatus === 'WITHIN LIMITS') {
-          data.cell.styles.textColor = [22, 163, 74];
-        } else {
-          data.cell.styles.textColor = [220, 38, 38];
-        }
+        data.cell.styles.textColor = overallStatus === 'WITHIN LIMITS' ? [22, 163, 74] : [220, 38, 38];
       }
       // Color weight margin if over
-      if (data.row.index === 1 && data.column.index === 1 && data.section === 'body' && !withinWeight) {
+      if (data.row.index === 1 && !withinWeight) {
         data.cell.styles.textColor = [220, 38, 38];
         data.cell.styles.fontStyle = 'bold';
       }
@@ -501,7 +515,6 @@ export const generateWeightBalancePDF = (options: PDFOptions): void => {
   if (fuelBurnState && fuelBurnState.burnRateGPH > 0 && fuelBurnState.flightDurationHours > 0) {
     const landing = calculateLandingWeightAndCG(loadingState, aircraft, settings, fuelBurnState);
     const fuelBurnGallons = fuelBurnState.burnRateGPH * fuelBurnState.flightDurationHours;
-    const fuelBurnLitres = fuelBurnGallons * GALLONS_TO_LITRES;
     const exceedsMLW = landing.weight > aircraft.maxLandingWeightLbs;
     const mlwStatus = exceedsMLW ? 'EXCEEDS' : 'Within';
 
@@ -510,26 +523,22 @@ export const generateWeightBalancePDF = (options: PDFOptions): void => {
       margin: { left: margin, right: margin },
       tableWidth: usableWidth,
       theme: 'grid',
-      styles: { fontSize: 7, cellPadding: 1.3, halign: 'center' },
-      headStyles: { fillColor: [50, 50, 50], fontSize: 6.5 },
+      styles: { fontSize: 7.5, cellPadding: 1.5, halign: 'center' },
+      headStyles: { fillColor: [50, 50, 50], fontSize: 7 },
       head: [['Burn Rate', 'Duration', 'Fuel Burn', 'Fuel Rem.', 'Land Wt', 'Land CG', 'MLW']],
       body: [[
-        `${fuelBurnState.burnRateGPH.toFixed(1)} GPH\n${(fuelBurnState.burnRateGPH * GALLONS_TO_LITRES).toFixed(1)} L/hr`,
+        `${fmtBurnRate(fuelBurnState.burnRateGPH)} ${burnRateUnit}`,
         `${fuelBurnState.flightDurationHours.toFixed(1)} hrs`,
-        `${fuelBurnGallons.toFixed(1)} gal\n${fuelBurnLitres.toFixed(1)} L`,
-        `${landing.fuelRemaining.toFixed(1)} gal\n${(landing.fuelRemaining * GALLONS_TO_LITRES).toFixed(1)} L`,
-        `${landing.weight.toFixed(0)} lbs\n${(landing.weight * LBS_TO_KG).toFixed(1)} kg`,
-        `${(landing.cgPosition * MM_TO_INCHES).toFixed(1)}"\n${landing.cgPosition.toFixed(0)} mm`,
-        `${mlwStatus}\n(${aircraft.maxLandingWeightLbs} lbs)`,
+        `${fmtFuel(fuelBurnGallons)} ${fuelUnit}`,
+        `${fmtFuel(landing.fuelRemaining)} ${fuelUnit}`,
+        `${fmtWeight(landing.weight)} ${weightUnit}`,
+        `${fmtArm(landing.cgPosition)} ${armUnit}`,
+        `${mlwStatus} (${fmtWeight(aircraft.maxLandingWeightLbs)})`,
       ]],
       didParseCell: (data) => {
         if (data.column.index === 6 && data.section === 'body') {
           data.cell.styles.fontStyle = 'bold';
-          if (exceedsMLW) {
-            data.cell.styles.textColor = [220, 38, 38];
-          } else {
-            data.cell.styles.textColor = [22, 163, 74];
-          }
+          data.cell.styles.textColor = exceedsMLW ? [220, 38, 38] : [22, 163, 74];
         }
       },
     });
