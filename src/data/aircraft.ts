@@ -102,7 +102,7 @@ const vhYpbCGEnvelope: CGEnvelopePoint[] = [
 // VH-YPB Aircraft Definition
 export const vhYpbAircraft: Aircraft = {
   registration: 'VH-YPB',
-  model: 'Cessna 182T NAV III',
+  model: 'Cessna 182T',
   emptyWeightLbs: 2007.0,           // From load data sheet
   emptyCGMm: 975,                   // 38.4" converted to mm (38.4 * 25.4)
   maxTakeoffWeightLbs: 3100,        // From POH Figure 6-8

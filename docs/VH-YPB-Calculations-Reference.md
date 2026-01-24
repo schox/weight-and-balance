@@ -1,6 +1,6 @@
 # VH-YPB Weight & Balance Calculations Reference
 
-This document provides a detailed explanation of all calculations used in the weight and balance application, along with the baseline aircraft-specific data for VH-YPB (Cessna 182T NAV III).
+This document provides a detailed explanation of all calculations used in the weight and balance application, along with the baseline aircraft-specific data for VH-YPB (Cessna 182T).
 
 ---
 
@@ -23,7 +23,7 @@ This document provides a detailed explanation of all calculations used in the we
 | Parameter | Value (Imperial) | Value (Metric) | Source |
 |-----------|------------------|----------------|--------|
 | Registration | VH-YPB | - | Load Data Sheet |
-| Model | Cessna 182T NAV III | - | Load Data Sheet |
+| Model | Cessna 182T | - | Load Data Sheet |
 | Basic Empty Weight (BEW) | 2,007.0 lbs | 910.4 kg | Load Data Sheet |
 | Empty CG Position | 38.4 inches | 975 mm | Load Data Sheet |
 | Empty Moment | 77,068.8 in-lbs | 887,850 kg.mm | Calculated |

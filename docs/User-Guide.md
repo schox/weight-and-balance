@@ -11,10 +11,11 @@
 7. [Understanding the Results](#understanding-the-results)
 8. [Using the CG Envelope Graph](#using-the-cg-envelope-graph)
 9. [Flight Planning Feature](#flight-planning-feature)
-10. [Changing Settings](#changing-settings)
-11. [Sample Calculations](#sample-calculations)
-12. [Troubleshooting](#troubleshooting)
-13. [Contact Information](#contact-information)
+10. [Generating a PDF Loading Sheet](#generating-a-pdf-loading-sheet)
+11. [Changing Settings](#changing-settings)
+12. [Sample Calculations](#sample-calculations)
+13. [Troubleshooting](#troubleshooting)
+14. [Contact Information](#contact-information)
 
 ---
 
@@ -28,7 +29,7 @@ The Weight & Balance Calculator is a web-based application designed for pilots a
 - Plan fuel burn and predict landing weight and CG
 
 The calculator supports two aircraft:
-- **VH-YPB** - Cessna 182T NAV III
+- **VH-YPB** - Cessna 182T
 - **VH-KXW** - Cessna 172P
 
 ---
@@ -287,6 +288,57 @@ If your projected landing weight exceeds the Maximum Landing Weight (MLW), the l
 
 ---
 
+## Generating a PDF Loading Sheet
+
+### Purpose
+
+The PDF Loading Sheet feature lets you generate a single-page A4 document summarising your weight and balance calculation. This is useful for:
+
+- Keeping a record of your pre-flight planning
+- Printing a loading sheet to carry in the aircraft
+- Sharing your calculation with an instructor or flight examiner
+
+### How to Generate a PDF
+
+1. Complete your loading data (weights, fuel, etc.)
+2. Scroll to the bottom of the aircraft tab
+3. Click the **"Generate PDF Loading Sheet"** button
+4. In the dialog that appears:
+   - **Flight Date:** Select the date of your planned flight (defaults to today)
+   - **Pilot Name:** Enter the pilot-in-command's name (optional)
+5. Review the loading summary shown in the dialog (aircraft, total weight, CG, status)
+6. Click **"Generate PDF"** to download the file
+
+The PDF is saved with a filename like `W&B_VH-YPB_24-Jan-2026.pdf`.
+
+### What the PDF Contains
+
+The loading sheet fits on a single A4 page and includes:
+
+| Section | Content |
+|---------|---------|
+| **Header** | Title, club name |
+| **Flight Info** | Aircraft registration/model, date, pilot, units |
+| **CG Envelope Chart** | Graphical plot of the CG envelope with your takeoff position marked. If flight planning is active, the landing position and fuel burn trajectory are also shown. |
+| **Loading Summary** | Table of all non-zero loading stations with weight and arm |
+| **Status** | Total weight vs MTOW, CG vs limits, overall WITHIN/OUTSIDE status |
+| **Flight Planning** | Burn rate, duration, fuel burn, landing weight/CG, MLW status (only shown if flight planning data is entered) |
+| **Aircraft Reference** | One-line summary of key aircraft limits |
+| **Disclaimer** | Reminder that the sheet is for planning purposes only |
+
+### CG Envelope Chart on the PDF
+
+The chart shows:
+- **Green shaded polygon:** The safe CG envelope
+- **Red lines:** Forward and aft CG limits
+- **MTOW / MLW lines:** Horizontal reference lines at maximum weights
+- **Green dot (T/O):** Your takeoff weight and CG position
+- **Green dot (LDG):** Landing position after fuel burn (if flight planning active)
+- **Dashed blue arrow:** Fuel burn trajectory from takeoff to landing
+- Dots are coloured **red** instead of green if outside limits
+
+---
+
 ## Changing Settings
 
 ### Accessing Settings
@@ -455,7 +507,7 @@ This CG position is then checked against the aircraft's CG envelope, which defin
 
 ### Changes Don't Save
 
-The calculator intentionally does not save data between sessions for privacy. If you need to record calculations, take a screenshot or write down the values.
+The calculator intentionally does not save data between sessions for privacy. If you need to record calculations, use the **Generate PDF Loading Sheet** button to download a PDF of your current calculation.
 
 ### Graph Doesn't Show Landing Position
 
@@ -477,4 +529,4 @@ For bug reports, feature requests, or questions about the calculator, please con
 
 ---
 
-*Last updated: January 2025*
+*Last updated: January 2026*

@@ -14,7 +14,8 @@ import {
   XCircle,
   Info,
   Calculator,
-  Clock
+  Clock,
+  FileDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -327,6 +328,48 @@ const HelpPage: React.FC = () => {
             </CardContent>
           </Card>
 
+          {/* PDF Loading Sheet */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <FileDown className="h-5 w-5 text-rose-600" />
+                Generating a PDF Loading Sheet
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm space-y-3">
+              <p>
+                Generate a single-page A4 PDF summarising your weight and balance calculation —
+                useful for printing, record-keeping, or sharing with an instructor.
+              </p>
+              <div>
+                <h4 className="font-semibold mb-2">How to Generate</h4>
+                <ol className="list-decimal pl-5 space-y-1">
+                  <li>Complete your loading data (weights, fuel, etc.)</li>
+                  <li>Scroll to the bottom of the aircraft tab</li>
+                  <li>Click <strong>"Generate PDF Loading Sheet"</strong></li>
+                  <li>Enter a flight date and pilot name (optional)</li>
+                  <li>Review the loading summary, then click <strong>"Generate PDF"</strong></li>
+                </ol>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-2">What the PDF Contains</h4>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li><strong>CG Envelope Chart:</strong> Graphical plot with takeoff and landing positions</li>
+                  <li><strong>Loading Summary:</strong> Table of all non-zero stations with weight and arm</li>
+                  <li><strong>Status:</strong> Weight vs MTOW, CG vs limits, overall result</li>
+                  <li><strong>Flight Planning:</strong> Burn rate, landing weight/CG, MLW status (if active)</li>
+                  <li><strong>Aircraft Reference:</strong> Key limits and disclaimer</li>
+                </ul>
+              </div>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p className="text-blue-800 text-xs">
+                  <strong>Tip:</strong> If flight planning data is entered, the PDF chart will show
+                  both takeoff and landing positions with a fuel burn trajectory arrow.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Changing Settings */}
           <Card>
             <CardHeader className="pb-3">
@@ -493,7 +536,8 @@ const HelpPage: React.FC = () => {
             <p className="text-sm text-green-700">
               All data you enter stays in your browser session only. When you close the browser
               tab or refresh the page, all entered values are reset. The calculator does not
-              store any personal information or flight data.
+              store any personal information or flight data. Use the <strong>Generate PDF Loading
+              Sheet</strong> button to save a copy of your calculation before closing.
             </p>
           </div>
         </div>
