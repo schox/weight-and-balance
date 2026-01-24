@@ -88,12 +88,10 @@ function drawCGEnvelopeChart(
   doc.setDrawColor(34, 139, 34);
   doc.setLineWidth(0.5);
 
-  // Build polygon using jsPDF lines() with relative offsets
   const polyPoints = envelope.slice(0, -1);
   const xCoords = polyPoints.map(p => scaleX(p.cgPosition * MM_TO_INCHES));
   const yCoords = polyPoints.map(p => scaleY(p.weight));
 
-  // Create relative line segments from starting point
   const lineSegments: [number, number][] = [];
   for (let i = 1; i < xCoords.length; i++) {
     lineSegments.push([xCoords[i] - xCoords[i - 1], yCoords[i] - yCoords[i - 1]]);
@@ -192,9 +190,7 @@ function drawCGEnvelopeChart(
   doc.setDrawColor(0, 0, 0);
   doc.setLineWidth(0.4);
   doc.setLineDashPattern([], 0);
-  // X axis
   doc.line(plotLeft, plotBottom, plotRight, plotBottom);
-  // Y axis
   doc.line(plotLeft, plotTop, plotLeft, plotBottom);
 
   // ── Axis tick labels ──
@@ -202,22 +198,18 @@ function drawCGEnvelopeChart(
   doc.setTextColor(60, 60, 60);
   doc.setFont('helvetica', 'normal');
 
-  // X axis labels (CG in inches)
   for (let cg = cgStart; cg <= maxCG; cg += cgStep) {
     const x = scaleX(cg);
     if (x >= plotLeft && x <= plotRight) {
       doc.text(cg.toFixed(0), x, plotBottom + 3.5, { align: 'center' });
-      // Tick mark
       doc.line(x, plotBottom, x, plotBottom + 1);
     }
   }
 
-  // Y axis labels (weight in lbs)
   for (let w = weightStart; w <= maxWeight; w += weightStep) {
     const yPos = scaleY(w);
     if (yPos >= plotTop && yPos <= plotBottom) {
       doc.text(w.toFixed(0), plotLeft - 1.5, yPos + 1, { align: 'right' });
-      // Tick mark
       doc.line(plotLeft - 1, yPos, plotLeft, yPos);
     }
   }
@@ -226,9 +218,7 @@ function drawCGEnvelopeChart(
   doc.setFontSize(6);
   doc.setTextColor(0, 0, 0);
   doc.setFont('helvetica', 'bold');
-  // X axis title
   doc.text('CG Position (inches)', (plotLeft + plotRight) / 2, plotBottom + 8, { align: 'center' });
-  // Y axis title (rotated)
   doc.text('Weight (lbs)', chartX + 2, (plotTop + plotBottom) / 2, { angle: 90 });
 
   // Reset
@@ -271,10 +261,11 @@ function isPointInEnvelope(weight: number, cgPositionMm: number, aircraft: Aircr
 export const generateWeightBalancePDF = (options: PDFOptions): void => {
   const { aircraft, loadingState, calculations, settings, fuelBurnState, flightDate, pilotName } = options;
 
-  const doc = new jsPDF('portrait', 'mm', 'a4');
-  const pageWidth = doc.internal.pageSize.getWidth(); // 210mm
+  // Landscape A4: 297mm × 210mm
+  const doc = new jsPDF('landscape', 'mm', 'a4');
+  const pageWidth = doc.internal.pageSize.getWidth();  // 297mm
   const margin = 12;
-  const usableWidth = pageWidth - 2 * margin; // 186mm
+  const usableWidth = pageWidth - 2 * margin; // 273mm
   let y = margin;
 
   // Helper: get station arm
@@ -283,8 +274,13 @@ export const generateWeightBalancePDF = (options: PDFOptions): void => {
     return station?.armMm || 0;
   };
 
+  // Helper: calculate moment (kg.mm)
+  const calcMoment = (weightLbs: number, armMm: number): number => {
+    return weightLbs * LBS_TO_KG * armMm;
+  };
+
   // ──────────────────────────────────────────────────────────────────────────────
-  // SECTION 1: Header (~8mm)
+  // SECTION 1: Header
   // ──────────────────────────────────────────────────────────────────────────────
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
@@ -295,7 +291,7 @@ export const generateWeightBalancePDF = (options: PDFOptions): void => {
   y += 13;
 
   // ──────────────────────────────────────────────────────────────────────────────
-  // SECTION 2: Flight Info (2×2 grid, ~18mm)
+  // SECTION 2: Flight Info (2×2 grid)
   // ──────────────────────────────────────────────────────────────────────────────
   const unitsDisplay = `${settings.weightUnits} / ${settings.fuelUnits} / ${settings.distanceUnits}`;
 
@@ -323,12 +319,14 @@ export const generateWeightBalancePDF = (options: PDFOptions): void => {
   y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 4;
 
   // ──────────────────────────────────────────────────────────────────────────────
-  // SECTION 3: Main Section - Chart + Loading Summary (~125mm)
+  // SECTION 3: Main Section - Chart (left) + Loading Table + Results (right)
   // ──────────────────────────────────────────────────────────────────────────────
   const mainSectionY = y;
-  const mainSectionHeight = 125;
-  const chartWidth = 95;
-  const tableWidth = usableWidth - chartWidth - 4; // gap between chart and table
+  const chartWidth = 100;
+  const chartHeight = 100;
+  const tableGap = 5;
+  const tableX = margin + chartWidth + tableGap;
+  const tableWidth = usableWidth - chartWidth - tableGap;
 
   // Calculate landing data if flight planning is active
   let landingData: { weight: number; cgPosition: number } | undefined;
@@ -343,20 +341,17 @@ export const generateWeightBalancePDF = (options: PDFOptions): void => {
     margin,
     mainSectionY,
     chartWidth,
-    mainSectionHeight,
+    chartHeight,
     aircraft,
     calculations,
     landingData
   );
 
-  // Loading Summary Table (right side)
-  const tableX = margin + chartWidth + 4;
-
-  // Section title
-  doc.setFontSize(8);
+  // ── Loading Calculation Table (right side) ──
+  doc.setFontSize(9);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(0, 0, 0);
-  doc.text('Loading Summary', tableX, mainSectionY + 4);
+  doc.text('Loading Calculation', tableX, mainSectionY + 4);
 
   // Build loading rows
   const fuelLeftLbs = getFuelWeightLbs(loadingState.fuelLeft, settings.fuelUnits);
@@ -369,57 +364,74 @@ export const generateWeightBalancePDF = (options: PDFOptions): void => {
   }
 
   const loadingRows: LoadingRow[] = [
-    { label: 'BEW', weightLbs: aircraft.emptyWeightLbs, armMm: aircraft.emptyCGMm },
+    { label: 'Basic Empty Weight', weightLbs: aircraft.emptyWeightLbs, armMm: aircraft.emptyCGMm },
     { label: 'Pilot', weightLbs: loadingState.pilot, armMm: getStationArm('pilot') },
-    { label: 'F.Pax', weightLbs: loadingState.frontPassenger, armMm: getStationArm('frontPassenger') },
-    { label: 'R.Pax 1', weightLbs: loadingState.rearPassenger1, armMm: getStationArm('rearPassenger1') },
-    { label: 'R.Pax 2', weightLbs: loadingState.rearPassenger2, armMm: getStationArm('rearPassenger2') },
-    { label: 'Bag A', weightLbs: loadingState.baggageA, armMm: getStationArm('baggageA') },
-    { label: 'Bag B', weightLbs: loadingState.baggageB, armMm: getStationArm('baggageB') },
+    { label: 'Front Passenger', weightLbs: loadingState.frontPassenger, armMm: getStationArm('frontPassenger') },
+    { label: 'Rear Passenger 1', weightLbs: loadingState.rearPassenger1, armMm: getStationArm('rearPassenger1') },
+    { label: 'Rear Passenger 2', weightLbs: loadingState.rearPassenger2, armMm: getStationArm('rearPassenger2') },
+    { label: aircraft.loadingStations.find(s => s.id === 'baggageA')?.name || 'Baggage A', weightLbs: loadingState.baggageA, armMm: getStationArm('baggageA') },
+    { label: aircraft.loadingStations.find(s => s.id === 'baggageB')?.name || 'Baggage B', weightLbs: loadingState.baggageB, armMm: getStationArm('baggageB') },
   ];
 
   // Add Baggage C if aircraft has it
   if (aircraft.loadingStations.some(s => s.id === 'baggageC')) {
-    loadingRows.push({ label: 'Bag C', weightLbs: loadingState.baggageC, armMm: getStationArm('baggageC') });
+    loadingRows.push({
+      label: 'Baggage Area C',
+      weightLbs: loadingState.baggageC,
+      armMm: getStationArm('baggageC'),
+    });
   }
 
   loadingRows.push(
-    { label: 'Fuel L', weightLbs: fuelLeftLbs, armMm: getStationArm('fuelLeft') },
-    { label: 'Fuel R', weightLbs: fuelRightLbs, armMm: getStationArm('fuelRight') },
+    { label: aircraft.loadingStations.find(s => s.id === 'fuelLeft')?.name || 'Fuel Left', weightLbs: fuelLeftLbs, armMm: getStationArm('fuelLeft') },
+    { label: aircraft.loadingStations.find(s => s.id === 'fuelRight')?.name || 'Fuel Right', weightLbs: fuelRightLbs, armMm: getStationArm('fuelRight') },
   );
 
-  // Filter out zero-weight rows (except BEW)
-  const displayRows = loadingRows.filter(r => r.label === 'BEW' || r.weightLbs > 0);
+  // Calculate totals and build table body
+  let totalWeightLbs = 0;
+  let totalMomentKgMm = 0;
 
-  // Format for table: show in user's preferred unit but also inches
-  const useKg = settings.weightUnits === 'kg';
-  const weightHeader = useKg ? 'kg' : 'lbs';
-  const tableBody = displayRows.map(row => {
-    const displayWeight = useKg ? (row.weightLbs * LBS_TO_KG).toFixed(1) : row.weightLbs.toFixed(1);
-    const armInches = (row.armMm * MM_TO_INCHES).toFixed(1) + '"';
-    return [row.label, displayWeight, armInches];
+  const tableBody = loadingRows.map(row => {
+    const moment = calcMoment(row.weightLbs, row.armMm);
+    totalWeightLbs += row.weightLbs;
+    totalMomentKgMm += moment;
+    return [
+      row.label,
+      row.weightLbs.toFixed(1),
+      (row.weightLbs * LBS_TO_KG).toFixed(1),
+      (row.armMm * MM_TO_INCHES).toFixed(1),
+      row.armMm.toFixed(0),
+      moment.toFixed(0),
+    ];
   });
 
   // Add totals row
-  const totalDisplayWeight = useKg
-    ? (calculations.totalWeight * LBS_TO_KG).toFixed(1)
-    : calculations.totalWeight.toFixed(1);
-  const totalCGInches = (calculations.cgPosition * MM_TO_INCHES).toFixed(1) + '"';
-  tableBody.push(['TOTAL', totalDisplayWeight, totalCGInches]);
+  const cgMm = totalMomentKgMm / (totalWeightLbs * LBS_TO_KG);
+  tableBody.push([
+    'TOTALS',
+    totalWeightLbs.toFixed(1),
+    (totalWeightLbs * LBS_TO_KG).toFixed(1),
+    (cgMm * MM_TO_INCHES).toFixed(1),
+    cgMm.toFixed(0),
+    totalMomentKgMm.toFixed(0),
+  ]);
 
   autoTable(doc, {
     startY: mainSectionY + 6,
     margin: { left: tableX, right: margin },
     tableWidth: tableWidth,
     theme: 'grid',
-    styles: { fontSize: 7, cellPadding: 1.2 },
-    headStyles: { fillColor: [66, 66, 66], fontSize: 6.5 },
-    head: [['Station', `Wt (${weightHeader})`, 'Arm']],
+    styles: { fontSize: 7.5, cellPadding: 1.3 },
+    headStyles: { fillColor: [66, 66, 66], fontSize: 7 },
+    head: [['Station', 'Wt (lbs)', 'Wt (kg)', 'Arm (in)', 'Arm (mm)', 'Mom (kg.mm)']],
     body: tableBody,
     columnStyles: {
-      0: { cellWidth: tableWidth * 0.38 },
-      1: { halign: 'right', cellWidth: tableWidth * 0.32 },
-      2: { halign: 'right', cellWidth: tableWidth * 0.30 },
+      0: { cellWidth: tableWidth * 0.25 },
+      1: { halign: 'right', cellWidth: tableWidth * 0.13 },
+      2: { halign: 'right', cellWidth: tableWidth * 0.13 },
+      3: { halign: 'right', cellWidth: tableWidth * 0.13 },
+      4: { halign: 'right', cellWidth: tableWidth * 0.13 },
+      5: { halign: 'right', cellWidth: tableWidth * 0.23 },
     },
     didParseCell: (data) => {
       if (data.row.index === tableBody.length - 1 && data.section === 'body') {
@@ -431,100 +443,93 @@ export const generateWeightBalancePDF = (options: PDFOptions): void => {
 
   const afterTableY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 3;
 
-  // Results box below the table
+  // ── Results section (below loading table, right side) ──
   const limits = extractEnvelopeLimits(aircraft);
   const forwardLimit = getForwardCGLimit(calculations.totalWeight, aircraft);
   const withinWeight = calculations.totalWeight <= aircraft.maxTakeoffWeightLbs;
   const withinCG = calculations.withinEnvelope;
   const overallStatus = withinWeight && withinCG ? 'WITHIN LIMITS' : 'OUTSIDE LIMITS';
 
-  // Draw results box
-  const boxX = tableX;
-  const boxY = afterTableY;
-
-  doc.setFontSize(6.5);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(60, 60, 60);
-
-  let resultY = boxY + 1;
   const weightMarginLbs = aircraft.maxTakeoffWeightLbs - calculations.totalWeight;
-  doc.text(`Weight: ${calculations.totalWeight.toFixed(0)} / ${aircraft.maxTakeoffWeightLbs} lbs`, boxX, resultY);
-  resultY += 3.5;
-  doc.text(`  Margin: ${weightMarginLbs.toFixed(0)} lbs`, boxX, resultY);
-  resultY += 3.5;
-  doc.text(`CG: ${(calculations.cgPosition * MM_TO_INCHES).toFixed(1)}"`, boxX, resultY);
-  resultY += 3.5;
-  doc.text(`  Fwd: ${(forwardLimit * MM_TO_INCHES).toFixed(1)}" / Aft: ${(limits.aftLimit * MM_TO_INCHES).toFixed(1)}"`, boxX, resultY);
-  resultY += 4.5;
 
-  // Status line
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'bold');
-  if (overallStatus === 'WITHIN LIMITS') {
-    doc.setTextColor(22, 163, 74);
-  } else {
-    doc.setTextColor(220, 38, 38);
-  }
-  doc.text(overallStatus, boxX, resultY);
+  const resultsBody: string[][] = [
+    ['Total Weight', `${calculations.totalWeight.toFixed(1)} lbs / ${(calculations.totalWeight * LBS_TO_KG).toFixed(1)} kg`],
+    ['Weight Margin', withinWeight ? `${weightMarginLbs.toFixed(0)} lbs below MTOW` : `${(-weightMarginLbs).toFixed(0)} lbs OVER MTOW`],
+    ['CG Position', `${(calculations.cgPosition * MM_TO_INCHES).toFixed(1)}" / ${calculations.cgPosition.toFixed(0)} mm`],
+    ['Fwd Limit (at wt)', `${(forwardLimit * MM_TO_INCHES).toFixed(1)}" / Aft Limit: ${(limits.aftLimit * MM_TO_INCHES).toFixed(1)}"`],
+    ['Status', overallStatus],
+  ];
 
-  // Reset
-  doc.setTextColor(0, 0, 0);
-  doc.setFont('helvetica', 'normal');
+  autoTable(doc, {
+    startY: afterTableY,
+    margin: { left: tableX, right: margin },
+    tableWidth: tableWidth,
+    theme: 'grid',
+    styles: { fontSize: 7.5, cellPadding: 1.3 },
+    headStyles: { fillColor: [50, 50, 50], fontSize: 7 },
+    head: [['Results', '']],
+    body: resultsBody,
+    columnStyles: {
+      0: { fontStyle: 'bold', cellWidth: tableWidth * 0.32 },
+      1: { cellWidth: tableWidth * 0.68 },
+    },
+    didParseCell: (data) => {
+      // Color the status row
+      if (data.row.index === resultsBody.length - 1 && data.column.index === 1 && data.section === 'body') {
+        data.cell.styles.fontStyle = 'bold';
+        if (overallStatus === 'WITHIN LIMITS') {
+          data.cell.styles.textColor = [22, 163, 74];
+        } else {
+          data.cell.styles.textColor = [220, 38, 38];
+        }
+      }
+      // Color weight margin if over
+      if (data.row.index === 1 && data.column.index === 1 && data.section === 'body' && !withinWeight) {
+        data.cell.styles.textColor = [220, 38, 38];
+        data.cell.styles.fontStyle = 'bold';
+      }
+    },
+  });
 
-  y = mainSectionY + mainSectionHeight + 4;
+  // Determine y position after main section (max of chart bottom and results table bottom)
+  const afterResultsY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
+  y = Math.max(mainSectionY + chartHeight, afterResultsY) + 4;
 
   // ──────────────────────────────────────────────────────────────────────────────
-  // SECTION 4: Flight Planning (~22mm) - only if burn data exists
+  // SECTION 4: Flight Planning (only if burn data exists)
   // ──────────────────────────────────────────────────────────────────────────────
   if (fuelBurnState && fuelBurnState.burnRateGPH > 0 && fuelBurnState.flightDurationHours > 0) {
     const landing = calculateLandingWeightAndCG(loadingState, aircraft, settings, fuelBurnState);
     const fuelBurnGallons = fuelBurnState.burnRateGPH * fuelBurnState.flightDurationHours;
+    const fuelBurnLitres = fuelBurnGallons * GALLONS_TO_LITRES;
     const exceedsMLW = landing.weight > aircraft.maxLandingWeightLbs;
 
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Flight Planning', margin, y + 3);
-    y += 5;
-
-    const burnLbl = useKg
-      ? `${(fuelBurnGallons * GALLONS_TO_LITRES).toFixed(1)} L`
-      : `${fuelBurnGallons.toFixed(1)} gal`;
-    const fuelRemLbl = useKg
-      ? `${(landing.fuelRemaining * GALLONS_TO_LITRES).toFixed(1)} L`
-      : `${landing.fuelRemaining.toFixed(1)} gal`;
-    const landWtLbl = useKg
-      ? `${(landing.weight * LBS_TO_KG).toFixed(1)} kg`
-      : `${landing.weight.toFixed(1)} lbs`;
-    const landCGLbl = `${(landing.cgPosition * MM_TO_INCHES).toFixed(1)}"`;
-    const mlwStatus = exceedsMLW ? 'EXCEEDS' : 'WITHIN';
+    const planningBody: string[][] = [
+      ['Fuel Burn Rate', `${fuelBurnState.burnRateGPH.toFixed(1)} GPH / ${(fuelBurnState.burnRateGPH * GALLONS_TO_LITRES).toFixed(1)} L/hr`],
+      ['Flight Duration', `${fuelBurnState.flightDurationHours.toFixed(1)} hours`],
+      ['Total Fuel Burn', `${fuelBurnGallons.toFixed(1)} gal / ${fuelBurnLitres.toFixed(1)} L`],
+      ['Fuel Remaining', `${landing.fuelRemaining.toFixed(1)} gal / ${(landing.fuelRemaining * GALLONS_TO_LITRES).toFixed(1)} L`],
+      ['Landing Weight', `${landing.weight.toFixed(1)} lbs / ${(landing.weight * LBS_TO_KG).toFixed(1)} kg`],
+      ['Landing CG', `${(landing.cgPosition * MM_TO_INCHES).toFixed(1)}" / ${landing.cgPosition.toFixed(0)} mm`],
+      ['MLW Status', exceedsMLW ? `EXCEEDS MLW (${aircraft.maxLandingWeightLbs} lbs)` : `Within MLW (${aircraft.maxLandingWeightLbs} lbs)`],
+    ];
 
     autoTable(doc, {
       startY: y,
       margin: { left: margin, right: margin },
+      tableWidth: usableWidth,
       theme: 'grid',
-      styles: { fontSize: 7.5, cellPadding: 1.5 },
-      headStyles: { fillColor: [66, 66, 66], fontSize: 7 },
-      head: [['Burn Rate', 'Duration', 'Fuel Burn', 'Fuel Rem.', 'Land Wt', 'Land CG', 'MLW']],
-      body: [[
-        `${fuelBurnState.burnRateGPH.toFixed(1)} GPH`,
-        `${fuelBurnState.flightDurationHours.toFixed(1)} hrs`,
-        burnLbl,
-        fuelRemLbl,
-        landWtLbl,
-        landCGLbl,
-        mlwStatus,
-      ]],
+      styles: { fontSize: 7.5, cellPadding: 1.3 },
+      headStyles: { fillColor: [50, 50, 50], fontSize: 7 },
+      head: [['Flight Planning', '']],
+      body: planningBody,
       columnStyles: {
-        0: { halign: 'center' },
-        1: { halign: 'center' },
-        2: { halign: 'center' },
-        3: { halign: 'center' },
-        4: { halign: 'center' },
-        5: { halign: 'center' },
-        6: { halign: 'center', fontStyle: 'bold' },
+        0: { fontStyle: 'bold', cellWidth: 40 },
+        1: { cellWidth: usableWidth - 40 },
       },
       didParseCell: (data) => {
-        if (data.column.index === 6 && data.section === 'body') {
+        if (data.row.index === planningBody.length - 1 && data.column.index === 1 && data.section === 'body') {
+          data.cell.styles.fontStyle = 'bold';
           if (exceedsMLW) {
             data.cell.styles.textColor = [220, 38, 38];
           } else {
@@ -538,17 +543,8 @@ export const generateWeightBalancePDF = (options: PDFOptions): void => {
   }
 
   // ──────────────────────────────────────────────────────────────────────────────
-  // SECTION 5: Aircraft Reference + Disclaimer (~20mm)
+  // SECTION 5: Disclaimer + Timestamp
   // ──────────────────────────────────────────────────────────────────────────────
-  // Aircraft summary line
-  doc.setFontSize(6.5);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(80, 80, 80);
-  const acSummary = `Aircraft: BEW ${aircraft.emptyWeightLbs.toFixed(0)} lbs | MTOW ${aircraft.maxTakeoffWeightLbs} lbs | MLW ${aircraft.maxLandingWeightLbs} lbs | Fuel ${aircraft.fuelCapacityGallons.toFixed(0)} gal | Fwd CG ${(limits.forwardFlatLimit * MM_TO_INCHES).toFixed(1)}" | Aft CG ${(limits.aftLimit * MM_TO_INCHES).toFixed(1)}"`;
-  doc.text(acSummary, margin, y);
-  y += 4;
-
-  // Disclaimer
   doc.setFontSize(6);
   doc.setFont('helvetica', 'italic');
   doc.setTextColor(120, 120, 120);
@@ -557,7 +553,6 @@ export const generateWeightBalancePDF = (options: PDFOptions): void => {
   doc.text(disclaimerLines, margin, y);
   y += disclaimerLines.length * 3 + 2;
 
-  // Generated timestamp
   doc.setFontSize(6);
   doc.setFont('helvetica', 'normal');
   doc.text(`Generated: ${new Date().toLocaleString('en-AU')} | Curtin Flying Club`, margin, y);
