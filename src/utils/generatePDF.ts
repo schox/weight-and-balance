@@ -503,32 +503,27 @@ export const generateWeightBalancePDF = (options: PDFOptions): void => {
     const fuelBurnGallons = fuelBurnState.burnRateGPH * fuelBurnState.flightDurationHours;
     const fuelBurnLitres = fuelBurnGallons * GALLONS_TO_LITRES;
     const exceedsMLW = landing.weight > aircraft.maxLandingWeightLbs;
-
-    const planningBody: string[][] = [
-      ['Fuel Burn Rate', `${fuelBurnState.burnRateGPH.toFixed(1)} GPH / ${(fuelBurnState.burnRateGPH * GALLONS_TO_LITRES).toFixed(1)} L/hr`],
-      ['Flight Duration', `${fuelBurnState.flightDurationHours.toFixed(1)} hours`],
-      ['Total Fuel Burn', `${fuelBurnGallons.toFixed(1)} gal / ${fuelBurnLitres.toFixed(1)} L`],
-      ['Fuel Remaining', `${landing.fuelRemaining.toFixed(1)} gal / ${(landing.fuelRemaining * GALLONS_TO_LITRES).toFixed(1)} L`],
-      ['Landing Weight', `${landing.weight.toFixed(1)} lbs / ${(landing.weight * LBS_TO_KG).toFixed(1)} kg`],
-      ['Landing CG', `${(landing.cgPosition * MM_TO_INCHES).toFixed(1)}" / ${landing.cgPosition.toFixed(0)} mm`],
-      ['MLW Status', exceedsMLW ? `EXCEEDS MLW (${aircraft.maxLandingWeightLbs} lbs)` : `Within MLW (${aircraft.maxLandingWeightLbs} lbs)`],
-    ];
+    const mlwStatus = exceedsMLW ? 'EXCEEDS' : 'Within';
 
     autoTable(doc, {
       startY: y,
       margin: { left: margin, right: margin },
       tableWidth: usableWidth,
       theme: 'grid',
-      styles: { fontSize: 7.5, cellPadding: 1.3 },
-      headStyles: { fillColor: [50, 50, 50], fontSize: 7 },
-      head: [['Flight Planning', '']],
-      body: planningBody,
-      columnStyles: {
-        0: { fontStyle: 'bold', cellWidth: 40 },
-        1: { cellWidth: usableWidth - 40 },
-      },
+      styles: { fontSize: 7, cellPadding: 1.3, halign: 'center' },
+      headStyles: { fillColor: [50, 50, 50], fontSize: 6.5 },
+      head: [['Burn Rate', 'Duration', 'Fuel Burn', 'Fuel Rem.', 'Land Wt', 'Land CG', 'MLW']],
+      body: [[
+        `${fuelBurnState.burnRateGPH.toFixed(1)} GPH\n${(fuelBurnState.burnRateGPH * GALLONS_TO_LITRES).toFixed(1)} L/hr`,
+        `${fuelBurnState.flightDurationHours.toFixed(1)} hrs`,
+        `${fuelBurnGallons.toFixed(1)} gal\n${fuelBurnLitres.toFixed(1)} L`,
+        `${landing.fuelRemaining.toFixed(1)} gal\n${(landing.fuelRemaining * GALLONS_TO_LITRES).toFixed(1)} L`,
+        `${landing.weight.toFixed(0)} lbs\n${(landing.weight * LBS_TO_KG).toFixed(1)} kg`,
+        `${(landing.cgPosition * MM_TO_INCHES).toFixed(1)}"\n${landing.cgPosition.toFixed(0)} mm`,
+        `${mlwStatus}\n(${aircraft.maxLandingWeightLbs} lbs)`,
+      ]],
       didParseCell: (data) => {
-        if (data.row.index === planningBody.length - 1 && data.column.index === 1 && data.section === 'body') {
+        if (data.column.index === 6 && data.section === 'body') {
           data.cell.styles.fontStyle = 'bold';
           if (exceedsMLW) {
             data.cell.styles.textColor = [220, 38, 38];
