@@ -7,6 +7,13 @@ import { theme } from '@/lib/theme';
 import type { Aircraft, CalculationResult, Settings, LoadingState, FuelBurnState, FuelUnit } from '@/types/aircraft';
 import { fuelConversions } from '@/utils/conversions';
 
+// Format a decimal value: show integer if close to whole number, otherwise 1 decimal place
+const formatDecimal = (val: number): string => {
+  const rounded = Math.round(val * 10) / 10;
+  if (Math.abs(rounded - Math.round(rounded)) < 0.05) return Math.round(rounded).toString();
+  return rounded.toFixed(1);
+};
+
 // Import visualization components
 import CGEnvelopeChart from '@/components/charts/CGEnvelopeChart';
 import AircraftSideView from './AircraftSideView';
@@ -83,7 +90,7 @@ const FuelBurnPanel: React.FC<{
           <span className="text-sm font-medium text-emerald-800">Flight Planning</span>
           {!isExpanded && fuelBurnState.burnRateGPH > 0 && fuelBurnState.flightDurationHours > 0 && (
             <span className="ml-2 text-xs text-emerald-600">
-              ({fuelBurnDisplay.toFixed(1)} {fuelUnits} burn)
+              ({formatDecimal(fuelBurnDisplay)} {fuelUnits} burn)
             </span>
           )}
         </div>
@@ -106,8 +113,8 @@ const FuelBurnPanel: React.FC<{
                 type="number"
                 min="0"
                 max={fuelUnits === 'litres' ? 190 : 50}
-                step="0.5"
-                value={burnRateDisplay ? burnRateDisplay.toFixed(1) : ''}
+                step="1"
+                value={burnRateDisplay ? formatDecimal(burnRateDisplay) : ''}
                 onChange={handleBurnRateChange}
                 placeholder={fuelUnits === 'litres' ? 'e.g., 53' : 'e.g., 14'}
                 className="w-full px-2 py-1.5 text-sm border border-emerald-300 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -132,7 +139,7 @@ const FuelBurnPanel: React.FC<{
           </div>
           {fuelBurnState.burnRateGPH > 0 && fuelBurnState.flightDurationHours > 0 && (
             <div className="mt-2 text-xs text-emerald-700">
-              Total fuel burn: {fuelBurnDisplay.toFixed(1)} {fuelUnits}
+              Total fuel burn: {formatDecimal(fuelBurnDisplay)} {fuelUnits}
             </div>
           )}
         </>
