@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -34,19 +34,12 @@ const BaggageTilesCombined: React.FC<BaggageTilesCombinedProps> = ({
   // Check if aircraft has baggageC station
   const hasBaggageC = aircraft.loadingStations.some(s => s.id === 'baggageC');
 
-  // Get max weight for each baggage area from aircraft loading stations
-  const getBaggageStation = (id: string) => aircraft.loadingStations.find(s => s.id === id);
-  const baggageAStation = getBaggageStation('baggageA');
-  const baggageBStation = getBaggageStation('baggageB');
-  const baggageCStation = getBaggageStation('baggageC');
+  // Get loading stations
+  const baggageAStation = aircraft.loadingStations.find(s => s.id === 'baggageA');
+  const baggageBStation = aircraft.loadingStations.find(s => s.id === 'baggageB');
+  const baggageCStation = aircraft.loadingStations.find(s => s.id === 'baggageC');
 
-  // Convert values for display
-  const baggageADisplay = convertWeightForDisplay(baggageA, settings.weightUnits);
-  const baggageBDisplay = convertWeightForDisplay(baggageB, settings.weightUnits);
-  const baggageCDisplay = hasBaggageC ? convertWeightForDisplay(baggageC, settings.weightUnits) : 0;
-  const totalBaggageDisplay = baggageADisplay + baggageBDisplay + baggageCDisplay;
-
-  // Max weights for each baggage area (in display units)
+  // Max weights in display units
   const getMaxWeight = (area: 'A' | 'B' | 'C') => {
     let maxLbs = 0;
     if (area === 'A' && baggageAStation) maxLbs = baggageAStation.maxWeightLbs;
@@ -55,43 +48,95 @@ const BaggageTilesCombined: React.FC<BaggageTilesCombinedProps> = ({
     return roundDownForDisplay(convertWeightForDisplay(maxLbs, settings.weightUnits));
   };
 
-  const handleInputChange = (value: string, area: 'A' | 'B' | 'C') => {
-    const numValue = Math.floor(parseFloat(value) || 0); // Use integers only
-    const maxWeight = getMaxWeight(area);
-    const clampedValue = Math.max(0, Math.min(numValue, maxWeight));
-    const weightInLbs = convertWeightToLbs(clampedValue, settings.weightUnits);
+  // Compute display values from props
+  const bagADisplay = Math.round(convertWeightForDisplay(baggageA, settings.weightUnits));
+  const bagBDisplay = Math.round(convertWeightForDisplay(baggageB, settings.weightUnits));
+  const bagCDisplay = hasBaggageC ? Math.round(convertWeightForDisplay(baggageC, settings.weightUnits)) : 0;
+  const totalBaggageDisplay = bagADisplay + bagBDisplay + bagCDisplay;
 
-    switch (area) {
-      case 'A':
-        onBaggageAChange(weightInLbs);
-        break;
-      case 'B':
-        onBaggageBChange(weightInLbs);
-        break;
-      case 'C':
-        onBaggageCChange(weightInLbs);
-        break;
-    }
-  };
+  // Local input state (string) to avoid controlled input issues
+  const [bagAInput, setBagAInput] = useState(String(bagADisplay));
+  const [bagBInput, setBagBInput] = useState(String(bagBDisplay));
+  const [bagCInput, setBagCInput] = useState(String(bagCDisplay));
+  const bagAFocused = useRef(false);
+  const bagBFocused = useRef(false);
+  const bagCFocused = useRef(false);
 
+  // Sync local state from props when not focused
+  useEffect(() => {
+    if (!bagAFocused.current) setBagAInput(String(bagADisplay));
+  }, [bagADisplay]);
 
+  useEffect(() => {
+    if (!bagBFocused.current) setBagBInput(String(bagBDisplay));
+  }, [bagBDisplay]);
 
-  const getCurrentValue = (area: 'A' | 'B' | 'C') => {
-    return Math.round(area === 'A' ? baggageADisplay : area === 'B' ? baggageBDisplay : baggageCDisplay);
-  };
+  useEffect(() => {
+    if (!bagCFocused.current) setBagCInput(String(bagCDisplay));
+  }, [bagCDisplay]);
+
+  const getOnChange = useCallback((area: 'A' | 'B' | 'C') => {
+    if (area === 'A') return onBaggageAChange;
+    if (area === 'B') return onBaggageBChange;
+    return onBaggageCChange;
+  }, [onBaggageAChange, onBaggageBChange, onBaggageCChange]);
+
+  // Commit value to global state
+  const commitValue = useCallback((rawValue: string, area: 'A' | 'B' | 'C') => {
+    const parsed = parseInt(rawValue, 10);
+    const numValue = isNaN(parsed) ? 0 : parsed;
+    // Inline max weight calculation to satisfy exhaustive-deps
+    let maxLbs = 0;
+    if (area === 'A' && baggageAStation) maxLbs = baggageAStation.maxWeightLbs;
+    else if (area === 'B' && baggageBStation) maxLbs = baggageBStation.maxWeightLbs;
+    else if (area === 'C' && baggageCStation) maxLbs = baggageCStation.maxWeightLbs;
+    const maxWeight = roundDownForDisplay(convertWeightForDisplay(maxLbs, settings.weightUnits));
+    const clamped = Math.max(0, Math.min(numValue, maxWeight));
+    const weightInLbs = convertWeightToLbs(clamped, settings.weightUnits);
+
+    getOnChange(area)(weightInLbs);
+    if (area === 'A') setBagAInput(String(clamped));
+    else if (area === 'B') setBagBInput(String(clamped));
+    else setBagCInput(String(clamped));
+  }, [settings.weightUnits, getOnChange, baggageAStation, baggageBStation, baggageCStation]);
 
   const renderBaggageTab = (area: 'A' | 'B' | 'C') => {
-    const currentValue = getCurrentValue(area);
+    const inputValue = area === 'A' ? bagAInput : area === 'B' ? bagBInput : bagCInput;
+    const setInput = area === 'A' ? setBagAInput : area === 'B' ? setBagBInput : setBagCInput;
+    const focusRef = area === 'A' ? bagAFocused : area === 'B' ? bagBFocused : bagCFocused;
     const maxWeight = getMaxWeight(area);
-    const isOutOfRange = currentValue < 0 || currentValue > maxWeight;
+    const displayNum = parseInt(inputValue, 10) || 0;
+    const isOutOfRange = displayNum < 0 || displayNum > maxWeight;
+    const onChange = getOnChange(area);
 
     return (
       <TabsContent value={area.toLowerCase()} variant="colored" className="p-2">
         <div className="flex items-center justify-center gap-2 text-sm">
           <Input
             type="number"
-            value={currentValue}
-            onChange={(e) => handleInputChange(e.target.value, area)}
+            value={inputValue}
+            onChange={(e) => {
+              setInput(e.target.value);
+              const val = parseInt(e.target.value, 10);
+              if (!isNaN(val)) {
+                const clamped = Math.max(0, Math.min(val, maxWeight));
+                const lbs = convertWeightToLbs(clamped, settings.weightUnits);
+                onChange(lbs);
+              }
+            }}
+            onFocus={() => {
+              focusRef.current = true;
+            }}
+            onBlur={(e) => {
+              focusRef.current = false;
+              commitValue(e.target.value, area);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                commitValue((e.target as HTMLInputElement).value, area);
+                (e.target as HTMLInputElement).blur();
+              }
+            }}
             className={`w-20 h-8 text-center text-sm ${isOutOfRange ? 'text-red-500 border-red-500' : ''}`}
             min="0"
             max={maxWeight}
@@ -107,7 +152,7 @@ const BaggageTilesCombined: React.FC<BaggageTilesCombinedProps> = ({
   };
 
   return (
-    <Card className={cn("relative bg-surface-container border border-border ", className)}>
+    <Card className={cn("relative bg-surface-container border border-border", className)}>
       <CardContent className="p-3 h-full flex flex-col">
         {/* Header */}
         <div className="flex items-center mb-2">
@@ -148,11 +193,11 @@ const BaggageTilesCombined: React.FC<BaggageTilesCombinedProps> = ({
           {hasBaggageC && renderBaggageTab('C')}
         </Tabs>
 
-        {/* Total display without divider */}
+        {/* Total display */}
         <div className="mt-2 bg-muted/30 rounded-md p-2">
           <div className="text-center text-sm">
             <span className="font-semibold">Total Baggage: </span>
-            <span className="font-bold">{Math.round(totalBaggageDisplay)} {settings.weightUnits}</span>
+            <span className="font-bold">{totalBaggageDisplay} {settings.weightUnits}</span>
           </div>
         </div>
       </CardContent>

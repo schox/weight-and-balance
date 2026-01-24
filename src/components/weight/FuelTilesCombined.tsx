@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -7,6 +7,8 @@ import { Fuel } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { convertFuelForDisplay, convertFuelToWeight, roundDownForDisplay } from '@/utils/conversions';
 import type { Settings, Aircraft } from '@/types/aircraft';
+
+const GALLONS_TO_LITRES = 3.78541;
 
 interface FuelTilesCombinedProps {
   aircraft: Aircraft;
@@ -27,59 +29,104 @@ const FuelTilesCombined: React.FC<FuelTilesCombinedProps> = ({
   settings,
   className
 }) => {
-  // Get max fuel per tank from aircraft (half of total capacity)
+  // Max fuel per tank in display units
   const maxFuelPerTankGallons = aircraft.fuelCapacityGallons / 2;
   const maxFuelPerTankLitres = aircraft.fuelCapacityLitres / 2;
+  const maxFuelPerTank = settings.fuelUnits === 'litres'
+    ? Math.round(maxFuelPerTankLitres)
+    : Math.round(maxFuelPerTankGallons * 10) / 10;
 
-  // Convert values for display
-  const fuelLeftDisplay = convertFuelForDisplay(fuelLeft, settings.fuelUnits);
-  const fuelRightDisplay = convertFuelForDisplay(fuelRight, settings.fuelUnits);
+  // Convert stored litres to display values
+  const fuelLeftDisplay = Math.round(convertFuelForDisplay(fuelLeft, settings.fuelUnits));
+  const fuelRightDisplay = Math.round(convertFuelForDisplay(fuelRight, settings.fuelUnits));
   const totalFuelDisplay = fuelLeftDisplay + fuelRightDisplay;
 
-  // Convert to weight
+  // Convert to weight for display
   const fuelLeftWeight = convertFuelToWeight(fuelLeft, settings);
   const fuelRightWeight = convertFuelToWeight(fuelRight, settings);
   const totalFuelWeight = fuelLeftWeight + fuelRightWeight;
 
-  // Max fuel per tank in current display units (keep decimal precision for accurate max)
-  const maxFuelPerTank = settings.fuelUnits === 'litres'
-    ? Math.round(maxFuelPerTankLitres * 10) / 10
-    : Math.round(maxFuelPerTankGallons * 10) / 10;
+  // Local input state (string)
+  const [leftInput, setLeftInput] = useState(String(fuelLeftDisplay));
+  const [rightInput, setRightInput] = useState(String(fuelRightDisplay));
+  const leftFocused = useRef(false);
+  const rightFocused = useRef(false);
 
-  const handleInputChange = (value: string, isLeft: boolean) => {
-    const numValue = Math.round((parseFloat(value) || 0) * 10) / 10; // Round to 1 decimal
-    const clampedValue = Math.max(0, Math.min(numValue, maxFuelPerTank));
+  // Sync local state from props when not focused
+  useEffect(() => {
+    if (!leftFocused.current) setLeftInput(String(fuelLeftDisplay));
+  }, [fuelLeftDisplay]);
 
-    if (isLeft) {
-      onFuelLeftChange(settings.fuelUnits === 'litres' ? clampedValue : clampedValue * 3.78541);
-    } else {
-      onFuelRightChange(settings.fuelUnits === 'litres' ? clampedValue : clampedValue * 3.78541);
-    }
+  useEffect(() => {
+    if (!rightFocused.current) setRightInput(String(fuelRightDisplay));
+  }, [fuelRightDisplay]);
+
+  // Convert display value to litres for storage
+  const displayToLitres = (displayValue: number): number => {
+    return settings.fuelUnits === 'litres' ? displayValue : displayValue * GALLONS_TO_LITRES;
   };
 
+  // Commit value to global state
+  const commitValue = useCallback((rawValue: string, isLeft: boolean) => {
+    const parsed = parseInt(rawValue, 10);
+    const numValue = isNaN(parsed) ? 0 : parsed;
+    const clamped = Math.max(0, Math.min(numValue, maxFuelPerTank));
+    const litres = settings.fuelUnits === 'litres' ? clamped : clamped * GALLONS_TO_LITRES;
+
+    if (isLeft) {
+      onFuelLeftChange(litres);
+      setLeftInput(String(clamped));
+    } else {
+      onFuelRightChange(litres);
+      setRightInput(String(clamped));
+    }
+  }, [maxFuelPerTank, settings.fuelUnits, onFuelLeftChange, onFuelRightChange]);
 
   const renderFuelTab = (isLeft: boolean) => {
-    const rawValue = isLeft ? fuelLeftDisplay : fuelRightDisplay;
-    const currentValue = Math.round(rawValue * 10) / 10;
-    const maxFuel = maxFuelPerTank;
+    const inputValue = isLeft ? leftInput : rightInput;
+    const setInput = isLeft ? setLeftInput : setRightInput;
+    const focusRef = isLeft ? leftFocused : rightFocused;
     const weight = roundDownForDisplay(isLeft ? fuelLeftWeight : fuelRightWeight);
-    const isOutOfRange = currentValue < 0 || currentValue > maxFuel + 0.05;
+    const displayNum = parseInt(inputValue, 10) || 0;
+    const isOutOfRange = displayNum < 0 || displayNum > maxFuelPerTank;
 
     return (
       <div className="space-y-2">
         <div className="flex items-center justify-center gap-2 text-sm">
           <Input
             type="number"
-            value={currentValue}
-            onChange={(e) => handleInputChange(e.target.value, isLeft)}
+            value={inputValue}
+            onChange={(e) => {
+              setInput(e.target.value);
+              const val = parseInt(e.target.value, 10);
+              if (!isNaN(val)) {
+                const clamped = Math.max(0, Math.min(val, maxFuelPerTank));
+                const litres = displayToLitres(clamped);
+                if (isLeft) onFuelLeftChange(litres);
+                else onFuelRightChange(litres);
+              }
+            }}
+            onFocus={() => {
+              focusRef.current = true;
+            }}
+            onBlur={(e) => {
+              focusRef.current = false;
+              commitValue(e.target.value, isLeft);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                commitValue((e.target as HTMLInputElement).value, isLeft);
+                (e.target as HTMLInputElement).blur();
+              }
+            }}
             className={`w-20 h-8 text-center text-sm ${isOutOfRange ? 'text-red-500 border-red-500' : ''}`}
             min="0"
-            max={maxFuel}
-            step="0.5"
+            max={maxFuelPerTank}
+            step="1"
           />
           <span className="text-muted-foreground">{settings.fuelUnits}</span>
           <span className={`text-sm ${isOutOfRange ? 'text-red-500' : 'text-muted-foreground'}`}>
-            Max: {maxFuel} {settings.fuelUnits}
+            Max: {maxFuelPerTank} {settings.fuelUnits}
           </span>
         </div>
         <div className="text-center text-sm text-muted-foreground">
@@ -90,7 +137,7 @@ const FuelTilesCombined: React.FC<FuelTilesCombinedProps> = ({
   };
 
   return (
-    <Card className={cn("relative bg-surface-container border border-border ", className)}>
+    <Card className={cn("relative bg-surface-container border border-border", className)}>
       <CardContent className="p-3 h-full flex flex-col">
         {/* Header */}
         <div className="flex items-center mb-2">
@@ -126,11 +173,11 @@ const FuelTilesCombined: React.FC<FuelTilesCombinedProps> = ({
           </TabsContent>
         </Tabs>
 
-        {/* Total display without divider */}
+        {/* Total display */}
         <div className="mt-2 bg-muted/30 rounded-md p-2">
           <div className="text-center text-sm">
             <span className="font-semibold">Total Fuel: </span>
-            <span className="font-bold">{Math.round(totalFuelDisplay * 10) / 10} {settings.fuelUnits}</span>
+            <span className="font-bold">{totalFuelDisplay} {settings.fuelUnits}</span>
             <span className="text-muted-foreground ml-2">{roundDownForDisplay(totalFuelWeight)} {settings.weightUnits}</span>
           </div>
         </div>

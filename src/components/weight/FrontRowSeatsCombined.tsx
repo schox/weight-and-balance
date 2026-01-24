@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -25,50 +25,82 @@ const FrontRowSeatsCombined: React.FC<FrontRowSeatsCombinedProps> = ({
   settings,
   className
 }) => {
-
-  // Convert values for display
-  const pilotDisplay = convertWeightForDisplay(pilot, settings.weightUnits);
-  const frontPassengerDisplay = convertWeightForDisplay(frontPassenger, settings.weightUnits);
-  const totalFrontRowDisplay = pilotDisplay + frontPassengerDisplay;
-
   // Max weight for each seat (400 lbs in display units)
-  const getMaxWeight = () => {
-    return roundDownForDisplay(convertWeightForDisplay(400, settings.weightUnits));
-  };
+  const maxWeight = roundDownForDisplay(convertWeightForDisplay(400, settings.weightUnits));
 
-  const handleInputChange = (value: string, seat: 'pilot' | 'frontPassenger') => {
-    const numValue = Math.floor(parseFloat(value) || 0); // Use integers only
-    const maxWeight = getMaxWeight();
-    const clampedValue = Math.max(0, Math.min(numValue, maxWeight));
-    const weightInLbs = convertWeightToLbs(clampedValue, settings.weightUnits);
+  // Compute display values from props
+  const pilotDisplayValue = Math.round(convertWeightForDisplay(pilot, settings.weightUnits));
+  const fpDisplayValue = Math.round(convertWeightForDisplay(frontPassenger, settings.weightUnits));
+  const totalFrontRowDisplay = pilotDisplayValue + fpDisplayValue;
+
+  // Local input state (string) to avoid controlled input fighting with browser arrows
+  const [pilotInput, setPilotInput] = useState(String(pilotDisplayValue));
+  const [fpInput, setFpInput] = useState(String(fpDisplayValue));
+  const pilotFocused = useRef(false);
+  const fpFocused = useRef(false);
+
+  // Sync local state from props when not focused
+  useEffect(() => {
+    if (!pilotFocused.current) setPilotInput(String(pilotDisplayValue));
+  }, [pilotDisplayValue]);
+
+  useEffect(() => {
+    if (!fpFocused.current) setFpInput(String(fpDisplayValue));
+  }, [fpDisplayValue]);
+
+  // Commit value to global state
+  const commitValue = useCallback((rawValue: string, seat: 'pilot' | 'frontPassenger') => {
+    const parsed = parseInt(rawValue, 10);
+    const numValue = isNaN(parsed) ? 0 : parsed;
+    const clamped = Math.max(0, Math.min(numValue, maxWeight));
+    const weightInLbs = convertWeightToLbs(clamped, settings.weightUnits);
 
     if (seat === 'pilot') {
       onPilotChange(weightInLbs);
+      setPilotInput(String(clamped));
     } else {
       onFrontPassengerChange(weightInLbs);
+      setFpInput(String(clamped));
     }
-  };
+  }, [maxWeight, settings.weightUnits, onPilotChange, onFrontPassengerChange]);
 
-
-  const getCurrentValue = (seat: 'pilot' | 'frontPassenger') => {
-    return Math.round(seat === 'pilot' ? pilotDisplay : frontPassengerDisplay);
-  };
-
-  const renderSeatControls = (
-    seat: 'pilot' | 'frontPassenger',
-    isRequired: boolean = false
-  ) => {
-    const currentValue = getCurrentValue(seat);
-    const maxWeight = getMaxWeight();
-    const isOutOfRange = currentValue < 0 || currentValue > maxWeight;
+  const renderSeatControls = (seat: 'pilot' | 'frontPassenger') => {
+    const inputValue = seat === 'pilot' ? pilotInput : fpInput;
+    const setInput = seat === 'pilot' ? setPilotInput : setFpInput;
+    const focusRef = seat === 'pilot' ? pilotFocused : fpFocused;
+    const displayNum = parseInt(inputValue, 10) || 0;
+    const isOutOfRange = displayNum < 0 || displayNum > maxWeight;
 
     return (
       <div className="space-y-3">
         <div className="flex items-center justify-center gap-2 text-sm">
           <Input
             type="number"
-            value={currentValue}
-            onChange={(e) => handleInputChange(e.target.value, seat)}
+            value={inputValue}
+            onChange={(e) => {
+              setInput(e.target.value);
+              // Immediately commit arrow-key changes (integer step)
+              const val = parseInt(e.target.value, 10);
+              if (!isNaN(val)) {
+                const clamped = Math.max(0, Math.min(val, maxWeight));
+                const lbs = convertWeightToLbs(clamped, settings.weightUnits);
+                if (seat === 'pilot') onPilotChange(lbs);
+                else onFrontPassengerChange(lbs);
+              }
+            }}
+            onFocus={() => {
+              focusRef.current = true;
+            }}
+            onBlur={(e) => {
+              focusRef.current = false;
+              commitValue(e.target.value, seat);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                commitValue((e.target as HTMLInputElement).value, seat);
+                (e.target as HTMLInputElement).blur();
+              }
+            }}
             className={`w-20 h-8 text-center text-sm ${isOutOfRange ? 'text-red-500 border-red-500' : ''}`}
             min="0"
             max={maxWeight}
@@ -77,7 +109,6 @@ const FrontRowSeatsCombined: React.FC<FrontRowSeatsCombinedProps> = ({
           <span className="text-muted-foreground">{settings.weightUnits}</span>
           <span className={`text-sm ${isOutOfRange ? 'text-red-500' : 'text-muted-foreground'}`}>
             Max: {maxWeight} {settings.weightUnits}
-            {isRequired && <span className="text-red-500 ml-1">*</span>}
           </span>
         </div>
       </div>
@@ -121,11 +152,11 @@ const FrontRowSeatsCombined: React.FC<FrontRowSeatsCombinedProps> = ({
           </TabsContent>
         </Tabs>
 
-        {/* Total display without divider */}
+        {/* Total display */}
         <div className="mt-2 bg-muted/30 rounded-md p-2">
           <div className="text-center text-sm">
             <span className="font-semibold">Total Front Row: </span>
-            <span className="font-bold">{Math.round(totalFrontRowDisplay)} {settings.weightUnits}</span>
+            <span className="font-bold">{totalFrontRowDisplay} {settings.weightUnits}</span>
           </div>
         </div>
       </CardContent>
