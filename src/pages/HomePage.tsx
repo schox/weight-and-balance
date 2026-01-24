@@ -61,11 +61,11 @@ const HomePage: React.FC<HomePageProps> = ({ settings }) => {
         </div>
       </div>
 
-      <TabsContent value="YPB" variant="borderless" className="mt-4">
+      <TabsContent value="YPB" variant="borderless" className="mt-4 data-[state=inactive]:hidden" forceMount>
         <AircraftTab aircraft={vhYpbAircraft} settings={settings} />
       </TabsContent>
 
-      <TabsContent value="KXW" variant="borderless" className="mt-4">
+      <TabsContent value="KXW" variant="borderless" className="mt-4 data-[state=inactive]:hidden" forceMount>
         <AircraftTab aircraft={vhKxwAircraft} settings={settings} />
       </TabsContent>
     </Tabs>
