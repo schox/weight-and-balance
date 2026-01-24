@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { BarChart3, Fuel, Clock, ChevronDown, ChevronUp } from 'lucide-react';
@@ -16,6 +16,8 @@ interface VisualizationTabsProps {
   calculations: CalculationResult;
   settings: Settings;
   loadingState: LoadingState;
+  fuelBurnState: FuelBurnState;
+  onFuelBurnStateChange: (state: FuelBurnState) => void;
   className?: string;
 }
 
@@ -144,24 +146,12 @@ const VisualizationTabs: React.FC<VisualizationTabsProps> = ({
   calculations,
   settings,
   loadingState,
+  fuelBurnState,
+  onFuelBurnStateChange,
   className
 }) => {
-  // Fuel burn state for flight planning - initialize with aircraft defaults
-  const [fuelBurnState, setFuelBurnState] = useState<FuelBurnState>({
-    burnRateGPH: aircraft.defaultFuelBurnRateGPH,
-    flightDurationHours: 1.0
-  });
-
   // Track if flight planning panel is expanded (controls visibility on chart)
   const [isFlightPlanningExpanded, setIsFlightPlanningExpanded] = useState(true);
-
-  // Update fuel burn rate when aircraft changes
-  useEffect(() => {
-    setFuelBurnState(prev => ({
-      ...prev,
-      burnRateGPH: aircraft.defaultFuelBurnRateGPH
-    }));
-  }, [aircraft.registration, aircraft.defaultFuelBurnRateGPH]);
 
   const tabs: VisualizationTab[] = [
     {
@@ -220,7 +210,7 @@ const VisualizationTabs: React.FC<VisualizationTabsProps> = ({
                 {tab.id === 'envelope' && (
                   <FuelBurnPanel
                     fuelBurnState={fuelBurnState}
-                    onUpdate={setFuelBurnState}
+                    onUpdate={onFuelBurnStateChange}
                     fuelUnits={settings.fuelUnits}
                     isExpanded={isFlightPlanningExpanded}
                     onToggleExpand={() => setIsFlightPlanningExpanded(!isFlightPlanningExpanded)}
