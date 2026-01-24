@@ -533,7 +533,7 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
 
         <div className="grid grid-cols-2 gap-4 p-3 bg-muted rounded-lg text-sm">
           <div>
-            <span className="font-medium">Takeoff Weight:</span>
+            <span className="font-medium">Takeoff Wt:</span>
             <span className="ml-2">{roundDownForDisplay(currentPosition.weight)} {settings.weightUnits}</span>
           </div>
           <div>
@@ -542,7 +542,7 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
           </div>
           {zeroFuelWeight && (
             <div>
-              <span className="font-medium">Zero Fuel Weight:</span>
+              <span className="font-medium">Zero Fuel Wt:</span>
               <span className="ml-2">{roundDownForDisplay(convertWeightForDisplay(zeroFuelWeight, settings.weightUnits))} {settings.weightUnits}</span>
             </div>
           )}
@@ -552,7 +552,7 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
             const exceedsMLW = landing.weight > aircraft.maxLandingWeightLbs;
             return (
               <div className={exceedsMLW ? "text-red-600" : ""}>
-                <span className="font-medium">Landing Weight:</span>
+                <span className="font-medium">Landing Wt:</span>
                 <span className="ml-2">{roundDownForDisplay(landingWeightDisplay)} {settings.weightUnits}</span>
                 {exceedsMLW && <span className="ml-1 text-xs">(exceeds MLW)</span>}
               </div>
