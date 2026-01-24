@@ -9,9 +9,8 @@ import { fuelConversions } from '@/utils/conversions';
 
 // Format a decimal value: show integer if close to whole number, otherwise 1 decimal place
 const formatDecimal = (val: number): string => {
-  const rounded = Math.round(val * 10) / 10;
-  if (Math.abs(rounded - Math.round(rounded)) < 0.05) return Math.round(rounded).toString();
-  return rounded.toFixed(1);
+  if (Math.abs(val - Math.round(val)) < 0.1) return Math.round(val).toString();
+  return (Math.round(val * 10) / 10).toFixed(1);
 };
 
 // Import visualization components
