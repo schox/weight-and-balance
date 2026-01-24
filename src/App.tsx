@@ -27,7 +27,7 @@ function AppLayout() {
   const [settings, setSettings] = useState<SettingsType>({
     fuelUnits: 'litres',
     weightUnits: 'kg',
-    distanceUnits: 'inches'
+    distanceUnits: 'mm'
   });
 
   const handleSettingsChange = (newSettings: SettingsType) => {

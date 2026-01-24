@@ -393,7 +393,7 @@ const HelpPage: React.FC = () => {
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                 <p className="text-blue-800 text-xs">
                   <strong>Note:</strong> Settings are not saved between sessions. The calculator
-                  returns to defaults (litres, kg, inches) each time you open it.
+                  returns to defaults (litres, kg, mm) each time you open it.
                 </p>
               </div>
             </CardContent>

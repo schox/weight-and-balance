@@ -28,7 +28,7 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
     return settings.distanceUnits === 'mm' ? cgMm : cgMm / 25.4;
   };
 
-  const getCGUnit = () => settings.distanceUnits;
+  const getCGUnit = () => settings.distanceUnits === 'inches' ? 'in' : 'mm';
 
   // Convert all envelope points to display units for plotting
   const envelopePoints = aircraft.cgEnvelope.map(point => ({
