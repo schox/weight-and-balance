@@ -47,14 +47,17 @@ const CGEnvelopeChart: React.FC<CGEnvelopeChartProps> = ({
     cgPosition: convertCGForDisplay(cgPosition)
   };
 
-  // Calculate chart bounds with fixed weight scale range
+  // Calculate chart bounds dynamically from envelope
   const allCGs = envelopePoints.map(p => p.cgPosition);
+  const allWeights = envelopePoints.map(p => p.weight);
 
-  // Fixed weight range: 850-1450 kg or equivalent in lbs
-  const minWeightKg = 850;
-  const maxWeightKg = 1450;
-  const minWeight = settings.weightUnits === 'kg' ? minWeightKg : minWeightKg * 2.20462;
-  const maxWeight = settings.weightUnits === 'kg' ? maxWeightKg : maxWeightKg * 2.20462;
+  // Calculate weight range from envelope with padding
+  const envelopeMinWeight = Math.min(...allWeights);
+  const envelopeMaxWeight = Math.max(...allWeights);
+  const weightRange = envelopeMaxWeight - envelopeMinWeight;
+  const verticalPadding = weightRange * 0.15; // 15% padding above and below
+  const minWeight = envelopeMinWeight - verticalPadding;
+  const maxWeight = envelopeMaxWeight + verticalPadding;
 
   // Add significant horizontal padding to match handbook layout
   const cgRange = Math.max(...allCGs) - Math.min(...allCGs);
