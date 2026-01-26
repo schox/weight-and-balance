@@ -30,7 +30,7 @@ The Weight & Balance Calculator is a web-based application designed for pilots a
 
 The calculator supports two aircraft:
 - **VH-YPB** - Cessna 182T
-- **VH-KXW** - Cessna 172P
+- **VH-KXW** - Cessna 172S
 
 ---
 
@@ -70,7 +70,7 @@ All data you enter stays in your browser session only. When you close the browse
 
 At the top of the calculator, you'll see two tabs:
 - **YPB C182T** - VH-YPB Cessna 182T
-- **KXW C172P** - VH-KXW Cessna 172P
+- **KXW C172S** - VH-KXW Cessna 172S
 
 Click on the appropriate tab to select the aircraft you'll be flying. Each aircraft has different:
 - Basic Empty Weight
@@ -160,7 +160,7 @@ The baggage section has tabs for each baggage area:
 - Area C: Up to 80 lbs / 36 kg
 - **Combined maximum: 200 lbs / 91 kg**
 
-**VH-KXW (C172P):**
+**VH-KXW (C172S):**
 - Area 1: Up to 120 lbs / 54 kg
 - Area 2: Up to 50 lbs / 23 kg
 - **Combined maximum: 120 lbs / 54 kg**
@@ -278,7 +278,7 @@ The Flight Planning section lets you project your landing weight and CG after fu
 
 Each aircraft has a default fuel burn rate pre-filled:
 - VH-YPB (C182T): 14 GPH / 53 L/hr
-- VH-KXW (C172P): 9 GPH / 34 L/hr
+- VH-KXW (C172S): 9 GPH / 34 L/hr
 
 You can adjust these based on your planned power settings.
 

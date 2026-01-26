@@ -4,7 +4,7 @@ A web-based aircraft weight and balance calculator built for the Curtin Flying C
 
 ## Features
 
-- **Weight & balance calculations** for multiple aircraft (Cessna 182T, Cessna 172P)
+- **Weight & balance calculations** for multiple aircraft (Cessna 182T, Cessna 172S)
 - **Interactive CG envelope chart** showing takeoff and landing positions relative to limits
 - **Aircraft side-view visualization** with weight distribution display
 - **Flight planning** with fuel burn rate, duration, and landing weight/CG prediction

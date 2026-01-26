@@ -118,7 +118,7 @@ export const vhYpbAircraft: Aircraft = {
   workOrder: 'WB-5014'              // From load data sheet
 };
 
-// VH-KXW Cessna 172P Loading Stations
+// VH-KXW Cessna 172S Loading Stations
 const vhKxwLoadingStations: LoadingStation[] = [
   {
     id: 'pilot',
@@ -188,7 +188,7 @@ const vhKxwLoadingStations: LoadingStation[] = [
 ];
 
 // CG Envelope points for VH-KXW (Normal Category)
-// Based on Cessna 172P POH
+// Based on Cessna 172S POH
 // POH specs:
 //   - Forward limit: 35.0" constant for weights ≤ 1,950 lbs
 //   - Forward limit: Linear taper from 35.0" at 1,950 lbs to 39.5" at 2,400 lbs
@@ -213,7 +213,7 @@ const vhKxwCGEnvelope: CGEnvelopePoint[] = [
 // VH-KXW Aircraft Definition
 export const vhKxwAircraft: Aircraft = {
   registration: 'VH-KXW',
-  model: 'Cessna 172P',
+  model: 'Cessna 172S',
   emptyWeightLbs: 1745.8,
   emptyCGMm: 1057,                   // 41.6" converted to mm
   maxTakeoffWeightLbs: 2400,

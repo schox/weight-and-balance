@@ -79,7 +79,7 @@ const HelpPage: React.FC = () => {
               <p className="font-medium">Supported aircraft:</p>
               <ul className="list-disc pl-5 space-y-1">
                 <li><strong>VH-YPB</strong> - Cessna 182T</li>
-                <li><strong>VH-KXW</strong> - Cessna 172P</li>
+                <li><strong>VH-KXW</strong> - Cessna 172S</li>
               </ul>
             </CardContent>
           </Card>
@@ -179,7 +179,7 @@ const HelpPage: React.FC = () => {
                     </ul>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-3">
-                    <div className="font-medium">VH-KXW (C172P)</div>
+                    <div className="font-medium">VH-KXW (C172S)</div>
                     <ul className="text-xs mt-1 space-y-0.5">
                       <li>Area 1: max 120 lbs / 54 kg</li>
                       <li>Area 2: max 50 lbs / 23 kg</li>
@@ -316,7 +316,7 @@ const HelpPage: React.FC = () => {
                 <h4 className="font-semibold mb-1">Default Burn Rates</h4>
                 <ul className="text-xs space-y-0.5">
                   <li>VH-YPB (C182T): 14 GPH / 53 L/hr</li>
-                  <li>VH-KXW (C172P): 9 GPH / 34 L/hr</li>
+                  <li>VH-KXW (C172S): 9 GPH / 34 L/hr</li>
                 </ul>
               </div>
               <div className="bg-red-50 border border-red-200 rounded-lg p-3">

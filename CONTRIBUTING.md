@@ -28,7 +28,7 @@ To add support for a new aircraft:
 4. Create the aircraft definition with empty weight, CG, max weights, and fuel capacity
 5. Add the aircraft to the `aircraftDatabase` export
 
-Use the existing VH-YPB (Cessna 182T) and VH-KXW (Cessna 172P) definitions as reference.
+Use the existing VH-YPB (Cessna 182T) and VH-KXW (Cessna 172S) definitions as reference.
 
 ## Code Style
 

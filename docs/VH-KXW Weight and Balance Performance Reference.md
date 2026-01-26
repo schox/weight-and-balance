@@ -1,16 +1,16 @@
-Based on the **Cessna 172P Pilot Operating Handbook (POH)** and the **specific Load Data Sheet information** you provided for VH-KXW, here is the updated Calculations Reference.  
-This document incorporates the actual weight and balance data for VH-KXW and applies the C172P POH limitations found in Section 6\.
+Based on the **Cessna 172S Pilot Operating Handbook (POH)** and the **specific Load Data Sheet information** you provided for VH-KXW, here is the updated Calculations Reference.
+This document incorporates the actual weight and balance data for VH-KXW and applies the C172S POH limitations found in Section 6\.
 
 # VH-KXW Calculations Reference
 
-This document defines the calculation logic, validation rules, and baseline data for **VH-KXW** (Cessna 172P). It is formatted for direct implementation into flight planning applications.
+This document defines the calculation logic, validation rules, and baseline data for **VH-KXW** (Cessna 172S). It is formatted for direct implementation into flight planning applications.
 
 ### 1\. Aircraft Baseline Data
 
-The following specifications are derived from the **VH-KXW Load Data Sheet** (User Provided) and the **Cessna 172P POH** Section 6 1, 2\.  
-Parameter,Value (Imperial),Value (Metric),Source  
-Registration,VH-KXW,,User Prompt  
-Model,Cessna 172P,,POH Sec 6 1  
+The following specifications are derived from the **VH-KXW Load Data Sheet** (User Provided) and the **Cessna 172S POH** Section 6 1, 2\.
+Parameter,Value (Imperial),Value (Metric),Source
+Registration,VH-KXW,,User Prompt
+Model,Cessna 172S,,POH Sec 6 1  
 Basic Empty Weight (BEW),"1,745.8 lbs",791.9 kg,VH-KXW Actual  
 Empty Arm,41.6 inches,"1,057 mm",VH-KXW Actual  
 Empty Moment,"72,640.0 lb-in","836,846 kg.mm",VH-KXW Actual\*  
@@ -32,7 +32,7 @@ Fuel (Standard),"48.0""","1,219 mm",-,1
 **Notes:**
 
 * **Baggage:** Maximum combined weight for Area 1 \+ Area 2 is **120 lbs** 1\.  
-* **Rear Pax Arm:** The POH sample problem uses a moment index that implies an arm of \~72.9". Standard practice for the C172P uses **73.0"**.  
+* **Rear Pax Arm:** The POH sample problem uses a moment index that implies an arm of \~72.9". Standard practice for the C172S uses **73.0"**.  
 * **Fuel Arm:** The POH sample uses an arm of \~47.9". Standard practice uses **48.0"**.
 
 ### 3\. CG Envelope Validation

@@ -43,7 +43,7 @@ const HomePage: React.FC<HomePageProps> = ({ settings }) => {
                 className="text-base font-semibold px-6 flex-1"
               >
                 <Plane className="h-4 w-4 mr-2" />
-                KXW C172P
+                KXW C172S
                 <Link
                   to="/aircraft/VH-KXW"
                   className="ml-2 p-1 rounded hover:bg-black/10 transition-colors"
