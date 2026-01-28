@@ -188,10 +188,10 @@ const vhKxwLoadingStations: LoadingStation[] = [
 ];
 
 // CG Envelope points for VH-KXW (Normal Category)
-// Based on Cessna 172S POH
+// Based on Cessna 172S POH Section 6, Figure 6-8
 // POH specs:
 //   - Forward limit: 35.0" constant for weights ≤ 1,950 lbs
-//   - Forward limit: Linear taper from 35.0" at 1,950 lbs to 39.5" at 2,400 lbs
+//   - Forward limit: Linear taper from 35.0" at 1,950 lbs to 41.0" at 2,550 lbs
 //   - Aft limit: 47.3" constant at all weights
 //   - Minimum weight: 1,746 lbs (Basic Empty Weight)
 // Tracing the envelope clockwise starting from bottom-left
@@ -201,9 +201,9 @@ const vhKxwCGEnvelope: CGEnvelopePoint[] = [
   // Forward limit stays flat until 1,950 lbs (vertical line up)
   { weight: 1950, cgPosition: 889 },     // 35.0" at 1,950 lbs
   // Forward limit tapers linearly to MTOW (diagonal line up-right)
-  { weight: 2400, cgPosition: 1003.3 },  // 39.5" at MTOW
+  { weight: 2550, cgPosition: 1041.4 },  // 41.0" at MTOW
   // Top-right (aft limit at MTOW)
-  { weight: 2400, cgPosition: 1201.4 },  // 47.3"
+  { weight: 2550, cgPosition: 1201.4 },  // 47.3"
   // Bottom-right (aft limit at BEW - vertical line down)
   { weight: 1746, cgPosition: 1201.4 },  // 47.3"
   // Close polygon back to start
@@ -216,9 +216,9 @@ export const vhKxwAircraft: Aircraft = {
   model: 'Cessna 172S',
   emptyWeightLbs: 1745.8,
   emptyCGMm: 1057,                   // 41.6" converted to mm
-  maxTakeoffWeightLbs: 2400,
-  maxLandingWeightLbs: 2400,
-  maxRampWeightLbs: 2410,            // Typical +10 lbs for taxi
+  maxTakeoffWeightLbs: 2550,          // POH Section 1, Normal Category
+  maxLandingWeightLbs: 2550,          // POH Section 1, Normal Category
+  maxRampWeightLbs: 2558,             // POH Section 1, Normal Category
   fuelCapacityGallons: 53,           // ~53 gallons usable (26.5 per tank)
   fuelCapacityLitres: 200.6,         // 53 gallons converted to litres
   loadingStations: vhKxwLoadingStations,
